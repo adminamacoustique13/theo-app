@@ -34,7 +34,7 @@ const T3 = [
 const ACC = '<b>Comptes actifs</b><div>d.marchal · Direction produit</div><div>n.aubry · Opérations</div><div><b>t.lenoir · LENOIR Théo</b> · développeur freelance</div>';
 
 // Le tatouage de Théo (avant-bras) : sur les portraits A et H de la pellicule (tous les téléphones)
-// et sur la photo de profil d'Ethel O. (tél. 2 à 4), gros plan tourné. C'est ce qui trahit Ethel.
+// et la photo de profil d'Ethel O. (tél. 2 à 4) est le symbole lui-même. C'est ce qui trahit Ethel.
 const AV_ETHEL = '<img src="/photos/ethel.jpg" alt="">';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
