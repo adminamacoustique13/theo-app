@@ -153,8 +153,8 @@ canvas{width:100%;border-radius:8px;display:block}
 .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:3px}
 /* Écran de verrouillage */
 .lock{flex:1;position:relative;display:flex;flex-direction:column}
-.lock .wp{filter:brightness(.6)}
-.lk-in{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 24px calc(var(--sb) + 26px);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);background:rgba(0,0,0,.22)}
+.lock .wp{filter:brightness(.75)}
+.lk-in{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 24px calc(var(--sb) + 26px);background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.45) 55%,rgba(0,0,0,.6))}
 .lk-ic{color:#fff;opacity:.9}
 .lk-d{font-size:18px;font-weight:600;margin-top:6px;opacity:.92}
 .lk-h{font-size:clamp(64px,11vh,88px);font-weight:700;line-height:1;letter-spacing:-1px;margin-bottom:auto;font-variant-numeric:tabular-nums}
