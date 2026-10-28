@@ -92,9 +92,11 @@ const CONV = {
   },
   'Nora': {
     num: '06 39 98 41 07',
-    1: { h: '12:40', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'Oui chef.'],
+    1: { h: '21:58', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'Oui chef.'],
+      ['in', "Nouveau jeu cette semaine : l'effet Mandela. Les trucs dont tout le monde se souvient… de travers."], ['in', 'Chacun note les siens. Celui qui en a le moins paie les croissants.'], ['out', 'Pari tenu. ok.'],
       day('Lundi 19 octobre · 12:31'), ['in', 'Alors ce job ?'], ['out', 'Une appli de méditation.  Ça paye bien. ok.'], ['in', 'Toi. Méditer.'], ['out', 'Je la code, je la fais pas 😅'], ['in', 'Le moine.'],
-      ['in', 'Je suis de nuit jeudi et vendredi, tu peux nourrir Biscotte ?'], ['out', '=> vendredi. ok.']] },
+      ['in', 'Je suis de nuit jeudi et vendredi, tu peux nourrir Biscotte ?'], ['out', '=> vendredi. ok.'],
+      day('21:52'), ['out', 'Bilan de la journée : 8.  => tout est dans mes notes. ok.'], ['in', '8 ?! Tu triches.'], ['in', "Moi j'en ai 3. Ok, je paie les croissants 🥐"]] },
     2: { h: '23:31', m: [day('Jeudi 22 octobre · 18:40'), ['in', 'Tu avais une drôle de voix au téléphone.'], ['out', 'Fatigué. Rien de grave.'],
       day('23:20'), ['out', 'Tu bosses ?'], ['in', "Oui, nuit calme pour l'instant. Pourquoi ?"], ['out', "Je peux te déposer un truc demain ? Tu le gardes, c'est tout."], ['in', "C'est quoi ?"],
       ['out', 'Rien.  => tu me le rendras quand je te le demanderai. ok.'], ['in', 'Mystérieux. Ok.']] },
@@ -102,6 +104,7 @@ const CONV = {
       day('Vendredi 23 octobre · 22:47'), ['out', "=> si je te parle d'une séance ce soir, dis-moi de pas la faire. ok."],
       day('Samedi 24 octobre · 21:10'), ['in', "Hier soir tu m'as écrit de ne pas faire la séance, c'était quoi ?"], ['out', "Ah. J'étais crevé, laisse."], ['in', 'Brunch demain 11 h ?'], ['out', 'ok.']] },
     4: { h: '19:20', m: [day('Lundi 26 octobre · 08:05'), ['in', "T'étais bizarre au brunch hier."], ['out', 'Fatigué.'],
+      day('Mardi 27 octobre · 20:10'), ['in', 'Effet Mandela du jour : Oscar Mayer ou Meyer ?'], ['out', 'Meyer, évidemment.'], ['in', 'Toi qui en avais trouvé 8…'],
       day('Jeudi 29 octobre · 13:40'), ['in', "J'ai pris rdv pour toi mardi 9 h. Pas de discussion."], ['out', 'Pour quoi ?'], ['in', 'Pour me faire plaisir.'],
       day('Vendredi 30 octobre · 19:12'), ['in', "Tu te souviens de ce qu'on s'est dit dimanche ?"], ['out', 'Non, rien.'], ['in', "Je passe demain matin après ma garde. J'ai un truc à toi."]] }
   },
@@ -157,7 +160,7 @@ const CONV = {
 };
 // Ordre de la liste des conversations sur chaque téléphone (la plus récente en haut).
 const ORDER = {
-  1: ['Lucile', 'Maman', 'Nicolas Aubry', 'Nora', 'Coinche du jeudi', 'M. Fabre', 'Direction'],
+  1: ['Nora', 'Lucile', 'Maman', 'Nicolas Aubry', 'Coinche du jeudi', 'M. Fabre', 'Direction'],
   2: ['Lucile', 'Nora', 'Coinche du jeudi', 'Ethel O.', 'Nicolas Aubry', 'Direction', 'Maman', 'Banque', 'M. Fabre'],
   3: ['Ethel O.', 'Direction', 'Lucile', 'Nora', 'Nicolas Aubry', 'Maman', 'Coinche du jeudi', 'M. Fabre', 'Banque'],
   4: ['Coinche du jeudi', 'Nora', 'Nicolas Aubry', 'Direction', 'Maman', 'Banque', 'Ethel O.', 'Doctolib', 'Lucile', 'M. Fabre']
