@@ -203,3 +203,5 @@ canvas{width:100%;border-radius:8px;display:block}
 .dev-box small{display:block;color:#7d8791;margin-top:4px;line-height:1.45}
 .dev-box.err{border-color:#5a2a2a}.dev-box.err b{color:#ff8a8a}
 .dev-acc div{padding:6px 0;border-bottom:1px solid #1e2328}
+
+.bub .au{display:block;font-size:11px;font-weight:600;color:#8fb3d9;margin-bottom:2px}
