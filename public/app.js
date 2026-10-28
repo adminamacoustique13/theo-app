@@ -119,7 +119,7 @@
   }
   const sb = () => '<div class="notch"></div><div class="sb"><span>●●●○</span><span>' + D.bat + ' %</span></div>';
   const hd = t => '<div class="hd"><button data-act="back">‹</button><span>' + esc(t) + '</span></div>';
-  const ICON = { postit: '🟨', board: '⬜', inv: '🧾', ticket: '💻', badge: '🪪', blur: '🌸', clock: '⏰', acc: '📋', plain: '🖼️' };
+  const ICON = { postit: '🟨', board: '⬜', inv: '🧾', ticket: '💻', badge: '🪪', blur: '🌸', clock: '⏰', acc: '📋', plain: '🖼️', desk: '🖥️', concert: '🎸' };
 
   // ---------- Sérénité ----------
   // Textes de l'appli propres à chaque téléphone (salutation, séance mise en avant, statistiques).
@@ -210,7 +210,7 @@
         b = '<div class="dev-box"><b>ORCHIDÉE</b></div><table class="dev-t"><tr><th>Client</th><th>Événement</th><th>Sujets</th><th>Oubli</th></tr>' + d.rows.map(r => '<tr>' + r.map(c => '<td>' + esc(c) + '</td>').join('') + '</tr>').join('') + '</table>' +
           '<div class="dev-box" style="margin-top:10px"><small>Accès : ' + esc(d.access) + '</small></div><div class="dev-box err"><b>Sujet 0 : fin de mission</b><small>' + esc(d.sujet0) + '</small></div>';
       } else {
-        b = '<div class="dev-box"><b>ORCHIDÉE</b><small>Dossier protégé</small></div><input type="text" placeholder="Mot de passe du dossier" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="doslogin">Ouvrir</button><div class="bad dev-err">' + esc(msg) + '</div>';
+        b = '<div class="dev-box"><b>ORCHIDÉE</b><small>Dossier protégé' + (A.dosMod ? ' · mot de passe modifié par ' + esc(A.dosMod) : '') + '</small>' + (A.dosHint ? '<small>Indice : ' + esc(A.dosHint) + '</small>' : '') + '</div><input type="text" placeholder="Mot de passe du dossier" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="doslogin">Ouvrir</button><div class="bad dev-err">' + esc(msg) + '</div>';
       }
     } else b = '<div class="mut">Aucun dossier partagé.</div>';
     return top + '<div class="dev-body"><div class="dev-brand sm">NOCTIS<span>préprod · t.lenoir</span></div><div class="dev-tabs">' + tabs + '</div>' + b + '</div>';
@@ -225,11 +225,11 @@
     if (n.app === 'msg') {
       if (n.view === 'card') {
         const t = D.th[n.i];
-        return hd('Contact') + '<div class="body"><div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + (t.n === 'Ethel O.' ? D.num : (t.num || 'Numéro masqué')) + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Cette personne est l\'anagramme de…</small><input type="text" placeholder="Prénom et nom" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Vérifier</button><div style="margin-top:8px">' + (S.ana ? '<b class="ok">Contact renommé : « Moi (Théo Lenoir) »</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '') + '</div>';
+        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Modifier le contact</small>' + (S.ana ? '<b class="ok">Contact enregistré : « Moi (Théo Lenoir) »</b>' : '<input type="text" placeholder="' + esc(t.n) + '" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Enregistrer</button><div style="margin-top:8px"><span class="bad">' + esc(msg) + '</span></div>') + '</div>' : '') + '</div>';
       }
       if (n.view === 'item') {
         const t = D.th[n.i];
-        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer">' + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
+        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
       }
       return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(nm(t)) + '</b><span>' + t.h + '</span><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div>').join('') + '</div>';
     }

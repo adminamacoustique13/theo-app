@@ -49,6 +49,11 @@ body{font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;c
 .s-clock{background:#050505;color:#fff;font-size:64px;text-align:center;font-weight:200;display:flex;align-items:center;justify-content:center}
 .s-acc{background:#0d1620;font-size:13px}
 .s-acc div{padding:7px 2px;border-bottom:1px solid #1f2d3b}
+.s-photo{padding:0;overflow:hidden;min-height:0;line-height:0}
+.s-photo svg{width:100%;height:auto;display:block}
+.av{width:96px;height:96px;border-radius:50%;overflow:hidden;margin:6px auto 12px}
+.av svg,.av-s svg{width:100%;height:100%;display:block}
+.av-s{width:28px;height:28px;border-radius:50%;overflow:hidden;display:inline-block;flex:none}
 .scene.plain{background:linear-gradient(135deg,#243344,#101820);color:#7d90a4;text-align:center;padding-top:90px}
 .cardx{background:#16212d;border-radius:12px;padding:13px;margin-bottom:10px}
 .cardx small{color:#8798aa;display:block;margin-top:3px}
