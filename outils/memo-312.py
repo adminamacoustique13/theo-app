@@ -68,7 +68,7 @@ def hidden_word(dur, word="TOI", f0=15500, f1=19500):
         out[k * hop:(k + 1) * hop] = seg; ph += 2 * np.pi * freqs * hop / SR
     return out / (np.abs(out).max() + 1e-9)
 
-def main(onnx, dest, mot=True, souffle=0.3):
+def main(onnx, dest, mot=True, souffle=0.0):
     rng = np.random.default_rng(3)
     parts = [np.zeros(int(1.4 * SR))]
     for txt, pause in PHRASES:
@@ -88,4 +88,4 @@ def main(onnx, dest, mot=True, souffle=0.3):
 if __name__ == "__main__":
     a = sys.argv
     if "--pierre" in a: SPEAKER = 1
-    main(a[1], a[2], "--sans-mot" not in a, float(a[a.index("--souffle") + 1]) if "--souffle" in a else 0.3)
+    main(a[1], a[2], "--sans-mot" not in a, float(a[a.index("--souffle") + 1]) if "--souffle" in a else 0.0)
