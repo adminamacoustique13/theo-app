@@ -150,6 +150,15 @@ th{color:#8798aa;font-weight:500}
 .tabs span{padding:6px 10px;border-radius:9px;background:#16212d;font-size:12.5px;cursor:pointer}
 .tabs span.on{background:#1f6fe0}
 canvas{width:100%;border-radius:8px;display:block}
+.vm-more{left:auto!important;right:6px;font-size:24px!important;font-weight:700!important}
+.sheet{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:flex-end;padding:8px 8px 28px;gap:8px}
+.sheet>div{background:rgba(44,44,46,.97);border-radius:14px;overflow:hidden}
+.sheet span{display:block;padding:15px;text-align:center;color:var(--acc);font-size:17px;border-bottom:.5px solid rgba(255,255,255,.12);cursor:pointer}
+.sheet span:last-child{border-bottom:0}
+.sheet span.del{color:#ff453a}
+.spec small{margin-bottom:6px}
+.seuil{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--t2)}
+.seuil input{flex:1;accent-color:var(--acc)}
 .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:3px}
 /* Écran de verrouillage */
 .lock{flex:1;position:relative;display:flex;flex-direction:column}

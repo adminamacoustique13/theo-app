@@ -20,7 +20,7 @@ module.exports = {
     2: [
       'Cette nuit-là, Théo a changé un mot de passe. Relisez sa note : il dit où il l\'a caché.',
       'Un mot que Théo a « sous les yeux tous les jours » : regardez bien la photo de son bureau. Le vocal de 3 h 12 n\'est pas fait que de mots.',
-      'Dans le dictaphone, utilisez « Analyser (spectre) » : un mot est caché en haut du spectre.'
+      'Mémo de 3 h 12 : menu « ⋯ », « Afficher le spectre », puis montez le curseur « Seuil » jusqu\'à ce qu\'un mot sorte du bruit.'
     ],
     3: [
       'Comparez les heures : deux séances portent la même heure locale.',
