@@ -365,3 +365,4 @@ canvas{width:100%;border-radius:8px;display:block}
 .mini.s-img img{width:100%;height:100%;object-fit:cover}
 .s-img.zoom{overflow:auto;cursor:zoom-out;max-height:calc(100vh - 140px)}
 .s-img.zoom img{width:300%;max-width:none}
+.av img,.av-s img,.av-l img{width:100%;height:100%;object-fit:cover;display:block}

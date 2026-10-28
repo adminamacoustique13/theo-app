@@ -19,10 +19,10 @@ assert.strictEqual(phones[3].admin.jr.filter(r => r[1] === '02:30').map(r => r[0
 const tri = s => sansAccents(s).toUpperCase().replace(/[^A-Z]/g, '').split('').sort().join('');
 assert.strictEqual(tri('Ethel'), tri('LETHE'));
 assert.ok(SECRETS.anagram.includes('THEOLENOIR'));
-// Le bracelet d'Ethel est aussi sur une photo du téléphone 1, et Ethel n'affiche pas le numéro de Théo.
+// Le tatouage d'Ethel est aussi sur les portraits de Théo (pellicule du téléphone 1), et Ethel n'affiche pas le numéro de Théo.
 const ethel = phones[2].public.th.find(t => t.n === 'Ethel O.');
-assert.ok(ethel.av && ethel.num !== require('./data').NUM);
-assert.ok(phones[1].public.ph.some(p => p.k === 'concert'));
+assert.ok(ethel.av.includes('/photos/ethel.jpg') && ethel.num !== require('./data').NUM);
+assert.ok(['a', 'h', 'l'].every(l => phones[1].public.roll.includes('/photos/vie-' + l + '.jpg')));
 
 // 3 bis. ASPHODÈLE n'est écrit nulle part en clair : seule l'étiquette latine du bureau (tél. 2) y mène,
 // et le tél. 3 ne montre l'indice qu'après LETHE.
@@ -32,7 +32,7 @@ assert.ok(phones[2].public.ph.some(p => p.k === 'desk' && p.html.includes('/phot
 // Toutes les photos citées existent.
 for (const n of [1, 2, 3, 4]) {
   const P = phones[n].public;
-  const urls = P.roll.concat(P.ph.map(p => (p.html.match(/src="([^"]+)"/) || [])[1]).filter(Boolean));
+  const urls = P.roll.concat(P.th.filter(t => t.av).map(t => t.av.match(/src="([^"]+)"/)[1]), P.ph.map(p => (p.html.match(/src="([^"]+)"/) || [])[1]).filter(Boolean));
   for (const u of urls) assert.ok(require('fs').existsSync(require('path').join(__dirname, 'public', u)), u);
 }
 assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');

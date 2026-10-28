@@ -33,14 +33,9 @@ const T3 = [
 
 const ACC = '<b>Comptes actifs</b><div>d.marchal · Direction produit</div><div>n.aubry · Opérations</div><div><b>t.lenoir · LENOIR Théo</b> · développeur freelance</div>';
 
-// Le bracelet de Théo (cordon rouge, trois nœuds, anneau d'argent) : au poignet de Théo sur la photo
-// du concert (tél. 1) et sur la photo de profil d'Ethel O. (tél. 2 à 4). C'est ce qui trahit Ethel.
-const BRACELET = (x, y, w) => '<g transform="translate(' + x + ' ' + y + ')"><rect x="0" y="0" width="' + w + '" height="7" rx="3" fill="#b3202a"/>' +
-  [0.25, 0.5, 0.75].map(f => '<circle cx="' + (w * f) + '" cy="3.5" r="4.2" fill="#7d141b"/>').join('') +
-  '<circle cx="' + (w * 0.62) + '" cy="11" r="3.4" fill="none" stroke="#d9dde2" stroke-width="1.6"/></g>';
-const AV_ETHEL = '<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#141820"/><g filter="url(#fl)">' +
-  '<path d="M-10 70 L70 18 L95 42 L15 100 Z" fill="#c99b7e"/></g><defs><filter id="fl"><feGaussianBlur stdDeviation="1.4"/></filter></defs>' +
-  '<g transform="rotate(-33 50 55) translate(50 55) scale(1.4) translate(-50 -55)">' + BRACELET(26, 52, 48) + '</g></svg>';
+// Le tatouage de Théo (avant-bras) : sur les portraits A, H et L de la pellicule (tous les téléphones)
+// et sur la photo de profil d'Ethel O. (tél. 2 à 4), gros plan tourné. C'est ce qui trahit Ethel.
+const AV_ETHEL = '<img src="/photos/ethel.jpg" alt="">';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
 const IMG = f => '<img src="/photos/' + f + '.jpg" alt="">';
@@ -55,12 +50,6 @@ const PH = {
   ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
   desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
-  // Théo au concert du samedi 17, bras levé : on voit son bracelet.
-  concert: ph('concert', 'Concert', 's-photo', '<svg viewBox="0 0 300 220"><defs><radialGradient id="lg" cx=".3" cy="0" r=".9"><stop offset="0" stop-color="#7a3cff"/><stop offset=".5" stop-color="#2a1150"/><stop offset="1" stop-color="#07040f"/></radialGradient></defs>' +
-    '<rect width="300" height="220" fill="url(#lg)"/><path d="M40 0 L90 220 L120 220 Z M230 0 L170 220 L205 220 Z" fill="#ffd6f5" opacity=".08"/>' +
-    '<g fill="#04030a"><circle cx="40" cy="200" r="34"/><circle cx="110" cy="210" r="30"/><circle cx="250" cy="205" r="36"/></g>' +
-    '<path d="M150 230 L176 120 L206 124 L190 230 Z" fill="#b48468"/><rect x="168" y="84" width="40" height="44" rx="10" fill="#c49478"/><rect x="176" y="62" width="26" height="40" rx="3" fill="#e9eef3" opacity=".85"/>' +
-    '<g transform="rotate(8 190 140)">' + BRACELET(172, 136, 34) + '</g></svg>'),
   badge: ph('badge', 'Badge', 's-badge', '<br>PETROVEX<br><span style="font-weight:400;font-size:12px">VISITEUR · site 4</span><br><br>'),
   blur: ph('blur', 'Flou', 's-blur', '<div></div>'),
   acc: ph('acc', 'Comptes', 's-acc', ACC),
@@ -237,7 +226,7 @@ const phones = {
       notes: notes8(),
       th: threads(1),
       cal: cal(1), calls: calls(1),
-      ph: [PH.live, PH.concert, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
+      ph: [PH.live, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
