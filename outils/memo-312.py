@@ -1,12 +1,13 @@
 """Fabrique le mémo chuchoté de 3h12 (tél. 2) avec le mot TOI caché en haut du spectre.
 
-Usage : python3 outils/memo-312.py <voix.onnx> <sortie.mp3> [--sans-mot]
+Usage : python3 outils/memo-312.py <voix.onnx> <sortie.mp3> [--sans-mot] [--souffle 0..1]
 Voix conseillée : fr_FR-tom-medium (huggingface.co/rhasspy/piper-voices).
 """
 import io, subprocess, sys, wave
 import numpy as np
 
 SR = 44100
+SPEAKER = None  # pour fr_FR-upmc-medium : 1 = Pierre
 PHRASES = [  # (texte, silence après en s)
     ("Je crois que j'ai vu quelque chose.", 2.6),
     ("Je ne sais plus quoi.", 1.8),
@@ -17,7 +18,7 @@ def tts(onnx, text):
     v = PiperVoice.load(onnx)
     buf = io.BytesIO()
     with wave.open(buf, "wb") as w:
-        v.synthesize_wav(text, w, SynthesisConfig(length_scale=1.25, noise_scale=0.8, noise_w_scale=0.9))
+        v.synthesize_wav(text, w, SynthesisConfig(speaker_id=SPEAKER, length_scale=1.15, noise_scale=0.6, noise_w_scale=0.8))
     buf.seek(0)
     with wave.open(buf) as w:
         sr, x = w.getframerate(), np.frombuffer(w.readframes(w.getnframes()), np.int16) / 32768
@@ -33,6 +34,12 @@ def istft(S, win, length, n=1024, hop=256):
     for k, f in enumerate(S):
         y[k * hop:k * hop + n] += win * np.fft.irfft(f, n); norm[k * hop:k * hop + n] += win ** 2
     return (y / np.maximum(norm, 1e-6))[n:n + length]
+
+def soft(x, souffle):
+    # voix basse : on garde la voix, on mélange un peu de souffle et on adoucit les aigus
+    y = x * (1 - souffle) + whisper(x) * souffle * np.abs(x).max()
+    k = np.exp(-np.arange(12) / 3); y = np.convolve(y, k / k.sum(), "same")
+    return y / (np.abs(y).max() + 1e-9)
 
 def whisper(x):
     # garde l'enveloppe de la voix, remplace la vibration des cordes vocales par du souffle
@@ -61,11 +68,11 @@ def hidden_word(dur, word="TOI", f0=15500, f1=19500):
         out[k * hop:(k + 1) * hop] = seg; ph += 2 * np.pi * freqs * hop / SR
     return out / (np.abs(out).max() + 1e-9)
 
-def main(onnx, dest, mot=True):
+def main(onnx, dest, mot=True, souffle=0.3):
     rng = np.random.default_rng(3)
     parts = [np.zeros(int(1.4 * SR))]
     for txt, pause in PHRASES:
-        parts += [whisper(tts(onnx, txt)) * 0.5, np.zeros(int(pause * SR))]
+        parts += [soft(tts(onnx, txt), souffle) * 0.45, np.zeros(int(pause * SR))]
     voice = np.concatenate(parts)
     room = np.convolve(rng.normal(0, 1, len(voice)), np.ones(40) / 40, "same") * 0.02  # souffle de pièce, nuit
     mix = voice + room
@@ -79,4 +86,6 @@ def main(onnx, dest, mot=True):
                     "-b:a", "192k", "-cutoff", "20000", dest], input=pcm, check=True)
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], "--sans-mot" not in sys.argv)
+    a = sys.argv
+    if "--pierre" in a: SPEAKER = 1
+    main(a[1], a[2], "--sans-mot" not in a, float(a[a.index("--souffle") + 1]) if "--souffle" in a else 0.3)
