@@ -175,12 +175,65 @@ const threads = N => ORDER[N].map(n => {
   return t;
 });
 
+// Calendrier. p : premier téléphone où l'événement existe (il reste ensuite sur les suivants).
+// d : date et heure locales (AAAA-MM-JJ HH:MM, ou AAAA-MM-JJ pour la journée entière).
+// by : qui l'a ajouté, quand ce n'est pas Théo. sys : note du téléphone lui-même.
+const CAL = [
+  { p: 1, d: '2026-10-17 20:30', t: 'Concert, Les Nuits Molles' },
+  { p: 1, d: '2026-10-19 09:00', t: 'NOCTIS : accueil' },
+  { p: 1, d: '2026-10-19 19:00', t: 'Appeler mamie' },
+  { p: 1, d: '2026-10-20 09:00', t: 'NOCTIS : accès préprod', by: 'n.aubry' },
+  { p: 1, d: '2026-10-22 21:00', t: 'Coinche chez Sami' },
+  { p: 1, d: '2026-10-23 12:00', t: 'Loyer M. Fabre !!' },
+  { p: 1, d: '2026-10-23 18:00', t: 'Nourrir Biscotte' },
+  { p: 1, d: '2026-10-25 11:00', t: 'Brunch chez Nora (croissants)' },
+  { p: 1, d: '2026-10-29 21:00', t: 'Coinche chez Sami' },
+  { p: 1, d: '2026-10-31', t: 'NOCTIS : livraison v1.0' },
+  { p: 1, d: '2026-11-01', t: 'Toussaint', sys: true },
+  { p: 2, d: '2026-10-22 22:40', t: 'Séance Sérénité : test longue durée', by: 'n.aubry' },
+  { p: 2, d: '2026-10-24 20:00', t: 'Ciné avec Lucile' },
+  { p: 3, d: '2026-10-24 21:50', t: 'Séance Sérénité : séance du soir', by: 'n.aubry' },
+  { p: 3, d: '2026-10-25 02:30', t: 'Séance Sérénité : séance de nuit', by: 'n.aubry' },
+  { p: 3, d: '2026-10-25 03:00', t: "Passage à l'heure d'hiver : 3 h 00 devient 2 h 00", sys: true },
+  { p: 3, d: '2026-10-31 21:00', t: 'Halloween chez Hugo (déguisé !)' },
+  { p: 4, d: '2026-10-28 19:00', t: 'Appeler mamie' },
+  { p: 4, d: '2026-10-31 02:30', t: 'Séance Sérénité : clôture', by: 'n.aubry' },
+  { p: 4, d: '2026-11-01 10:00', t: 'Cimetière avec papa et maman' },
+  { p: 4, d: '2026-11-03 09:00', t: 'Dr Vasseur', by: 'Nora B.' }
+];
+// Appels récents. dir : 'out' (sortant), 'in' (entrant), 'miss' (manqué). dur en minutes.
+const CALLS = [
+  { p: 1, d: '2026-10-18 19:40', n: 'Maman', dir: 'out', dur: 12 },
+  { p: 1, d: '2026-10-19 12:35', n: 'Nora', dir: 'in', dur: 6 },
+  { p: 1, d: '2026-10-19 17:20', n: 'Nicolas Aubry', dir: 'in', dur: 2 },
+  { p: 1, d: '2026-10-19 18:50', n: 'EHPAD Les Tilleuls', dir: 'miss' },
+  { p: 2, d: '2026-10-21 20:10', n: 'Lucile', dir: 'out', dur: 24 },
+  { p: 2, d: '2026-10-22 18:32', n: 'Nora', dir: 'out', dur: 4 },
+  { p: 2, d: '2026-10-22 21:12', n: 'Coinche du jeudi', dir: 'miss' },
+  { p: 2, d: '2026-10-23 02:41', n: 'Nora', dir: 'out', dur: 0 },
+  { p: 3, d: '2026-10-24 11:05', n: 'Maman', dir: 'miss' },
+  { p: 3, d: '2026-10-24 18:10', n: 'Nicolas Aubry', dir: 'in', dur: 3 },
+  { p: 3, d: '2026-10-24 19:59', n: 'Lucile', dir: 'out', dur: 1 },
+  { p: 4, d: '2026-10-26 19:02', n: 'Lucile', dir: 'miss' },
+  { p: 4, d: '2026-10-26 19:05', n: 'Lucile', dir: 'miss' },
+  { p: 4, d: '2026-10-26 19:30', n: 'Lucile', dir: 'miss' },
+  { p: 4, d: '2026-10-27 12:05', n: 'Maman', dir: 'in', dur: 8 },
+  { p: 4, d: '2026-10-28 18:45', n: 'EHPAD Les Tilleuls', dir: 'miss' },
+  { p: 4, d: '2026-10-29 13:35', n: 'Nora', dir: 'in', dur: 11 },
+  { p: 4, d: '2026-10-30 18:22', n: 'Nicolas Aubry', dir: 'in', dur: 1 },
+  { p: 4, d: '2026-10-30 19:15', n: 'Nora', dir: 'miss' }
+];
+// Calendrier du téléphone N dans l'ordre chronologique ; appels du plus récent au plus ancien.
+const cal = N => CAL.filter(e => e.p <= N).sort((a, b) => a.d.localeCompare(b.d)).map(({ p, ...e }) => e);
+const calls = N => CALLS.filter(c => c.p <= N).sort((a, b) => b.d.localeCompare(a.d)).map(({ p, ...c }) => c);
+
 const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
       notes: notes8(),
       th: threads(1),
+      cal: cal(1), calls: calls(1),
       ph: [PH.postit, PH.board, PH.concert, PH.inv],
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
@@ -193,6 +246,7 @@ const phones = {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "Ouvert par erreur un dossier.  J'ai changé son mot de passe => un mot que j'ai sous les yeux tous les jours. ok.\n\nClients : PETROVEX (incident site 4), puis un « État ».\n\nCe n'est pas de la méditation : ils font OUBLIER.\n\nNe plus faire la séance du soir. ok." }],
       th: threads(2),
+      cal: cal(2), calls: calls(2),
       ph: [PH.ticket, PH.desk, PH.badge, PH.blur],
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
@@ -209,6 +263,7 @@ const phones = {
         { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
       ],
       th: threads(3),
+      cal: cal(3), calls: calls(3),
       ph: [PH.acc, PH.clock],
       memos: [],
       drift: { 0: 'Oui' }, close: false
@@ -226,6 +281,7 @@ const phones = {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
+      cal: cal(4), calls: calls(4),
       ph: [PH.cafe, PH.rue, PH.ciel],
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
