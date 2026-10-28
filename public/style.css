@@ -244,6 +244,7 @@ canvas{width:100%;border-radius:8px;display:block}
 .ser-body{flex:1;overflow:auto;min-height:0;padding:6px 18px 24px;-webkit-overflow-scrolling:touch}
 .ser-body::-webkit-scrollbar{width:0}
 .ser-top{display:flex;align-items:center;gap:10px;padding:6px 0 14px}
+.ser-x{flex:none;width:30px;height:42px;margin:0 -6px 0 -8px;background:none;border:0;color:#cfc3f0;font-size:34px;line-height:1;font-weight:300;cursor:pointer;padding:0}
 .ser-logo{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9d6,#f3b9a5 45%,#b07ad6);color:#3a2464;display:flex;align-items:center;justify-content:center;box-shadow:0 0 22px rgba(243,185,165,.45);cursor:pointer;user-select:none;-webkit-user-select:none;flex:none}
 .ser-logo:active{transform:scale(.93)}
 .ser-logo svg{width:24px;height:24px}
