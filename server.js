@@ -107,7 +107,7 @@ function serveStatic(res, p) {
 const ERR = {
   admin: 'Mot de passe incorrect.',
   dossier: 'Mot de passe incorrect.',
-  anagram: "Ce n'est pas la bonne combinaison.",
+  anagram: 'Aucun contact connu sous ce nom.',
   final: 'Rémanence insuffisante. Séquence refusée.',
   spectro: 'Rien à analyser.'
 };
@@ -163,13 +163,17 @@ const server = http.createServer(async (req, res) => {
       let ok = false;
       const out = {};
       if (kind === 'admin') { ok = v === SECRETS.admin; if (ok) out.data = phones[n].admin; }
-      else if (kind === 'dossier') { ok = !!phones[n].dossier && v === SECRETS.dossier; if (ok) out.data = phones[n].dossier; }
-      else if (kind === 'anagram') { ok = v === SECRETS.anagram; }
+      else if (kind === 'dossier') {
+        ok = !!phones[n].dossier && SECRETS.dossier.includes(v);
+        if (ok) out.data = phones[n].dossier;
+        else if (v.startsWith(SECRETS.dossierLatin)) out.error = 'Mot de passe incorrect. Langue du compte : français.';
+      }
+      else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
       else if (kind === 'final') { ok = v === SECRETS.final; }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
       addLog({ phone: n, kind, ok, v: kind === 'spectro' ? '' : String(b.value || '').slice(0, 40) });
-      return json(res, 200, ok ? Object.assign({ ok: true }, out) : { ok: false, error: ERR[kind] });
+      return json(res, 200, ok ? Object.assign({ ok: true }, out) : { ok: false, error: out.error || ERR[kind] });
     }
     if ((m = p.match(/^\/api\/events\/([1-4])$/))) {
       const n = +m[1];
