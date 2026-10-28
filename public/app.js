@@ -131,39 +131,8 @@
   const batt = b => '<svg viewBox="0 0 27 13" width="27" height="13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="' + Math.max(1.5, 20 * b / 100) + '" height="9" rx="2" fill="' + (b <= 20 ? '#ff453a' : 'currentColor') + '"/><path d="M25 4.5v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2Z" opacity=".4"/></svg>';
   const sbar = (time, bat) => '<div class="notch"></div><div class="sb"><span class="sb-t">' + (time ? '<span class="clk">' + clock() + '</span>' : '') + '</span><span class="sb-r">' + SIG + WIFI + (bat != null ? batt(bat) : '') + '</span></div>';
 
-  // Fond d'écran : une orchidée qui s'ouvre un peu plus d'un téléphone à l'autre (bouton au tél. 1, pleine floraison au tél. 4).
-  function orchid(x, y, s, r) {
-    const p = (rx, ry, cx, cy, a, f) => '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '" transform="rotate(' + a + ' ' + cx + ' ' + cy + ')"/>';
-    return '<g transform="translate(' + x + ' ' + y + ') rotate(' + r + ') scale(' + s + ')">' +
-      p(8, 17, 0, -16, 0, 'url(#op2)') + p(7.5, 16, -10, 12, 35, 'url(#op2)') + p(7.5, 16, 10, 12, -35, 'url(#op2)') +
-      p(17, 15, -15, -1, -20, 'url(#op1)') + p(17, 15, 15, -1, 20, 'url(#op1)') +
-      '<path d="M-6 4C-9 12-5 20 0 21 5 20 9 12 6 4 3 1-3 1-6 4Z" fill="#8a1d72"/><path d="M-4 3C-7 -1-10 -2-12 0M4 3C7 -1 10 -2 12 0" stroke="#c43f8f" stroke-width="2" fill="none" stroke-linecap="round"/>' +
-      '<ellipse cx="0" cy="1" rx="3.2" ry="4" fill="#fff4d8"/><circle cx="0" cy="3.5" r="1.6" fill="#f2b33d"/></g>';
-  }
-  function bud(x, y, s, open) {
-    return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')"><path d="M0 -12C' + (7 + open * 4) + ' -10 ' + (9 + open * 6) + ' 2 0 10C' + (-9 - open * 6) + ' 2 ' + (-7 - open * 4) + ' -10 0 -12Z" fill="' + (open ? 'url(#op2)' : 'url(#ob)') + '"/>' +
-      (open ? '<path d="M0 -10C3 -4 3 4 0 9" stroke="#b77ad9" stroke-width="1" fill="none"/>' : '') + '</g>';
-  }
-  function wall(s) {
-    s = Math.min(4, Math.max(1, +s || 1));
-    const stem = '<path d="M118 600C112 520 118 430 140 350C158 290 186 248 222 214" stroke="#4f7a4a" stroke-width="3.2" fill="none" stroke-linecap="round"/>' +
-      '<path d="M140 350l-6 8M168 290l-7 7M196 246l-6 7" stroke="#4f7a4a" stroke-width="2"/>';
-    const spots = [[134, 368], [161, 306], [190, 262], [222, 218]];
-    const st = [[0, 0, 0, 0], [1, 1, 0, 0], [2, 1, 1, 0], [2, 2, 2, 1]][s - 1];
-    const fl = spots.map((q, i) => {
-      const k = st[i], sc = 1.25 - i * .12;
-      if (k === 2) return orchid(q[0], q[1] + 4, sc, -8 + i * 6);
-      return bud(q[0], q[1] + 6, sc * (k ? .95 : .7), k);
-    }).join('');
-    const bokeh = [[40, 120, 46, .06], [250, 90, 30, .05], [60, 300, 22, .05], [240, 420, 40, .04], [200, 150, 14, .07]].map(b => '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="' + b[2] + '" fill="#c9a6ff" opacity="' + b[3] + '"/>').join('');
-    return '<svg class="wp" viewBox="0 0 288 596" preserveAspectRatio="xMidYMid slice"><defs>' +
-      '<radialGradient id="wbg" cx="55%" cy="45%" r="85%"><stop offset="0" stop-color="#2d1f4f"/><stop offset=".55" stop-color="#140f27"/><stop offset="1" stop-color="#05040b"/></radialGradient>' +
-      '<radialGradient id="op1" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#fbeaff"/><stop offset=".55" stop-color="#e2b5f5"/><stop offset="1" stop-color="#a967d6"/></radialGradient>' +
-      '<radialGradient id="op2" cx="50%" cy="35%" r="75%"><stop offset="0" stop-color="#f4dcff"/><stop offset="1" stop-color="#b47ae0"/></radialGradient>' +
-      '<linearGradient id="ob" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a97cc4"/><stop offset="1" stop-color="#5e7a4f"/></linearGradient></defs>' +
-      '<rect width="288" height="596" fill="url(#wbg)"/>' + bokeh + stem + fl +
-      '<path d="M118 560C80 540 40 548 14 580 52 590 92 584 118 560Z" fill="#2f5a36"/><path d="M122 566C160 538 210 540 250 566 210 586 160 588 122 566Z" fill="#3a6b40"/><path d="M118 560C80 540 40 548 14 580" stroke="#4d8452" stroke-width="1.2" fill="none"/></svg>';
-  }
+  // Fond d'écran : la même photo sur les quatre téléphones (public/wallpaper.jpg), fond sombre si elle manque.
+  const wall = () => '<div class="wp"></div>';
   const sb = () => sbar(true, D.bat);
   const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';

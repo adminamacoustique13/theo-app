@@ -18,7 +18,7 @@ body{font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;c
 }
 /* Écran d'accueil */
 .home{position:absolute;inset:0;display:flex;flex-direction:column}
-svg.wp{position:absolute;inset:0;width:100%;height:100%}
+.wp{position:absolute;inset:0;background:#0b0b10 url(/wallpaper.jpg) center/cover no-repeat}
 .wid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 22px 0}
 .wid>div{aspect-ratio:1;border-radius:22px;padding:14px;cursor:default;background:rgba(40,36,60,.42);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:.5px solid rgba(255,255,255,.12)}
 .w-cal small{display:block;color:#ff453a;font-size:12px;font-weight:700;letter-spacing:.3px}
@@ -153,7 +153,7 @@ canvas{width:100%;border-radius:8px;display:block}
 .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:3px}
 /* Écran de verrouillage */
 .lock{flex:1;position:relative;display:flex;flex-direction:column}
-.lock svg.wp{filter:brightness(.6)}
+.lock .wp{filter:brightness(.6)}
 .lk-in{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 24px calc(var(--sb) + 26px);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);background:rgba(0,0,0,.22)}
 .lk-ic{color:#fff;opacity:.9}
 .lk-d{font-size:18px;font-weight:600;margin-top:6px;opacity:.92}
