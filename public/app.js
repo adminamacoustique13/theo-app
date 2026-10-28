@@ -6,7 +6,7 @@
   try { S = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { S = {}; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null;
+  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, player = null;
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
@@ -321,7 +321,7 @@
     if (n.app === 'dicta') {
       if (n.view === 'item') {
         const x = D.memos[n.i];
-        return hd('') + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
+        return hd('') + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b' + (x.a ? ' data-act="play" style="cursor:pointer"' : '') + '>' + (player && !player.paused ? '❚❚' : '▶') + '</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
           (x.sp ? '<button class="go alt" data-act="spectro">Analyser (spectre)</button><div style="margin-top:8px">' + (S.sp ? '<canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' : '<span class="bad">' + esc(msg) + '</span>') + '</div>' : '') + '</div>';
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
@@ -387,7 +387,13 @@
     const inp = $('screen').querySelector('input');
     const val = inp ? inp.value : '';
     msg = '';
-    if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; }
+    if (player && (a === 'open' || a === 'home' || a === 'back')) { player.pause(); player = null; }
+    if (a === 'play') {
+      const x = D.memos[n.i];
+      if (!player) { player = new Audio(x.a); player.onended = () => { player = null; draw(); }; }
+      if (player.paused) player.play().catch(() => {}); else player.pause();
+    }
+    else if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; }
     else if (a === 'home') nav = { app: null };
     else if (a === 'back') {
       if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };

@@ -248,7 +248,7 @@ const phones = {
       th: threads(2),
       cal: cal(2), calls: calls(2),
       ph: [PH.ticket, PH.desk, PH.badge, PH.blur],
-      memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
+      memos: [{ n: 'Mémo 3:12', d: '0:11', h: '03:12', sp: true, a: '/audio/memo-312.mp3', x: '(à voix basse) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
     },
     admin: { adm: 'ok', lethe: 'actif en test', jr: [['S-0422-1', '22:40', '20:40', 'Test LETHE-ALPHA · sujet 0 · rémanence mesurée 31 %', '25 min']], tk: T3.concat([['T-214', 'Accès préprod (restreint)']]), accHtml: null, dos: 'none' },
