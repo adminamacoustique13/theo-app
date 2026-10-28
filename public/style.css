@@ -366,3 +366,17 @@ canvas{width:100%;border-radius:8px;display:block}
 .s-img.zoom{overflow:auto;cursor:zoom-out;max-height:calc(100vh - 140px)}
 .s-img.zoom img{width:300%;max-width:none}
 .av img,.av-s img,.av-l img{width:100%;height:100%;object-fit:cover;display:block}
+.a-bank{--acc:#30d158}
+.bk-card{margin:6px 16px 22px;padding:18px 18px 16px;border-radius:16px;background:linear-gradient(140deg,#1f8a6b,#0b3f33);display:flex;flex-direction:column;gap:2px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.bk-card small{font-size:12px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.6px}
+.bk-card span{font-size:15px;font-weight:600}
+.bk-card em{font-style:normal;font-size:13px;color:rgba(255,255,255,.65);margin:2px 0 14px;font-variant-numeric:tabular-nums}
+.bk-card b{font-size:32px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.bk-card b.neg{color:#ff8a80}
+.bk-h{font-size:22px;font-weight:700;margin:0 16px 6px}
+.bk-day{font-size:13px;color:var(--t2);text-transform:uppercase;margin:14px 32px 6px}
+.a-bank .grp{margin:0 16px 4px}
+.a-bank .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 16px;position:relative;font-size:15px}
+.a-bank .row span{min-width:0}
+.a-bank .row b{font-weight:500;flex:none;font-variant-numeric:tabular-nums}
+.a-bank .row b.pos{color:#30d158}
