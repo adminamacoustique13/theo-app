@@ -29,7 +29,7 @@ module.exports = {
     ],
     4: [
       'Ethel O. en sait beaucoup sur Théo. Regardez bien sa photo de profil.',
-      'Ce bracelet, un autre joueur l\'a vu au poignet de quelqu\'un, sur une photo de concert.',
+      'Ce tatouage, vous l\'avez déjà vu sur un avant-bras, dans les photos de Théo.',
       'Ethel, c\'est Théo. Modifiez le contact et donnez-lui son vrai nom. Le mot de passe final assemble les quatre fragments dans l\'ordre chronologique des téléphones.'
     ]
   }
