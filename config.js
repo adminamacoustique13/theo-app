@@ -18,19 +18,19 @@ module.exports = {
       'Appuyez 7 fois sur le logo de Sérénité, puis tapez LETHE.'
     ],
     2: [
-      'Cherchez dans les photos : un ticket, un accès… quelqu\'un d\'autre en aura besoin.',
-      'Le mot de passe du ticket 214 ouvre un dossier chez un autre joueur. Le vocal de 3 h 12 n\'est pas fait que de mots.',
+      'Cette nuit-là, Théo a changé un mot de passe. Relisez sa note : il dit où il l\'a caché.',
+      'Un mot que Théo a « sous les yeux tous les jours » : regardez bien la photo de son bureau. Le vocal de 3 h 12 n\'est pas fait que de mots.',
       'Dans le dictaphone, utilisez « Analyser (spectre) » : un mot est caché en haut du spectre.'
     ],
     3: [
       'Comparez les heures : deux séances portent la même heure locale.',
       'Le back-office compte en UTC. Regardez la colonne UTC pour ordonner les deux séances de 2 h 30.',
-      'Dans l\'ordre UTC, la dernière lettre de chaque identifiant donne D puis E. Le dossier ORCHIDÉE s\'ouvre avec le mot de passe vu chez un autre joueur.'
+      'Dans l\'ordre UTC, la dernière lettre de chaque identifiant donne D puis E. Le dossier ORCHIDÉE s\'ouvre avec le nom de la plante du bureau de Théo, en français (photo chez un autre joueur).'
     ],
     4: [
-      'Ethel O. vous rappelle quelqu\'un. Regardez sa fiche de contact.',
-      'L\'anagramme d\'Ethel Orion se trouve chez deux autres joueurs, sous la forme d\'un nom.',
-      'Tapez « Théo Lenoir » dans la fiche du contact. Le mot de passe final assemble les quatre fragments dans l\'ordre chronologique des téléphones.'
+      'Ethel O. en sait beaucoup sur Théo. Regardez bien sa photo de profil.',
+      'Ce bracelet, un autre joueur l\'a vu au poignet de quelqu\'un, sur une photo de concert.',
+      'Ethel, c\'est Théo. Modifiez le contact et donnez-lui son vrai nom. Le mot de passe final assemble les quatre fragments dans l\'ordre chronologique des téléphones.'
     ]
   }
 };

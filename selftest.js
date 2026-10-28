@@ -15,9 +15,20 @@ assert.strictEqual(deux.map(r => r[0].slice(-1)).join(''), 'DE');
 // Et l'affichage (trié par heure locale) les présente à l'envers : E avant D.
 assert.strictEqual(phones[3].admin.jr.filter(r => r[1] === '02:30').map(r => r[0].slice(-1)).join(''), 'ED');
 
-// 3. « Ethel Orion » est bien l'anagramme de « Théo Lenoir ».
+// 3. « Ethel » est l'anagramme de LETHE (clin d'œil), et le contact accepte le vrai nom de Théo.
 const tri = s => sansAccents(s).toUpperCase().replace(/[^A-Z]/g, '').split('').sort().join('');
-assert.strictEqual(tri('Ethel Orion'), tri('Théo Lenoir'));
+assert.strictEqual(tri('Ethel'), tri('LETHE'));
+assert.ok(SECRETS.anagram.includes('THEOLENOIR'));
+// Le bracelet d'Ethel est aussi sur une photo du téléphone 1, et Ethel n'affiche pas le numéro de Théo.
+const ethel = phones[2].public.th.find(t => t.n === 'Ethel O.');
+assert.ok(ethel.av && ethel.num !== require('./data').NUM);
+assert.ok(phones[1].public.ph.some(p => p.k === 'concert'));
+
+// 3 bis. ASPHODÈLE n'est écrit nulle part en clair : seule l'étiquette latine du bureau (tél. 2) y mène,
+// et le tél. 3 ne montre l'indice qu'après LETHE.
+for (const n of [1, 2, 3, 4]) assert.strictEqual(/ASPHOD[EÈ]LE/i.test(JSON.stringify(phones[n].public)), false);
+assert.ok(phones[2].public.ph.some(p => p.k === 'desk' && p.html.includes('Asphodelus albus')));
+assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');
 
 // 4. Les quatre fragments, dans l'ordre des téléphones, donnent le mot de passe final.
 assert.strictEqual(['SOUVIENS', 'TOI', 'DE', 'MOI'].join(''), SECRETS.final);
