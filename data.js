@@ -33,15 +33,15 @@ const T3 = [
 
 const ACC = '<b>Comptes actifs</b><div>d.marchal · Direction produit</div><div>n.aubry · Opérations</div><div><b>t.lenoir · LENOIR Théo</b> · développeur freelance</div>';
 
-// Le tatouage de Théo (avant-bras) : sur les portraits A, H et L de la pellicule (tous les téléphones)
+// Le tatouage de Théo (avant-bras) : sur les portraits A et H de la pellicule (tous les téléphones)
 // et sur la photo de profil d'Ethel O. (tél. 2 à 4), gros plan tourné. C'est ce qui trahit Ethel.
 const AV_ETHEL = '<img src="/photos/ethel.jpg" alt="">';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
 const IMG = f => '<img src="/photos/' + f + '.jpg" alt="">';
-// Pellicule d'avant l'histoire (portraits de Théo), la même sur les quatre téléphones, avant les photos de l'histoire.
+// Pellicule d'avant l'histoire (portraits de Théo), la même sur les quatre téléphones (B et G : avec Nora), avant les photos de l'histoire.
 // Le tél. 4 n'a plus que celle-ci : tout ce qui date de la période NOCTIS a disparu (compteur à 164).
-const ROLL = ['e', 'b', 'g', 'a', 'j', 'l', 'f', 'd', 'h', 'c'].map(l => '/photos/vie-' + l + '.jpg');
+const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c'].map(l => '/photos/vie-' + l + '.jpg');
 const PH = {
   // Vraie photo du post-it : même texte qu'avant, l'énigme LETHE ne bouge pas.
   postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),

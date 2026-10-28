@@ -22,7 +22,7 @@ assert.ok(SECRETS.anagram.includes('THEOLENOIR'));
 // Le tatouage d'Ethel est aussi sur les portraits de Théo (pellicule du téléphone 1), et Ethel n'affiche pas le numéro de Théo.
 const ethel = phones[2].public.th.find(t => t.n === 'Ethel O.');
 assert.ok(ethel.av.includes('/photos/ethel.jpg') && ethel.num !== require('./data').NUM);
-assert.ok(['a', 'h', 'l'].every(l => phones[1].public.roll.includes('/photos/vie-' + l + '.jpg')));
+assert.ok(['a', 'h'].every(l => phones[1].public.roll.includes('/photos/vie-' + l + '.jpg')));
 
 // 3 bis. ASPHODÈLE n'est écrit nulle part en clair : seule l'étiquette latine du bureau (tél. 2) y mène,
 // et le tél. 3 ne montre l'indice qu'après LETHE.
