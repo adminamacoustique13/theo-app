@@ -61,6 +61,16 @@ const PH = {
   cine: ph('cine', 'Samedi 24 octobre · 19:52', 's-img', IMG('cinema'))
 };
 
+// Photos de l'histoire : [photo, date de prise, premier téléphone]. Comme les messages, une photo reste
+// sur les téléphones suivants. Exception : le tél. 4 a perdu toute la période NOCTIS (pellicule seule).
+const PHT = [
+  [PH.live, '2026-10-17 22:47', 1], [PH.postit, '2026-10-19 08:41', 1], [PH.jour, '2026-10-19 09:12', 1],
+  [PH.board, '2026-10-19 11:30', 1], [PH.inv, '2026-10-19 18:05', 1],
+  [PH.badge, '2026-10-22 21:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2], [PH.blur, '2026-10-23 02:58', 2],
+  [PH.chat, '2026-10-23 18:20', 3], [PH.cine, '2026-10-24 19:52', 3], [PH.acc, '2026-10-24 23:40', 3], [PH.clock, '2026-10-25 02:30', 3]
+];
+const photos = N => N === 4 ? [] : PHT.filter(x => x[2] <= N).sort((a, b) => a[1].localeCompare(b[1])).map(x => x[0]);
+
 // Conversations. Chaque contact a un segment par téléphone (1 à 4) : le téléphone N affiche
 // les segments 1 à N, donc l'historique se garde d'un téléphone à l'autre.
 // Message : ['in' | 'out', texte, auteur (groupes)] ; séparateur : ['day', 'Jeudi 22 octobre · 21:05'].
@@ -226,7 +236,7 @@ const phones = {
       notes: notes8(),
       th: threads(1),
       cal: cal(1), calls: calls(1),
-      ph: [PH.live, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
+      ph: photos(1), roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
@@ -239,7 +249,7 @@ const phones = {
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "Ouvert par erreur un dossier.  J'ai changé son mot de passe => un mot que j'ai sous les yeux tous les jours. ok.\n\nClients : PETROVEX (incident site 4), puis un « État ».\n\nCe n'est pas de la méditation : ils font OUBLIER.\n\nNe plus faire la séance du soir. ok." }],
       th: threads(2),
       cal: cal(2), calls: calls(2),
-      ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
+      ph: photos(2), roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
     },
@@ -256,7 +266,7 @@ const phones = {
       ],
       th: threads(3),
       cal: cal(3), calls: calls(3),
-      ph: [PH.chat, PH.cine, PH.acc, PH.clock], roll: ROLL,
+      ph: photos(3), roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
@@ -274,7 +284,7 @@ const phones = {
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
       cal: cal(4), calls: calls(4),
-      ph: [], roll: ROLL,
+      ph: photos(4), roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
     },
