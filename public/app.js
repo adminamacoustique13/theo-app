@@ -225,13 +225,13 @@
     if (n.app === 'msg') {
       if (n.view === 'card') {
         const t = D.th[n.i];
-        return hd('Contact') + '<div class="body"><div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + (t.n === 'Ethel O.' ? D.num : 'Numéro masqué') + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Cette personne est l\'anagramme de…</small><input type="text" placeholder="Prénom et nom" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Vérifier</button><div style="margin-top:8px">' + (S.ana ? '<b class="ok">Contact renommé : « Moi (Théo Lenoir) »</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '') + '</div>';
+        return hd('Contact') + '<div class="body"><div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + (t.n === 'Ethel O.' ? D.num : (t.num || 'Numéro masqué')) + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Cette personne est l\'anagramme de…</small><input type="text" placeholder="Prénom et nom" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Vérifier</button><div style="margin-top:8px">' + (S.ana ? '<b class="ok">Contact renommé : « Moi (Théo Lenoir) »</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '') + '</div>';
       }
       if (n.view === 'item') {
         const t = D.th[n.i];
-        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer">' + esc(nm(t)) + ' ⓘ</span></div><div class="body"><div class="tm">' + t.h + '</div>' + t.m.map(m => '<div class="bub ' + m[0] + '">' + esc(m[1]) + '</div>').join('') + '</div>';
+        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer">' + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
       }
-      return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(nm(t)) + '</b><span>' + t.h + '</span><small>' + esc(t.m[t.m.length - 1][1]) + '</small></div>').join('') + '</div>';
+      return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(nm(t)) + '</b><span>' + t.h + '</span><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div>').join('') + '</div>';
     }
     if (n.app === 'photos') {
       if (n.view === 'item') { const x = D.ph[n.i]; return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + '">' + x.html + '</div></div>'; }
