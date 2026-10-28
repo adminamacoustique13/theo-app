@@ -112,7 +112,7 @@
   // ---------- Rendu ----------
   // ---------- Téléphone : horloge, icônes, fond d'écran ----------
   // Date et heure affichées par chaque téléphone au moment où on le déverrouille ; l'heure avance ensuite normalement.
-  const CLOCK = { 1: ['Lundi 19 octobre', 22 * 60 + 14], 2: ['Vendredi 23 octobre', 3 * 60 + 26], 3: ['Dimanche 25 octobre', 3 * 60 + 41], 4: ['Vendredi 30 octobre', 23 * 60 + 58] }[N] || ['', 0];
+  const CLOCK = { 1: ['Lundi 19 octobre', 22 * 60 + 14, '2026-10-19'], 2: ['Vendredi 23 octobre', 3 * 60 + 26, '2026-10-23'], 3: ['Dimanche 25 octobre', 3 * 60 + 41, '2026-10-25'], 4: ['Vendredi 30 octobre', 23 * 60 + 58, '2026-10-30'] }[N] || ['', 0, '2026-10-19'];
   const T0 = Date.now();
   const clock = () => { const m = (CLOCK[1] + Math.floor((Date.now() - T0) / 60000)) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   setInterval(() => { document.querySelectorAll('.clk').forEach(e => { e.textContent = clock(); }); }, 1000);
@@ -123,7 +123,9 @@
     dicta: '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#111"/>' + [6, 12, 20, 30, 16, 24, 34, 22, 12, 18, 8].map((h, i) => '<rect x="' + (8.5 + i * 4) + '" y="' + (30 - h / 2) + '" width="2.2" height="' + h + '" rx="1.1" fill="' + (i === 5 ? '#ff3b30' : '#f2f2f2') + '"/>').join('') + '</svg>',
     set: '<svg viewBox="0 0 60 60"><defs><linearGradient id="ics" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4d7dc"/><stop offset="1" stop-color="#8f949b"/></linearGradient></defs><rect width="60" height="60" fill="url(#ics)"/><g fill="#4b4f55">' + Array.from({ length: 12 }, (_, i) => '<rect x="27.5" y="8" width="5" height="9" rx="1.5" transform="rotate(' + (i * 30) + ' 30 30)"/>').join('') + '<circle cx="30" cy="30" r="15.5"/></g><circle cx="30" cy="30" r="11" fill="#a9adb3"/><circle cx="30" cy="30" r="5.5" fill="#4b4f55"/></svg>'
   };
-  const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : IC[k]) + '</i>';
+  IC.tel = '<svg viewBox="0 0 60 60"><defs><linearGradient id="ict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6bf27c"/><stop offset="1" stop-color="#0dbd2d"/></linearGradient></defs><rect width="60" height="60" fill="url(#ict)"/><path d="M21.5 14.5c1.4-.9 3.2-.5 4.1.9l3.3 5c.8 1.3.6 3-.6 4l-2.6 2.1c1.8 4 4.6 6.9 8.6 8.8l2.1-2.6c1-1.2 2.7-1.5 4-.6l5 3.3c1.4.9 1.8 2.7.9 4.1l-2 3c-1.3 1.9-3.6 2.8-5.8 2.2C26.9 42.300 17.7 33.100 15.3 21.500c-.5-2.200.4-4.500 2.300-5.800Z" fill="#fff"/></svg>';
+  const icCal = () => { const d = dOf(CLOCK[2]); return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff"/><text x="30" y="17" text-anchor="middle" font-size="9.5" font-weight="600" fill="#ff3b30" font-family="-apple-system,Helvetica,Arial">' + JOURS[d.getDay()].slice(0, 3).toUpperCase() + '.</text><text x="30" y="48" text-anchor="middle" font-size="32" font-weight="300" fill="#111" font-family="-apple-system,Helvetica,Arial">' + d.getDate() + '</text></svg>'; };
+  const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : k === 'cal' ? icCal() : IC[k]) + '</i>';
   const SIG = '<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>';
   const WIFI = '<svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0Z"/><path d="M3.6 7a6.3 6.3 0 0 1 8.8 0l1.4-1.4a8.3 8.3 0 0 0-11.6 0Z"/><path d="M1.4 4.8a9.4 9.4 0 0 1 13.2 0L16 3.4a11.4 11.4 0 0 0-16 0Z"/></svg>';
   const batt = b => '<svg viewBox="0 0 27 13" width="27" height="13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="' + Math.max(1.5, 20 * b / 100) + '" height="9" rx="2" fill="' + (b <= 20 ? '#ff453a' : 'currentColor') + '"/><path d="M25 4.5v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2Z" opacity=".4"/></svg>';
@@ -163,7 +165,7 @@
       '<path d="M118 560C80 540 40 548 14 580 52 590 92 584 118 560Z" fill="#2f5a36"/><path d="M122 566C160 538 210 540 250 566 210 586 160 588 122 566Z" fill="#3a6b40"/><path d="M118 560C80 540 40 548 14 580" stroke="#4d8452" stroke-width="1.2" fill="none"/></svg>';
   }
   const sb = () => sbar(true, D.bat);
-  const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages' };
+  const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';
   const LOCK_IC = '<svg viewBox="0 0 14 18" width="14" height="18"><path d="M3 8V5.5a4 4 0 0 1 8 0V8" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="0" y="8" width="14" height="10" rx="2.5" fill="currentColor"/></svg>';
   const ini = s => s.replace(/\(.*\)/, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -263,6 +265,67 @@
     } else b = '<div class="mut">Aucun dossier partagé.</div>';
     return top + '<div class="dev-body"><div class="dev-brand sm">NOCTIS<span>préprod · t.lenoir</span></div><div class="dev-tabs">' + tabs + '</div>' + b + '</div>';
   }
+  // ---------- Calendrier et Téléphone ----------
+  const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const ymd = (y, m, d) => y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  const dOf = iso => { const p = iso.slice(0, 10).split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const longDay = iso => { const x = dOf(iso); return cap(JOURS[x.getDay()]) + ' ' + x.getDate() + ' ' + MOIS[x.getMonth()]; };
+  const evColor = e => e.sys ? '#8e8e93' : e.by === 'n.aubry' ? '#bf5af2' : e.by ? '#ff9f0a' : '#0a84ff';
+  function evRow(e) {
+    const h = e.d.length > 10 ? e.d.slice(11) : 'journée';
+    return '<div class="ev"><span class="ev-h">' + h + '</span><i style="background:' + evColor(e) + '"></i><div><b>' + esc(e.t) + '</b>' +
+      (e.by ? '<small>Ajouté par ' + esc(e.by) + '</small>' : e.sys ? '<small>' + (/heure/i.test(e.t) ? 'iPhone' : 'Jours fériés') + '</small>' : '') + '</div></div>';
+  }
+  function calApp() {
+    const ev = D.cal || [], today = CLOCK[2];
+    if (nav.list) {
+      let last = '', o = '';
+      ev.forEach(e => { const k = e.d.slice(0, 10); if (k !== last) { o += '<div class="ev-day' + (k === today ? ' now' : '') + '">' + longDay(k) + (k === today ? ' · Aujourd\'hui' : '') + '</div>'; last = k; } o += evRow(e); });
+      return hd('Événements') + '<div class="cal-tb"><span data-act="callist">Mois</span></div><div class="body">' + (o || '<div class="foot">Aucun événement</div>') + '</div>';
+    }
+    const t = dOf(today), mo = nav.mo != null ? nav.mo : t.getMonth(), y = t.getFullYear();
+    const sel = nav.sel || today;
+    const first = (new Date(y, mo, 1).getDay() + 6) % 7, nd = new Date(y, mo + 1, 0).getDate();
+    let g = '';
+    for (let i = 0; i < first; i++) g += '<span></span>';
+    for (let d = 1; d <= nd; d++) {
+      const k = ymd(y, mo, d), has = ev.some(e => e.d.startsWith(k));
+      g += '<span class="' + (k === today ? 'today ' : '') + (k === sel ? 'sel ' : '') + '" data-act="calday" data-d="' + k + '">' + d + (has ? '<i></i>' : '') + '</span>';
+    }
+    const day = ev.filter(e => e.d.startsWith(sel));
+    return hd('') + '<div class="cal-tb"><span data-act="calmo" data-m="-1">‹</span><b>' + cap(MOIS[mo]) + ' ' + y + '</b><span data-act="calmo" data-m="1">›</span><span data-act="callist">Liste</span></div>' +
+      '<div class="body"><div class="cal-w">' + ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => '<span>' + x + '</span>').join('') + '</div><div class="cal-g">' + g + '</div>' +
+      '<div class="ev-day">' + longDay(sel) + '</div>' + (day.length ? day.map(evRow).join('') : '<div class="foot">Aucun événement</div>') + '</div>';
+  }
+  function callWhen(iso) {
+    const k = iso.slice(0, 10), diff = Math.round((dOf(CLOCK[2]) - dOf(k)) / 864e5);
+    if (diff === 0) return iso.slice(11);
+    if (diff === 1) return 'Hier';
+    if (diff > 1 && diff < 7) return cap(JOURS[dOf(k).getDay()]);
+    return k.slice(8) + '/' + k.slice(5, 7) + '/' + k.slice(0, 4);
+  }
+  const callTxt = c => c.dir === 'miss' ? 'Appel manqué' : (c.dir === 'out' ? 'Appel sortant' : 'Appel entrant') + (c.dur === 0 ? ' · annulé' : c.dur != null ? ' · ' + c.dur + ' min' : '');
+  function telApp() {
+    const all = D.calls || [];
+    const tabs = '<nav class="tel-tab">' + [['☆', 'Favoris'], ['◷', 'Récents'], ['◉', 'Contacts'], ['⠿', 'Clavier'], ['◎', 'Messagerie']].map(x => '<span class="' + (x[1] === 'Récents' ? 'on' : '') + '"><i>' + x[0] + '</i>' + x[1] + '</span>').join('') + '</nav>';
+    if (nav.view === 'item') {
+      const g = nav.grp || [], c = g[0] || {};
+      return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + esc(ini(c.n || '')) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
+        '<div class="grp"><div class="row tel-d">' + longDay(c.d) + '</div>' + g.map(x => '<div class="row"><span>' + x.d.slice(11) + '</span><b class="' + (x.dir === 'miss' ? 'bad' : '') + '">' + callTxt(x) + '</b></div>').join('') + '</div></div>' + tabs;
+    }
+    // Appels consécutifs du même contact, même sens et même jour : regroupés comme sur iPhone.
+    const grps = [];
+    all.filter(c => !nav.miss || c.dir === 'miss').forEach(c => {
+      const l = grps[grps.length - 1];
+      if (l && l[0].n === c.n && l[0].dir === c.dir && l[0].d.slice(0, 10) === c.d.slice(0, 10)) l.push(c); else grps.push([c]);
+    });
+    nav.grps = grps;
+    return hd('Récents') + '<div class="seg"><span class="' + (nav.miss ? '' : 'on') + '" data-act="telmiss" data-v="0">Tous</span><span class="' + (nav.miss ? 'on' : '') + '" data-act="telmiss" data-v="1">Manqués</span></div>' +
+      '<div class="body">' + grps.map((g, i) => '<div class="item call" data-act="callgrp" data-i="' + i + '"><div><b class="' + (g[0].dir === 'miss' ? 'bad' : '') + '">' + esc(g[0].n) + (g.length > 1 ? ' (' + g.length + ')' : '') + '</b>' +
+        '<small>' + (g[0].dir === 'out' ? '↗ ' : g[0].dir === 'in' ? '↙ ' : '') + callTxt(g[0]).replace('Appel manqué', 'mobile') + '</small></div><span>' + callWhen(g[0].d) + ' <em>ⓘ</em></span></div>').join('') + '</div>' + tabs;
+  }
   function renderApp() {
     const n = nav;
     if (n.app === 'notes') {
@@ -294,6 +357,8 @@
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
     }
+    if (n.app === 'cal') return calApp();
+    if (n.app === 'tel') return telApp();
     if (n.app === 'sereni') return sereni();
     if (n.app === 'admin') return admin();
     if (n.app === 'set') {
@@ -332,10 +397,10 @@
       const ic = a => '<div class="ic" data-act="open" data-app="' + a[0] + '">' + icon(a[0]) + '<span>' + a[1] + '</span></div>';
       const day = CLOCK[0].split(' ');
       el.innerHTML = '<div class="home">' + wall(D.wp) + sb() +
-        '<div class="wid"><div class="w-cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
+        '<div class="wid"><div class="w-cal" data-act="open" data-app="cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
         '<div class="w-ser" data-act="open" data-app="sereni"><i>' + SVG_MOON + '</i><small>Sérénité</small><b>' + (D.close ? 'Séance de clôture' : SER.hero[0]) + '</b><span>' + (D.close ? 'Cette nuit, 2 h 30' : SER.hero[1]) + '</span></div></div>' +
-        '<div class="icons">' + [['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['set', 'Réglages']].map(ic).join('') + '</div>' +
-        '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['msg', 'Messages'], ['sereni', 'Sérénité']].map(ic).join('') + '</div></div>';
+        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone']].map(ic).join('') + '</div>' +
+        '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['tel', 'Téléphone'], ['msg', 'Messages'], ['sereni', 'Sérénité'], ['set', 'Réglages']].map(ic).join('') + '</div></div>';
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
     }
@@ -369,6 +434,11 @@
       else if (taps >= 3) { toast('Encore ' + (7 - taps) + ' appui' + (7 - taps > 1 ? 's' : '') + ' pour passer en mode développeur.'); return; }
       else return;
     }
+    else if (a === 'calday') n.sel = el.dataset.d;
+    else if (a === 'calmo') { const t = dOf(CLOCK[2]); n.mo = Math.min(11, Math.max(9, (n.mo != null ? n.mo : t.getMonth()) + +el.dataset.m)); }
+    else if (a === 'callist') n.list = !n.list;
+    else if (a === 'telmiss') n.miss = el.dataset.v === '1';
+    else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
     else if (a === 'dev') nav = { app: 'admin', view: 'main', tab: 'journal' };
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
     else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; }
