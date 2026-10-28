@@ -321,8 +321,11 @@
     if (n.app === 'dicta') {
       if (n.view === 'item') {
         const x = D.memos[n.i];
-        return hd('') + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
-          (x.sp ? '<button class="go alt" data-act="spectro">Analyser (spectre)</button><div style="margin-top:8px">' + (S.sp ? '<canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' : '<span class="bad">' + esc(msg) + '</span>') + '</div>' : '') + '</div>';
+        const more = '<button class="vm-more" data-act="vmore">⋯</button></div>';
+        const sheet = n.more ? '<div class="sheet" data-act="vmore"><div>' + ['Partager', 'Modifier l\'enregistrement', 'Dupliquer', 'Afficher le spectre', 'Copier la transcription'].map(t => '<span data-act="' + (t === 'Afficher le spectre' ? 'spectro' : 'vnone') + '">' + t + '</span>').join('') + '<span class="del" data-act="vnone">Supprimer</span></div><div><span data-act="vmore"><b>Annuler</b></span></div></div>' : '';
+        return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
+          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
+            '<label class="seuil"><span>Seuil</span><input id="seuil" type="range" min="0" max="100" value="' + (n.seuil || 0) + '"></label></div>' : '') + '</div>';
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
     }
@@ -338,16 +341,27 @@
     }
     return '';
   }
-  function spectro(c, text) {
-    const x = c.getContext('2d'), w = c.width, h = c.height, img = x.createImageData(w, h);
-    for (let i = 0; i < w * h; i++) { const y = Math.floor(i / w), b = 20 + Math.random() * 38 + (1 - y / h) * 14; img.data[i * 4] = b * .4; img.data[i * 4 + 1] = b * .9; img.data[i * 4 + 2] = b * 2.2; img.data[i * 4 + 3] = 255; }
+  // Spectre : chaque point a une énergie e et un grain g (bruit fixe, tiré une fois). On affiche le grain
+  // des points dont l'énergie dépasse le seuil. À 0, tout est du bruit uniforme ; en montant le seuil,
+  // le bruit s'éteint et seul le mot caché (énergie plus forte) reste allumé.
+  function spectro(c, text, seuil) {
+    const x = c.getContext('2d'), w = c.width, h = c.height;
+    let r = 12345; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+    let td = null;
+    if (text) {
+      const t = document.createElement('canvas'); t.width = w; t.height = h;
+      const tx = t.getContext('2d');
+      tx.fillStyle = '#000'; tx.fillRect(0, 0, w, h); tx.fillStyle = '#fff'; tx.font = 'bold 66px sans-serif'; tx.textAlign = 'center'; tx.fillText(text, w / 2, h * .46);
+      td = tx.getImageData(0, 0, w, h).data;
+    }
+    const th = seuil / 100, img = x.createImageData(w, h);
+    for (let i = 0; i < w * h; i++) {
+      const y = Math.floor(i / w), g = 0.35 + rnd() * 0.65, hot = rnd() < 0.015;
+      const e = rnd() * 0.75 + (hot ? 0.3 : 0) + (td && td[i * 4] > 128 ? 0.45 : 0);
+      const b = e > th * 0.95 ? (20 + g * 60 + (1 - y / h) * 14) : 4;
+      img.data[i * 4] = b * .4; img.data[i * 4 + 1] = b * .9; img.data[i * 4 + 2] = b * 2.2; img.data[i * 4 + 3] = 255;
+    }
     x.putImageData(img, 0, 0);
-    const t = document.createElement('canvas'); t.width = w; t.height = h;
-    const tx = t.getContext('2d');
-    tx.fillStyle = '#000'; tx.fillRect(0, 0, w, h); tx.fillStyle = '#fff'; tx.font = 'bold 66px sans-serif'; tx.textAlign = 'center'; tx.fillText(text, w / 2, h * .46);
-    const td = tx.getImageData(0, 0, w, h).data, id = x.getImageData(0, 0, w, h);
-    for (let i = 0; i < w * h; i++) if (td[i * 4] > 128) { id.data[i * 4] = Math.min(255, id.data[i * 4] + 170); id.data[i * 4 + 1] = Math.min(255, id.data[i * 4 + 1] + 150); id.data[i * 4 + 2] = Math.min(255, id.data[i * 4 + 2] + 50); }
-    x.putImageData(id, 0, 0);
   }
   function toast(t) {
     let x = $('toast');
@@ -373,11 +387,17 @@
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
     }
-    const cv = $('cv'); if (cv && S.sp) spectro(cv, S.sp);
+    const cv = $('cv'); if (cv) spectro(cv, D.memos[nav.i] && D.memos[nav.i].sp ? S.sp : '', nav.seuil || 0);
     refreshCd();
   }
 
   // ---------- Actions ----------
+  // Curseur Seuil du spectre : on redessine seulement le canvas.
+  document.addEventListener('input', e => {
+    if (e.target.id !== 'seuil') return;
+    nav.seuil = +e.target.value;
+    const cv = $('cv'); if (cv) spectro(cv, D.memos[nav.i] && D.memos[nav.i].sp ? S.sp : '', nav.seuil);
+  });
   document.addEventListener('click', async e => {
     const k = e.target.closest('[data-k]');
     if (k && $('lmsg')) { padKey(k.dataset.k); return; }
@@ -430,9 +450,11 @@
       const r = await check('anagram', val);
       if (r && r.j.ok) { S.ana = true; save(); } else if (r) msg = r.j.error || "Ce n'est pas la bonne combinaison.";
     }
+    else if (a === 'vmore') { n.more = !n.more; }
+    else if (a === 'vnone') { n.more = false; toast('Indisponible pendant la séance de test.'); }
     else if (a === 'spectro') {
-      const r = await check('spectro');
-      if (r && r.j.ok) { S.sp = r.j.text; save(); } else if (r) msg = r.j.error || 'Rien à analyser.';
+      n.more = false; n.spec = true; n.seuil = 0;
+      if (D.memos[n.i] && D.memos[n.i].sp && !S.sp) { const r = await check('spectro'); if (r && r.j.ok) { S.sp = r.j.text; save(); } }
     }
     if (D) draw();
   });
