@@ -1,0 +1,14 @@
+{
+  "name": "theo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Le téléphone de Théo : jeu de fin de soirée (4 téléphones, 2 game masters)",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node selftest.js",
+    "icons": "node make-icons.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

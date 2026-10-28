@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game master · Le téléphone de Théo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0a0e13;color:#e7edf4;font-family:-apple-system,"SF Pro Text",Arial,sans-serif;padding:18px 22px 60px;max-width:1180px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:26px 0 10px;color:#7fd6ff}
+.sub{color:#8fa0b3;font-size:13px;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.card{background:#111a24;border:1px solid #1f2d3b;border-radius:14px;padding:14px}
+.card h3{margin:0 0 8px;font-size:14px}
+.btn{background:#1f6fe0;color:#fff;border:0;border-radius:9px;padding:8px 11px;font-size:13px;cursor:pointer;margin:3px 3px 3px 0}
+.btn.alt{background:#2a3a4c}.btn.red{background:#a83a3a}
+.hint{font-size:12.5px;color:#9fb1c4;margin:6px 0 2px;line-height:1.35}
+input,select,textarea{background:#0a1118;border:1px solid #28394b;color:#e7edf4;border-radius:9px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+textarea{width:100%;min-height:60px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.url{font-size:12px;color:#9fdcff;word-break:break-all}
+.code{font-size:26px;letter-spacing:6px;font-weight:300}
+#log{font-family:Menlo,monospace;font-size:12px;max-height:280px;overflow:auto;background:#0a1118;border-radius:10px;padding:10px}
+.ok{color:#6df29a}.ko{color:#ff8a8a}
+#toast{position:fixed;right:18px;bottom:18px;background:#16324a;border-radius:10px;padding:10px 14px;font-size:13px;opacity:0;transition:opacity .25s}
+#toast.on{opacity:1}
+#cd{font-size:22px;font-weight:300}
+.qr{margin-top:8px;background:#fff;display:inline-block;padding:6px;border-radius:8px}
+</style>
+</head>
+<body>
+<h1>Game master · Le téléphone de Théo</h1>
+<div class="sub">Page réservée à Mélanie et Alicia. Ne pas la montrer aux joueurs.</div>
+
+<h2>Compte à rebours de la séance de clôture</h2>
+<div class="card">
+  <div id="cd">Pas de compte à rebours lancé</div>
+  <div class="row" style="margin-top:8px">
+    <input id="min" type="number" min="1" value="45" style="width:80px"> minutes
+    <button class="btn" onclick="countdown(false)">Lancer</button>
+    <button class="btn alt" onclick="countdown(true)">Arrêter</button>
+  </div>
+  <div class="sub">Le compte à rebours s'affiche sur le téléphone 4, dans Sérénité.</div>
+</div>
+
+<h2>Les quatre téléphones : liens, QR codes et codes de déverrouillage</h2>
+<div class="grid" id="phones"></div>
+
+<h2>Indices de secours</h2>
+<div class="grid" id="hints"></div>
+
+<h2>Événement en direct</h2>
+<div class="card">
+  <div class="row">
+    <select id="evPhone"><option value="all">Tous les téléphones</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+    <select id="evType"><option value="banner">Notification</option><option value="message">Message dans l'appli Messages</option></select>
+    <input id="evThread" placeholder="Contact (messages)" value="Direction">
+    <input id="evTitle" placeholder="Titre (notification)" value="Sérénité">
+  </div>
+  <textarea id="evText" placeholder="Texte à envoyer"></textarea>
+  <div class="row" style="margin-top:8px">
+    <button class="btn" onclick="sendEv()">Envoyer</button>
+    <button class="btn alt" onclick="preset('Ta séance de clôture approche. Détends-toi. 🌙')">Direction : clôture proche</button>
+    <button class="btn alt" onclick="preset('Il se passe quelque chose avec les séances. Ne dis rien à Direction.', 'Ethel O.')">Ethel : alerte</button>
+  </div>
+</div>
+
+<h2>Ce que font les joueurs, en direct</h2>
+<div id="log">En attente…</div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const TOKEN = new URLSearchParams(location.search).get('token') || '';
+const H = { 'content-type': 'application/json', 'x-gm-token': TOKEN };
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+let deadline = null;
+
+function toast(t) { const e = $('toast'); e.textContent = t; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 2200); }
+async function post(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: H, body: JSON.stringify(body) });
+  return r.json().catch(() => ({}));
+}
+function logLine(e) {
+  const d = new Date(e.t);
+  const hh = d.toTimeString().slice(0, 8);
+  return '<div><span class="' + (e.ok ? 'ok' : 'ko') + '">' + (e.ok ? '✔' : '✘') + '</span> ' + hh + ' · tél. ' + e.phone + ' · ' + esc(e.kind) + (e.v ? ' · ' + esc(e.v) : '') + '</div>';
+}
+function addLog(e) {
+  const l = $('log');
+  if (l.textContent === 'En attente…') l.innerHTML = '';
+  l.insertAdjacentHTML('afterbegin', logLine(e));
+}
+async function init() {
+  const r = await fetch('/api/gm/info', { headers: H });
+  if (!r.ok) { document.body.innerHTML = '<p>Jeton invalide.</p>'; return; }
+  const info = await r.json();
+  $('min').value = info.clotureMinutes;
+  const local = ['localhost', '127.0.0.1'].includes(location.hostname);
+  const base = local && info.ips.length ? 'http://' + info.ips[0] + ':' + info.port : location.origin;
+  $('phones').innerHTML = [1, 2, 3, 4].map(n => {
+    const url = base + '/t/' + n;
+    return '<div class="card"><h3>Téléphone ' + n + '</h3><div class="code">' + info.codes[n] + '</div><div class="url">' + url + '</div><div class="qr" id="qr' + n + '"></div></div>';
+  }).join('');
+  if (window.QRCode) [1, 2, 3, 4].forEach(n => new QRCode($('qr' + n), { text: base + '/t/' + n, width: 120, height: 120 }));
+  $('hints').innerHTML = [1, 2, 3, 4].map(n => '<div class="card"><h3>Téléphone ' + n + '</h3>' + info.hints[n].map((h, i) =>
+    '<div class="hint"><b>Niveau ' + (i + 1) + '</b> : ' + esc(h) + '</div><button class="btn" onclick="sendHint(' + n + ',' + i + ')">Envoyer au tél. ' + n + '</button>').join('') + '</div>').join('');
+  window.HINTS = info.hints;
+  deadline = info.deadline;
+  (info.log || []).forEach(addLog);
+  const es = new EventSource('/api/gm/stream?token=' + encodeURIComponent(TOKEN));
+  es.addEventListener('log', ev => addLog(JSON.parse(ev.data)));
+}
+async function sendHint(n, i) {
+  const r = await post('/api/gm/push', { phone: n, type: 'hint', text: window.HINTS[n][i] });
+  toast(r.ok ? 'Indice envoyé (' + r.sent + ' appareil' + (r.sent > 1 ? 's' : '') + ')' : 'Échec');
+}
+async function sendEv() {
+  const type = $('evType').value, text = $('evText').value.trim();
+  if (!text) return toast('Texte vide');
+  const r = await post('/api/gm/push', { phone: $('evPhone').value, type, text, thread: $('evThread').value, title: $('evTitle').value });
+  toast(r.ok ? 'Envoyé (' + r.sent + ' appareil' + (r.sent > 1 ? 's' : '') + ')' : 'Échec');
+}
+function preset(text, thread) {
+  $('evText').value = text;
+  $('evType').value = 'message';
+  $('evThread').value = thread || 'Direction';
+}
+async function countdown(stop) {
+  const r = await post('/api/gm/countdown', stop ? { stop: true } : { minutes: +$('min').value });
+  deadline = r.deadline || null;
+  toast(stop ? 'Compte à rebours arrêté' : 'Compte à rebours lancé');
+}
+setInterval(() => {
+  const e = $('cd');
+  if (!deadline) { e.textContent = 'Pas de compte à rebours lancé'; return; }
+  const s = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+  e.textContent = s === 0 ? 'Séance de clôture en cours' : Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s';
+}, 1000);
+init();
+</script>
+</body>
+</html>
