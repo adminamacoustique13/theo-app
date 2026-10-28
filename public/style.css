@@ -358,3 +358,10 @@ canvas{width:100%;border-radius:8px;display:block}
 .dev-acc div{padding:6px 0;border-bottom:1px solid #1e2328}
 
 .bub .au{display:block;font-size:11px;font-weight:600;color:#8fb3d9;margin-bottom:2px}
+.th>img{width:100%;height:100%;object-fit:cover;display:block}
+.s-img{padding:0;min-height:0;line-height:0;overflow:hidden;cursor:zoom-in}
+.s-img img{width:100%;height:auto;display:block}
+.mini.s-img{min-height:0!important;height:300%}
+.mini.s-img img{width:100%;height:100%;object-fit:cover}
+.s-img.zoom{overflow:auto;cursor:zoom-out;max-height:calc(100vh - 140px)}
+.s-img.zoom img{width:300%;max-width:none}

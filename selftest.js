@@ -27,7 +27,14 @@ assert.ok(phones[1].public.ph.some(p => p.k === 'concert'));
 // 3 bis. ASPHODÈLE n'est écrit nulle part en clair : seule l'étiquette latine du bureau (tél. 2) y mène,
 // et le tél. 3 ne montre l'indice qu'après LETHE.
 for (const n of [1, 2, 3, 4]) assert.strictEqual(/ASPHOD[EÈ]LE/i.test(JSON.stringify(phones[n].public)), false);
-assert.ok(phones[2].public.ph.some(p => p.k === 'desk' && p.html.includes('Asphodelus albus')));
+// L'étiquette « Asphodelus albus » est dans la vraie photo du bureau (public/photos/bureau-nuit.jpg).
+assert.ok(phones[2].public.ph.some(p => p.k === 'desk' && p.html.includes('/photos/bureau-nuit.jpg')));
+// Toutes les photos citées existent.
+for (const n of [1, 2, 3, 4]) {
+  const P = phones[n].public;
+  const urls = P.roll.concat(P.ph.map(p => (p.html.match(/src="([^"]+)"/) || [])[1]).filter(Boolean));
+  for (const u of urls) assert.ok(require('fs').existsSync(require('path').join(__dirname, 'public', u)), u);
+}
 assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');
 
 // 4. Les quatre fragments, dans l'ordre des téléphones, donnent le mot de passe final.

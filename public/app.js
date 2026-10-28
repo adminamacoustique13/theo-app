@@ -316,8 +316,15 @@
       return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item mi" data-act="view" data-i="' + i + '"><i class="av-l">' + (t.av || esc(ini(nm(t)))) + '</i><div><b>' + esc(nm(t)) + '<span>' + t.h + ' ›</span></b><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div></div>').join('') + '</div>';
     }
     if (n.app === 'photos') {
-      if (n.view === 'item') { const x = D.ph[n.i]; return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + '">' + x.html + '</div></div>'; }
-      const fill = Array.from({ length: 12 - (D.ph.length % 3) }, (_, i) => '<div class="th plain f' + ((i * 5 + N) % 6) + '"></div>').join('');
+      const roll = D.roll || [];
+      if (n.view === 'item') {
+        // Les vraies photos s'agrandissent d'un appui (le zoom du navigateur est bloqué).
+        if (n.i < 0) return hd('') + '<div class="body"><div class="scene s-img' + (n.zoom ? ' zoom' : '') + '" data-act="zoom"><img src="' + roll[-1 - n.i] + '" alt=""></div></div>';
+        const x = D.ph[n.i];
+        return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + (n.zoom ? ' zoom' : '') + '"' + (x.cls === 's-img' ? ' data-act="zoom"' : '') + '>' + x.html + '</div></div>';
+      }
+      const fill = Array.from({ length: (99 - roll.length - D.ph.length) % 3 }, (_, i) => '<div class="th plain f' + ((i * 5 + N) % 6) + '"></div>').join('') +
+        roll.map((u, i) => '<div class="th" data-act="view" data-i="' + (-1 - i) + '"><img src="' + u + '" alt="" loading="lazy"></div>').join('');
       return hd('Photos') + '<div class="body"><div class="grid">' + fill + D.ph.map((x, i) => '<div class="th" data-act="view" data-i="' + i + '"><div class="mini scene ' + x.cls + '">' + x.html + '</div></div>').join('') + '</div><div class="foot">' + D.total + ' photos</div></div>';
     }
     if (n.app === 'dicta') {
@@ -417,7 +424,8 @@
       else if (n.view && n.view !== 'list') n.view = 'list';
       else nav = { app: null };
     }
-    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; }
+    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; }
+    else if (a === 'zoom') { n.zoom = !n.zoom; }
     else if (a === 'card') { n.view = 'card'; }
     else if (a === 'logo') {
       taps++;

@@ -43,20 +43,18 @@ const AV_ETHEL = '<svg viewBox="0 0 100 100"><rect width="100" height="100" fill
   '<g transform="rotate(-33 50 55) translate(50 55) scale(1.4) translate(-50 -55)">' + BRACELET(26, 52, 48) + '</g></svg>';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
+const IMG = f => '<img src="/photos/' + f + '.jpg" alt="">';
+// Pellicule d'avant l'histoire (portraits de Théo), la même sur les quatre téléphones, avant les photos de l'histoire.
+// Le tél. 4 n'a plus que celle-ci : tout ce qui date de la période NOCTIS a disparu (compteur à 164).
+const ROLL = ['e', 'b', 'g', 'a', 'j', 'l', 'f', 'd', 'h', 'c'].map(l => '/photos/vie-' + l + '.jpg');
 const PH = {
-  postit: ph('postit', 'Post-it', 's-postit', 'Admin :<br>le fleuve des Enfers où les morts oublient<br>(5 lettres)'),
+  // Vraie photo du post-it : même texte qu'avant, l'énigme LETHE ne bouge pas.
+  postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),
   board: ph('board', 'Tableau blanc', 's-board', 'Mode test<br>=&gt; 7 appuis sur le logo<br><br>☾ → v1.0 avant le 31 ?<br>tickets : T-101 / 102 / 103'),
   inv: ph('inv', 'Facture', 's-inv', "<b>FACTURE n° 001</b><br><br>LENOIR Théo, développeur freelance<br>à l'attention de NOCTIS Wellbeing SAS<br><br>10 h de développement · tranche 1<br><br><i>Merci.</i>"),
   ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
-  // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine donne le nom.
-  desk: ph('desk', 'Bureau', 's-photo', '<svg viewBox="0 0 300 220"><rect width="300" height="220" fill="#1c1712"/><rect y="150" width="300" height="70" fill="#5a3f28"/>' +
-    '<rect x="20" y="70" width="130" height="82" rx="5" fill="#2a2f38"/><rect x="27" y="77" width="116" height="66" fill="#0c1220"/><text x="85" y="114" fill="#3b4f7a" font-size="9" text-anchor="middle" font-family="monospace">NOCTIS · préprod</text>' +
-    '<path d="M8 152 H162 L152 160 H18 Z" fill="#3a404b"/><rect x="172" y="122" width="24" height="30" rx="3" fill="#d8d2c4"/><path d="M196 128 q10 2 0 14" stroke="#d8d2c4" stroke-width="4" fill="none"/>' +
-    '<path d="M226 120 h44 l-6 32 h-32 Z" fill="#a4573a"/><path d="M248 120 C247 95 250 70 248 30" stroke="#5c7a3c" stroke-width="3" fill="none"/>' +
-    '<path d="M236 120 C236 105 230 95 228 90 M258 120 C260 108 266 100 268 96" stroke="#6d8c45" stroke-width="3" fill="none"/>' +
-    [[248, 34], [244, 44], [253, 50], [246, 58], [252, 66], [245, 74], [250, 82]].map(c => '<g fill="#f4f1ea"><circle cx="' + c[0] + '" cy="' + c[1] + '" r="4"/></g><circle cx="' + c[0] + '" cy="' + c[1] + '" r="1.2" fill="#b0884a"/>').join('') +
-    '<path d="M262 152 L262 108" stroke="#c9b48a" stroke-width="2"/><rect x="204" y="160" width="84" height="18" rx="2" fill="#efe9d8" transform="rotate(-4 246 169)"/>' +
-    '<text x="246" y="173" font-size="10" fill="#2b2b2b" text-anchor="middle" font-style="italic" transform="rotate(-4 246 169)">Asphodelus albus</text></svg>'),
+  // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
+  desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
   // Théo au concert du samedi 17, bras levé : on voit son bracelet.
   concert: ph('concert', 'Concert', 's-photo', '<svg viewBox="0 0 300 220"><defs><radialGradient id="lg" cx=".3" cy="0" r=".9"><stop offset="0" stop-color="#7a3cff"/><stop offset=".5" stop-color="#2a1150"/><stop offset="1" stop-color="#07040f"/></radialGradient></defs>' +
     '<rect width="300" height="220" fill="url(#lg)"/><path d="M40 0 L90 220 L120 220 Z M230 0 L170 220 L205 220 Z" fill="#ffd6f5" opacity=".08"/>' +
@@ -67,9 +65,11 @@ const PH = {
   blur: ph('blur', 'Flou', 's-blur', '<div></div>'),
   acc: ph('acc', 'Comptes', 's-acc', ACC),
   clock: ph('clock', 'Horloge', 's-clock', '02:30'),
-  cafe: ph('plain', 'Café', 'plain', 'Café'),
-  rue: ph('plain', 'Rue', 'plain', 'Rue'),
-  ciel: ph('plain', 'Ciel', 'plain', 'Ciel')
+  // Vraies photos sans indice.
+  live: ph('live', 'Samedi 17 octobre · 22:47', 's-img', IMG('concert')),
+  jour: ph('jour', 'Lundi 19 octobre · 09:12', 's-img', IMG('bureau-jour')),
+  chat: ph('chat', 'Vendredi 23 octobre · 18:20', 's-img', IMG('biscotte')),
+  cine: ph('cine', 'Samedi 24 octobre · 19:52', 's-img', IMG('cinema'))
 };
 
 // Conversations. Chaque contact a un segment par téléphone (1 à 4) : le téléphone N affiche
@@ -237,7 +237,7 @@ const phones = {
       notes: notes8(),
       th: threads(1),
       cal: cal(1), calls: calls(1),
-      ph: [PH.postit, PH.board, PH.concert, PH.inv],
+      ph: [PH.live, PH.concert, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
@@ -250,7 +250,7 @@ const phones = {
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "Ouvert par erreur un dossier.  J'ai changé son mot de passe => un mot que j'ai sous les yeux tous les jours. ok.\n\nClients : PETROVEX (incident site 4), puis un « État ».\n\nCe n'est pas de la méditation : ils font OUBLIER.\n\nNe plus faire la séance du soir. ok." }],
       th: threads(2),
       cal: cal(2), calls: calls(2),
-      ph: [PH.ticket, PH.desk, PH.badge, PH.blur],
+      ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
     },
@@ -267,7 +267,7 @@ const phones = {
       ],
       th: threads(3),
       cal: cal(3), calls: calls(3),
-      ph: [PH.acc, PH.clock],
+      ph: [PH.chat, PH.cine, PH.acc, PH.clock], roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
@@ -285,7 +285,7 @@ const phones = {
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
       cal: cal(4), calls: calls(4),
-      ph: [PH.cafe, PH.rue, PH.ciel],
+      ph: [], roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
     },
