@@ -76,7 +76,7 @@ body{font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;c
 .a-msg .mi b span{flex:none;color:var(--t2);font-weight:400;font-size:14px}
 .a-msg .mi small{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}
 .av-l{flex:none;width:46px;height:46px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:600;font-size:17px;color:#fff;background:linear-gradient(180deg,#a5abb8,#6e7380)}
-.av-l svg{width:100%;height:100%;display:block}
+.av-l svg,.av-l img{width:100%;height:100%;display:block;object-fit:cover}
 .av-l.big{width:60px;height:60px;font-size:24px}
 .a-msg .hd span[data-act=card]{flex-direction:column;gap:3px!important;font-size:12px;font-weight:400;padding:4px 0 6px}
 .a-msg .hd span[data-act=card] .av-s{width:42px;height:42px}
@@ -110,8 +110,11 @@ body{font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;c
 .s-acc div{padding:7px 2px;border-bottom:1px solid #1f2d3b}
 .s-photo{padding:0;overflow:hidden;min-height:0;line-height:0}
 .s-photo svg{width:100%;height:auto;display:block}
+.s-pic img{width:100%;height:auto;display:block}
+.mini.s-pic{height:300%}
+.mini.s-pic img{height:100%;object-fit:cover}
 .av{width:96px;height:96px;border-radius:50%;overflow:hidden;margin:6px auto 12px}
-.av svg,.av-s svg{width:100%;height:100%;display:block}
+.av svg,.av-s svg,.av img,.av-s img{width:100%;height:100%;display:block;object-fit:cover}
 .av-s{width:28px;height:28px;border-radius:50%;overflow:hidden;display:inline-block;flex:none}
 .scene.plain{background:linear-gradient(135deg,#243344,#101820);color:#7d90a4;text-align:center;padding-top:90px}
 .cardx{background:var(--g1);border-radius:12px;padding:13px 16px;margin-bottom:12px}
