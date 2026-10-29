@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
-const { phones, MQ, NUM, SECRETS } = require('./data');
+const { phones, MQ, NUM, SECRETS, FIN } = require('./data');
 const config = require('./config');
 
 const PORT = +process.env.PORT || 3000;
@@ -19,7 +19,7 @@ try { require('./make-icons').ensure(PUB); } catch (e) { console.error('Icônes 
 const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z]/g, '').toUpperCase();
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.png': 'image/png', '.mp3': 'audio/mpeg', '.svg': 'image/svg+xml', '.json': 'application/json', '.webmanifest': 'application/manifest+json'
+  '.png': 'image/png', '.mp3': 'audio/mpeg', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.json': 'application/json', '.webmanifest': 'application/manifest+json'
 };
 
 const state = {
@@ -28,6 +28,9 @@ const state = {
   clients: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
   gm: new Set(),
   log: [],
+  // Fin : énigme finale trouvée, puis choix commun des joueurs (un seul, définitif).
+  won: false,
+  choix: null,
   tries: new Map()
 };
 
@@ -98,17 +101,35 @@ function page(res, n) {
     res.end(t.replace(/__N__/g, n));
   });
 }
-function serveStatic(res, p) {
+// Sons (musiques de Sérénité, vocaux) : Safari sur iPhone exige les requêtes partielles (Range) pour lire un fichier audio.
+const AUDIO = { '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4' };
+function sendAudio(req, res, file, type) {
+  fs.stat(file, (e, st) => {
+    if (e || !st.isFile()) { res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' }); return res.end('Introuvable'); }
+    const h = { 'content-type': type, 'accept-ranges': 'bytes', 'cache-control': 'public, max-age=3600' };
+    const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+    if (!m || (!m[1] && !m[2])) { res.writeHead(200, { ...h, 'content-length': st.size }); return fs.createReadStream(file).pipe(res); }
+    let a = m[1] ? +m[1] : Math.max(0, st.size - +m[2]);
+    let b = m[1] && m[2] ? Math.min(+m[2], st.size - 1) : st.size - 1;
+    if (a > b || a >= st.size) { res.writeHead(416, { 'content-range': 'bytes */' + st.size }); return res.end(); }
+    res.writeHead(206, { ...h, 'content-range': 'bytes ' + a + '-' + b + '/' + st.size, 'content-length': b - a + 1 });
+    fs.createReadStream(file, { start: a, end: b }).pipe(res);
+  });
+}
+function serveStatic(req, res, p) {
   const f = path.normalize(path.join(PUB, p));
   if (!f.startsWith(PUB + path.sep)) { res.writeHead(403); return res.end(); }
-  sendFile(res, f, MIME[path.extname(f)] || 'application/octet-stream');
+  const ext = path.extname(f);
+  if (AUDIO[ext]) return sendAudio(req, res, f, AUDIO[ext]);
+  sendFile(res, f, MIME[ext] || 'application/octet-stream');
 }
 
 const ERR = {
   admin: 'Mot de passe incorrect.',
   dossier: 'Mot de passe incorrect.',
-  anagram: 'Aucun contact connu sous ce nom.',
+  anagram: 'Mot de passe incorrect.',
   final: 'Rémanence insuffisante. Séquence refusée.',
+  choix: 'Choix indisponible.',
   spectro: 'Rien à analyser.'
 };
 
@@ -169,7 +190,15 @@ const server = http.createServer(async (req, res) => {
         else if (v.startsWith(SECRETS.dossierLatin)) out.error = 'Mot de passe incorrect. Langue du compte : français.';
       }
       else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
-      else if (kind === 'final') { ok = v === SECRETS.final; }
+      else if (kind === 'final') {
+        ok = SECRETS.final.includes(v);
+        if (ok) { state.won = true; out.fin = { ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix }; }
+      }
+      else if (kind === 'choix') {
+        const c = FIN.choix.find(x => x.k === (state.choix || v));
+        ok = state.won && !!c;
+        if (ok) { state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; }
+      }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
       addLog({ phone: n, kind, ok, v: kind === 'spectro' ? '' : String(b.value || '').slice(0, 40) });
@@ -221,7 +250,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ----- Fichiers statiques -----
-    if (req.method === 'GET') return serveStatic(res, p);
+    if (req.method === 'GET') return serveStatic(req, res, p);
     res.writeHead(404); res.end();
   } catch (e) {
     console.error(e);

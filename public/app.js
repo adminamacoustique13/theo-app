@@ -6,11 +6,14 @@
   try { S = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { S = {}; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [], player = null;
+  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [], player = null, devOk = false; // devOk : la console développeur redemande LETHE à chaque ouverture.
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
   const nm = t => (t.n === 'Ethel O.' && S.ana) ? 'Moi (Théo Lenoir)' : t.n;
+  // Une phase de lune par mot du mot de passe final : à côté du mot à trouver, puis sur sa case.
+  const MOON = ['', '🌑', '🌒', '🌓', '🌕'];
+  const mk = i => i ? '<i class="mk">' + MOON[i] + '</i>' : '';
 
   async function api(path, opt) {
     opt = opt || {};
@@ -50,7 +53,8 @@
     if (code.length === 4) {
       try {
         const r = await api('/api/unlock', { body: { phone: N, code } });
-        if (r.ok) { S.sess = r.j.session; save(); start(r.j.data); return; }
+        // Nouveau déverrouillage = nouvelle partie côté serveur : on oublie une fin restée d'une partie précédente.
+        if (r.ok) { S.sess = r.j.session; delete S.fin; delete S.fs; delete S.end; delete S.win; save(); start(r.j.data); return; }
         m.textContent = r.j.error || 'Code incorrect';
       } catch (e) { m.textContent = 'Réseau indisponible. Reconnectez-vous au wifi du jeu.'; }
       code = '';
@@ -66,6 +70,7 @@
     (S.live || []).forEach(addMsg);
     nav = { app: null };
     draw();
+    fin();
     connect();
   }
   function connect() {
@@ -124,6 +129,8 @@
     set: '<svg viewBox="0 0 60 60"><defs><linearGradient id="ics" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4d7dc"/><stop offset="1" stop-color="#8f949b"/></linearGradient></defs><rect width="60" height="60" fill="url(#ics)"/><g fill="#4b4f55">' + Array.from({ length: 12 }, (_, i) => '<rect x="27.5" y="8" width="5" height="9" rx="1.5" transform="rotate(' + (i * 30) + ' 30 30)"/>').join('') + '<circle cx="30" cy="30" r="15.5"/></g><circle cx="30" cy="30" r="11" fill="#a9adb3"/><circle cx="30" cy="30" r="5.5" fill="#4b4f55"/></svg>'
   };
   IC.tel = '<svg viewBox="0 0 60 60"><defs><linearGradient id="ict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6bf27c"/><stop offset="1" stop-color="#0dbd2d"/></linearGradient></defs><rect width="60" height="60" fill="url(#ict)"/><path d="M21.5 14.5c1.4-.9 3.2-.5 4.1.9l3.3 5c.8 1.3.6 3-.6 4l-2.6 2.1c1.8 4 4.6 6.9 8.6 8.8l2.1-2.6c1-1.2 2.7-1.5 4-.6l5 3.3c1.4.9 1.8 2.7.9 4.1l-2 3c-1.3 1.9-3.6 2.8-5.8 2.2C26.9 42.300 17.7 33.100 15.3 21.500c-.5-2.200.4-4.500 2.300-5.800Z" fill="#fff"/></svg>';
+  IC.bank = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8a6b"/><stop offset="1" stop-color="#0b4a3a"/></linearGradient></defs><rect width="60" height="60" fill="url(#icb)"/><g fill="#fff"><path d="M30 12 47 21H13Z"/><rect x="13" y="22.5" width="34" height="3" rx="1"/><rect x="16" y="28" width="4" height="13"/><rect x="24" y="28" width="4" height="13"/><rect x="32" y="28" width="4" height="13"/><rect x="40" y="28" width="4" height="13"/><rect x="12" y="43" width="36" height="4" rx="1"/></g></svg>';
+  IC.mail = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ac8fa"/><stop offset="1" stop-color="#0a6cff"/></linearGradient></defs><rect width="60" height="60" fill="url(#icl)"/><rect x="11" y="18" width="38" height="25" rx="3" fill="#fff"/><path d="M12 20 30 33l18-13" fill="none" stroke="#2b8cff" stroke-width="2.4" stroke-linejoin="round"/></svg>';
   const icCal = () => { const d = dOf(CLOCK[2]); return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff"/><text x="30" y="17" text-anchor="middle" font-size="9.5" font-weight="600" fill="#ff3b30" font-family="-apple-system,Helvetica,Arial">' + JOURS[d.getDay()].slice(0, 3).toUpperCase() + '.</text><text x="30" y="48" text-anchor="middle" font-size="32" font-weight="300" fill="#111" font-family="-apple-system,Helvetica,Arial">' + d.getDate() + '</text></svg>'; };
   const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : k === 'cal' ? icCal() : IC[k]) + '</i>';
   const SIG = '<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>';
@@ -134,7 +141,7 @@
   // Fond d'écran : la même photo sur les quatre téléphones (public/wallpaper.jpg), fond sombre si elle manque.
   const wall = () => '<div class="wp"></div>';
   const sb = () => sbar(true, D.bat);
-  const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
+  const APPN = { bank: 'Comptes', mail: 'Mail', notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';
   const LOCK_IC = '<svg viewBox="0 0 14 18" width="14" height="18"><path d="M3 8V5.5a4 4 0 0 1 8 0V8" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="0" y="8" width="14" height="10" rx="2.5" fill="currentColor"/></svg>';
   const ini = s => s.replace(/\(.*\)/, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -143,10 +150,10 @@
   // ---------- Sérénité ----------
   // Textes de l'appli propres à chaque téléphone (salutation, séance mise en avant, statistiques).
   const SER = {
-    1: { hi: 'Bonjour, Théo', sub: 'Une pause de quelques minutes ?', hero: ['Respiration guidée', 'Détente · 10 min'], st: [['1', 'séance'], ['10', 'minutes'], ['—', 'série']] },
-    2: { hi: 'Bonne nuit, Théo', sub: 'Laissez la journée derrière vous.', hero: ['Séance du soir', 'Lâcher prise · 25 min'], st: [['4', 'séances'], ['96', 'minutes'], ['3', 'nuits']] },
-    3: { hi: 'Bonne nuit, Théo', sub: 'Tout est calme.', hero: ['Séance de nuit', 'Sommeil profond · 52 min'], st: [['7', 'séances'], ['212', 'minutes'], ['5', 'nuits']] },
-    4: { hi: 'Bonsoir, Théo', sub: 'Vous pouvez souffler.', hero: ['Séance du soir', 'Tourner la page · 24 min'], st: [['14', 'séances'], ['418', 'minutes'], ['11', 'nuits']] }
+    1: { hi: 'Bonjour, Théo', sub: 'Une pause de quelques minutes ?', hero: ['Respiration guidée', 'Détente · 10 min', 'p2'], st: [['1', 'séance'], ['10', 'minutes'], ['—', 'série']] },
+    2: { hi: 'Bonne nuit, Théo', sub: 'Laissez la journée derrière vous.', hero: ['Séance du soir', 'Lâcher prise · 25 min', 'p2'], st: [['4', 'séances'], ['96', 'minutes'], ['3', 'nuits']] },
+    3: { hi: 'Bonne nuit, Théo', sub: 'Tout est calme.', hero: ['Séance de nuit', 'Sommeil profond · 52 min', 'p1'], st: [['7', 'séances'], ['212', 'minutes'], ['5', 'nuits']] },
+    4: { hi: 'Bonsoir, Théo', sub: 'Vous pouvez souffler.', hero: ['Séance du soir', 'Tourner la page · 24 min', 'p4'], st: [['14', 'séances'], ['418', 'minutes'], ['11', 'nuits']] }
   }[N] || {};
   const PROGS = [
     ['Sommeil profond', '8 séances', 'p1'], ['Lâcher prise', '6 séances', 'p2'], ['Oublier le stress', '10 séances', 'p3'], ['Repartir à zéro', '5 séances', 'p4']
@@ -154,6 +161,15 @@
   const EXPLO = [
     ['Sommeil', 'p1'], ['Anxiété', 'p3'], ['Respiration', 'p2'], ['Tourner la page', 'p4'], ['Concentration', 'p3'], ['Oublier une rupture', 'p2']
   ];
+  // Musique de chaque séance, selon sa couleur : fichiers dans public/musique/ (rien ne joue tant qu'ils manquent).
+  const MUSIC = { p1: 'sommeil', p2: 'respiration', p3: 'calme', p4: 'page' };
+  let music = null;
+  function musicFor(p) {
+    if (!music) { music = new Audio(); music.loop = true; }
+    const src = '/musique/' + (MUSIC[p] || 'calme') + '.mp3';
+    if (!music.src.endsWith(src)) music.src = src;
+    music.play().catch(() => {});
+  }
   const MOODS = ['Serein', 'Fatigué', 'Tendu', 'Agité', 'Vide'];
   const SVG_MOON = '<svg viewBox="0 0 40 40"><path d="M25.5 6.5A14 14 0 1 0 33.5 27 11.5 11.5 0 0 1 25.5 6.5Z" fill="currentColor"/><circle cx="30" cy="10" r="1.3" fill="currentColor"/><circle cx="34" cy="16" r=".9" fill="currentColor"/></svg>';
   const SVG_HERO = '<svg class="ser-hero-art" viewBox="0 0 300 120" preserveAspectRatio="xMidYMax slice"><circle cx="232" cy="38" r="20" fill="#fff6e9" opacity=".9"/><path d="M0 92C50 70 90 72 150 88S250 104 300 82V120H0Z" fill="#fff" opacity=".16"/><path d="M0 104C60 88 110 94 170 104S260 112 300 100V120H0Z" fill="#fff" opacity=".22"/></svg>';
@@ -163,32 +179,25 @@
       .map(t => '<span class="' + (t[0] === cur ? 'on' : '') + '" data-act="stab" data-t="' + t[0] + '"><svg viewBox="0 0 24 24">' + t[2] + '</svg>' + t[1] + '</span>').join('') + '</nav>';
   }
   function serTop() {
-    return '<div class="ser-top"><div class="ser-logo" data-act="logo">' + SVG_MOON + '</div><div class="ser-word">sérénité<small>par NOCTIS</small></div><div class="ser-av" data-act="stab" data-t="profile">T</div></div>';
-  }
-  function mandela() {
-    return D.mq.map((x, i) => {
-      const d = D.drift[i];
-      return '<div class="ser-q"><span>' + esc(x.q) + '</span><b class="' + (d ? 'drift' : '') + '">' + esc(d || x.t) + '</b></div>';
-    }).join('');
+    return '<div class="ser-top"><button class="ser-x" data-act="home" aria-label="Quitter Sérénité">‹</button><div class="ser-logo" data-act="logo">' + SVG_MOON + '</div><div class="ser-word">sérénité<small>par NOCTIS</small></div><div class="ser-av" data-act="stab" data-t="profile">T</div></div>';
   }
   function serHome() {
     const clos = D.close ? '<div class="ser-close"><div class="ser-close-h"><span class="ser-pill">Programmée</span><b>Séance de clôture</b></div>' +
       '<div class="ser-close-t">Cette nuit, 2 h 30. Une dernière séance pour refermer ce chapitre en douceur.</div><div class="ser-cd" id="cd">Programmée cette nuit</div>' +
-      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
-      '<div class="ser-res">' + (S.win ? '<b class="ok">Rémanence : 100 %. Séance reportée. Vous vous souviendrez de Théo.</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '';
+      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<label>' + MOON[i] + '</label><input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
+      '<div class="ser-res">' + '<span class="bad">' + esc(msg) + '</span>' + '</div></div>' : '';
     const moods = MOODS.map(m => '<span class="' + (S.mood === m ? 'on' : '') + '" data-act="mood" data-m="' + m + '">' + m + '</span>').join('');
     return '<div class="ser-body">' + serTop() +
       '<h1 class="ser-hi">' + SER.hi + '</h1><div class="ser-sub">' + SER.sub + '</div>' + clos +
       '<div class="ser-h2">Comment vous sentez-vous ?</div><div class="ser-moods">' + moods + '</div>' +
-      '<div class="ser-hero" data-act="play" data-p="' + esc(SER.hero[0]) + '">' + SVG_HERO + '<small>Recommandé pour vous</small><b>' + SER.hero[0] + '</b><span>' + SER.hero[1] + '</span><i>▶</i></div>' +
+      '<div class="ser-hero" data-act="play" data-p="' + esc(SER.hero[0]) + '" data-m="' + SER.hero[2] + '">' + SVG_HERO + '<small>Recommandé pour vous</small><b>' + SER.hero[0] + '</b><span>' + SER.hero[1] + '</span><i>▶</i></div>' +
       '<div class="ser-stats">' + SER.st.map(s => '<div><b>' + s[0] + '</b><span>' + s[1] + '</span></div>').join('') + '</div>' +
-      '<div class="ser-h2">Programmes</div><div class="ser-row">' + PROGS.map(p => '<div class="ser-prog ' + p[2] + '" data-act="play" data-p="' + p[0] + '"><b>' + p[0] + '</b><span>' + p[1] + '</span></div>').join('') + '</div>' +
-      '<div class="ser-h2">Test de rémanence</div><div class="ser-card"><div class="ser-mut">Quelques questions pour mesurer ce que votre mémoire garde après chaque séance.</div>' + mandela() + '</div>' +
+      '<div class="ser-h2">Programmes</div><div class="ser-row">' + PROGS.map(p => '<div class="ser-prog ' + p[2] + '" data-act="play" data-p="' + p[0] + '" data-m="' + p[2] + '"><b>' + p[0] + '</b><span>' + p[1] + '</span></div>').join('') + '</div>' +
       '<div class="ser-foot">Version ' + D.ver + ' · atténuation ' + D.att + '<br>NOCTIS Wellbeing SAS</div></div>' + serTabs('home');
   }
   function serExplore() {
     return '<div class="ser-body">' + serTop() + '<h1 class="ser-hi">Explorer</h1><div class="ser-sub">Des séances pour chaque moment.</div>' +
-      '<div class="ser-grid">' + EXPLO.map(e => '<div class="ser-prog ' + e[1] + '" data-act="play" data-p="' + e[0] + '"><b>' + e[0] + '</b></div>').join('') + '</div></div>' + serTabs('explore');
+      '<div class="ser-grid">' + EXPLO.map(e => '<div class="ser-prog ' + e[1] + '" data-act="play" data-p="' + e[0] + '" data-m="' + e[1] + '"><b>' + e[0] + '</b></div>').join('') + '</div></div>' + serTabs('explore');
   }
   function serProfile() {
     const rows = [['Rappel du soir', '22:00'], ['Voix du guide', 'Douce'], ['Atténuation', D.att], ['Version', D.ver]];
@@ -211,7 +220,7 @@
   }
   function admin() {
     const top = '<div class="dev-top"><button data-act="back">‹ Sérénité</button><span class="dev-pill">DEV</span></div>';
-    if (!S.adm) {
+    if (!S.adm || !devOk) {
       return top + '<div class="dev-body"><div class="dev-brand">NOCTIS<span>console développeur</span></div>' +
         '<div class="dev-kv"><span>environnement</span><b>préprod</b></div><div class="dev-kv"><span>utilisateur</span><b>t.lenoir</b></div>' +
         '<div class="dev-lbl">Mot de passe administrateur</div><input type="text" placeholder="••••••" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="adminlogin">Connexion</button><div class="bad dev-err">' + esc(msg) + '</div></div>';
@@ -220,7 +229,7 @@
     const tabs = ['journal', 'tickets', 'comptes', 'dossiers'].map(t => '<span class="' + (t === tab ? 'on' : '') + '" data-act="tab" data-t="' + t + '">' + t + '</span>').join('');
     let b = '';
     if (A.adm === 'revoked') b = '<div class="dev-box err"><b>Accès révoqué</b><small>Le compte t.lenoir n\'a plus de droits sur cet environnement.</small></div>';
-    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Local</th><th>UTC</th><th>Type</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + ' Z</td><td>' + esc(r[3]) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
+    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Heure</th><th>Séance</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + (r[6] ? '<br><span class="mut">' + esc(r[6]) + '</span>' : '') + '</td><td>' + (r[5] ? ul(r[3]) + ' ' + mk(r[5]) : esc(r[3])) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
     else if (tab === 'tickets') b = '<table class="dev-t">' + A.tk.map(r => '<tr><td><b>' + r[0] + '</b></td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>';
     else if (tab === 'comptes') b = A.accHtml ? '<div class="dev-box dev-acc">' + A.accHtml + '</div>' : '<div class="mut">Section réservée aux administrateurs système.</div>';
     else if (A.dos === 'locked') {
@@ -280,8 +289,8 @@
     const all = D.calls || [];
     const tabs = '<nav class="tel-tab">' + [['☆', 'Favoris'], ['◷', 'Récents'], ['◉', 'Contacts'], ['⠿', 'Clavier'], ['◎', 'Messagerie']].map(x => '<span class="' + (x[1] === 'Récents' ? 'on' : '') + '"><i>' + x[0] + '</i>' + x[1] + '</span>').join('') + '</nav>';
     if (nav.view === 'item') {
-      const g = nav.grp || [], c = g[0] || {};
-      return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + esc(ini(c.n || '')) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
+      const g = nav.grp || [], c = g[0] || {}, av = (D.th.find(t => t.n === c.n) || {}).av;
+      return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + (av || esc(ini(c.n || ''))) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
         '<div class="grp"><div class="row tel-d">' + longDay(c.d) + '</div>' + g.map(x => '<div class="row"><span>' + x.d.slice(11) + '</span><b class="' + (x.dir === 'miss' ? 'bad' : '') + '">' + callTxt(x) + '</b></div>').join('') + '</div></div>' + tabs;
     }
     // Appels consécutifs du même contact, même sens et même jour : regroupés comme sur iPhone.
@@ -295,29 +304,76 @@
       '<div class="body">' + grps.map((g, i) => '<div class="item call" data-act="callgrp" data-i="' + i + '"><div><b class="' + (g[0].dir === 'miss' ? 'bad' : '') + '">' + esc(g[0].n) + (g.length > 1 ? ' (' + g.length + ')' : '') + '</b>' +
         '<small>' + (g[0].dir === 'out' ? '↗ ' : g[0].dir === 'in' ? '↙ ' : '') + callTxt(g[0]).replace('Appel manqué', 'mobile') + '</small></div><span>' + callWhen(g[0].d) + ' <em>ⓘ</em></span></div>').join('') + '</div>' + tabs;
   }
+  // Banque : un compte courant, opérations groupées par jour, de la plus récente à la plus ancienne.
+  // Le titulaire n'est pas affiché sur le tél. 4 (le nom LENOIR y gâcherait l'anagramme).
+  const eur = a => (a < 0 ? '−' : a > 0 ? '+' : '') + Math.abs(a).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+,)/g, ' ') + ' €';
+  function bankApp() {
+    const B = D.bank || { ops: [], solde: 0 };
+    const days = [];
+    B.ops.forEach(o => { const l = days[days.length - 1]; if (l && l[0].d === o.d) l.push(o); else days.push([o]); });
+    const card = '<div class="bk-card"><small>Compte courant</small>' + (B.holder ? '<span>' + esc(B.holder) + '</span>' : '') + '<em>FR76 •••• •••• •••• 4821</em>' +
+      '<small>Solde disponible</small><b class="' + (B.solde < 0 ? 'neg' : '') + '">' + eur(B.solde).replace('+', '') + '</b></div>';
+    return hd('Comptes') + '<div class="body">' + card + '<div class="bk-h">Opérations</div>' +
+      days.map(g => '<div class="bk-day">' + longDay(g[0].d) + '</div><div class="grp">' + g.map(o => '<div class="row"><span>' + esc(o.t) + '</span><b class="' + (o.a > 0 ? 'pos' : '') + '">' + eur(o.a) + '</b></div>').join('') + '</div>').join('') + '</div>';
+  }
+  // Mail : reçus et envoyés, du plus récent au plus ancien ; une pièce jointe s'ouvre comme un PDF.
+  function mailApp() {
+    const box = nav.box || 'in', all = D.mail || [];
+    const list = all.map((m, i) => ({ m, i })).filter(o => (o.m.box || 'in') === box);
+    const who = m => m.box === 'sent' ? 'À : ' + (m.to || '') : m.from || m.addr || '';
+    if (nav.view === 'att') {
+      const m = all[nav.i], a = (m.att || [])[nav.att] || {};
+      return hd(a.n || '') + '<div class="body"><div class="ml-pdf' + (nav.zoom ? ' zoom' : '') + '" data-act="zoom">' + (a.html || esc(a.n || '')) + '</div></div>';
+    }
+    if (nav.view === 'item') {
+      const m = all[nav.i];
+      return hd('') + '<div class="body"><div class="ml-v"><h2>' + esc(m.subj || '(Sans objet)') + '</h2>' +
+        '<div class="ml-from"><i class="av-l">' + esc(ini(m.box === 'sent' ? (m.to || '') : (m.from || m.addr || ''))) + '</i><div><b>' + esc(m.box === 'sent' ? 'Moi' : (m.from || m.addr || '')) + '</b>' +
+        (m.addr && m.box !== 'sent' ? '<small>' + esc(m.addr) + '</small>' : '') + (m.to ? '<small>À : ' + esc(m.to) + '</small>' : '') + '</div><span>' + esc(longDay(m.d)) + (m.d.length > 10 ? ' · ' + m.d.slice(11, 16) : '') + '</span></div>' +
+        '<div class="ml-body">' + esc(m.body || '').replace(/\n/g, '<br>') + '</div>' +
+        (m.att || []).map((a, k) => '<div class="ml-att" data-act="att" data-i="' + k + '"><i>PDF</i><div><b>' + esc(a.n) + '</b><small>' + esc(a.sz || 'Document PDF') + '</small></div></div>').join('') + '</div></div>';
+    }
+    return hd(box === 'sent' ? 'Envoyés' : 'Réception') + '<div class="seg"><span class="' + (box === 'in' ? 'on' : '') + '" data-act="mailbox" data-v="in">Reçus</span><span class="' + (box === 'sent' ? 'on' : '') + '" data-act="mailbox" data-v="sent">Envoyés</span></div>' +
+      '<div class="body">' + (list.length ? list.map(o => '<div class="item ml" data-act="view" data-i="' + o.i + '">' + (o.m.unread ? '<em class="ml-dot"></em>' : '') +
+        '<b>' + esc(who(o.m)) + '<span>' + callWhen(o.m.d) + ' ›</span></b><div class="ml-s">' + esc(o.m.subj || '(Sans objet)') + (o.m.att && o.m.att.length ? ' 📎' : '') + '</div>' +
+        '<small>' + esc((o.m.body || '').replace(/\s+/g, ' ')) + '</small></div>').join('') : '<div class="foot">Aucun message</div>') + '</div>';
+  }
   // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
-  const ul = t => '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1));
+  function ul(t) { return '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1)); }
+  // Pièce jointe verrouillée d'Ethel : le mot de passe est « qui je suis » (moi, Théo, Théo Lenoir).
+  function lockBub(m) {
+    if (S.ana) return '<div class="bub in lockb"><small>🔓 ' + mk(4) + ' pièce jointe</small>c\'est moi. souviens-toi de moi</div>';
+    return '<div class="bub in lockb" data-act="lockopen"><small>🔒 ' + mk(4) + ' pièce jointe verrouillée</small>' + esc(m[1]) +
+      (nav.lock ? '<input type="text" placeholder="mot de passe" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Ouvrir</button><span class="bad">' + esc(msg) + '</span>' : '') + '</div>';
+  }
   function renderApp() {
     const n = nav;
     if (n.app === 'notes') {
-      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + '</h3>' + esc(x.b) + '</div></div>'; }
+      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + ' ' + mk(x.mk) + '</h3>' + esc(x.b) + '</div></div>'; }
       const list = D.notes.map((x, i) => ({ x, i })).sort((a, b) => b.x.h.localeCompare(a.x.h));
-      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
+      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + ' ' + mk(o.x.mk) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
     }
     if (n.app === 'msg') {
       if (n.view === 'card') {
         const t = D.th[n.i];
-        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Modifier le contact</small>' + (S.ana ? '<b class="ok">Contact enregistré : « Moi (Théo Lenoir) »</b>' : '<input type="text" placeholder="' + esc(t.n) + '" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Enregistrer</button><div style="margin-top:8px"><span class="bad">' + esc(msg) + '</span></div>') + '</div>' : '') + '</div>';
+        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div></div>';
       }
       if (n.view === 'item') {
         const t = D.th[n.i];
-        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
+        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : m[0] === 'lock' ? lockBub(m) : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
       }
       return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item mi" data-act="view" data-i="' + i + '"><i class="av-l">' + (t.av || esc(ini(nm(t)))) + '</i><div><b>' + esc(nm(t)) + '<span>' + t.h + ' ›</span></b><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div></div>').join('') + '</div>';
     }
     if (n.app === 'photos') {
-      if (n.view === 'item') { const x = D.ph[n.i]; return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + '">' + x.html + '</div></div>'; }
-      const fill = Array.from({ length: 12 - (D.ph.length % 3) }, (_, i) => '<div class="th plain f' + ((i * 5 + N) % 6) + '"></div>').join('');
+      const roll = D.roll || [];
+      if (n.view === 'item') {
+        // Les vraies photos s'agrandissent d'un appui (le zoom du navigateur est bloqué).
+        if (n.i < 0) return hd('') + '<div class="body"><div class="scene s-img' + (n.zoom ? ' zoom' : '') + '" data-act="zoom"><img src="' + roll[-1 - n.i] + '" alt=""></div></div>';
+        const x = D.ph[n.i];
+        return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + (n.zoom ? ' zoom' : '') + '"' + (x.cls === 's-img' ? ' data-act="zoom"' : '') + '>' + x.html + '</div></div>';
+      }
+      const fill = Array.from({ length: (99 - roll.length - D.ph.length) % 3 }, (_, i) => '<div class="th plain f' + ((i * 5 + N) % 6) + '"></div>').join('') +
+        roll.map((u, i) => '<div class="th" data-act="view" data-i="' + (-1 - i) + '"><img src="' + u + '" alt="" loading="lazy"></div>').join('');
       return hd('Photos') + '<div class="body"><div class="grid">' + fill + D.ph.map((x, i) => '<div class="th" data-act="view" data-i="' + i + '"><div class="mini scene ' + x.cls + '">' + x.html + '</div></div>').join('') + '</div><div class="foot">' + D.total + ' photos</div></div>';
     }
     if (n.app === 'dicta') {
@@ -326,13 +382,15 @@
         const more = '<button class="vm-more" data-act="vmore">⋯</button></div>';
         const sheet = n.more ? '<div class="sheet" data-act="vmore"><div>' + ['Partager', 'Modifier l\'enregistrement', 'Dupliquer', 'Afficher le spectre', 'Copier la transcription'].map(t => '<span data-act="' + (t === 'Afficher le spectre' ? 'spectro' : 'vnone') + '">' + t + '</span>').join('') + '<span class="del" data-act="vnone">Supprimer</span></div><div><span data-act="vmore"><b>Annuler</b></span></div></div>' : '';
         return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b' + (x.a ? ' data-act="vplay" style="cursor:pointer"' : '') + '>' + (player && !player.paused ? '❚❚' : '▶') + '</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
-          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
+          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz' + (x.sp ? ' ' + mk(2) : '') + '</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
             '<label class="seuil"><span>Seuil</span><input id="seuil" type="range" min="0" max="100" value="' + (n.seuil || 0) + '"></label></div>' : '') + '</div>';
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
     }
     if (n.app === 'cal') return calApp();
     if (n.app === 'tel') return telApp();
+    if (n.app === 'bank') return bankApp();
+    if (n.app === 'mail') return mailApp();
     if (n.app === 'sereni') return sereni();
     if (n.app === 'admin') return admin();
     if (n.app === 'set') {
@@ -373,6 +431,78 @@
     clearTimeout(toastT);
     toastT = setTimeout(() => { x.className = ''; }, 1800);
   }
+  // ---------- Fin du jeu ----------
+  // Plein écran de nuit par-dessus tout le téléphone : écran 1, écran 2, la question, puis la fin choisie.
+  // S.fin = ce que renvoie le serveur pour « final », S.fs = l'écran affiché, S.end = la fin choisie (définitive).
+  // Espaces insécables de la typographie française : jamais de « ou de : seul en bout de ligne.
+  const fr = t => esc(t).replace(/ ([:;?!»%])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+  const fx = d => ' class="fx" style="animation-delay:' + d.toFixed(1) + 's"';
+  const paras = (b, d0, lead) => b.split('\n\n').map((p, i) => {
+    let h = fr(p).replace(/\n/g, '<br>');
+    if (lead) h = h.replace(/^([A-ZÀ-Ÿa-zà-ÿ]+)\. /, '<b>$1.</b> ');
+    return '<p' + fx(d0 + i * 1.1) + '>' + h + '</p>';
+  });
+  const LOCK_OPEN = '<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 7.6-1.7"/><circle cx="12" cy="15.5" r="1.3"/></svg>';
+  function fin() {
+    const el = $('fin');
+    if (!S.fin && !S.end) { el.className = ''; el.innerHTML = ''; return; }
+    const n = S.fin ? S.fin.ecrans.length : 2, step = S.end ? n + 1 : Math.min(S.fs || 0, n);
+    let h, p;
+    if (S.end) {
+      p = paras(S.end.b, 1.6);
+      const d = 1.6 + p.length * 1.1;
+      h = '<div class="fin-k fx" style="animation-delay:.3s">Votre choix</div>' +
+        '<h2 class="fin-h2 fx" style="animation-delay:.8s">' + fr(S.end.l) + '</h2>' +
+        '<div class="fin-card">' + p.join('') + '</div>' +
+        '<div class="fin-m fx" style="animation-delay:' + (d + 0.6).toFixed(1) + 's"><i></i><p>' + fr(S.end.m) + '</p></div>' +
+        '<div class="fin-end fx" style="animation-delay:' + (d + 2).toFixed(1) + 's"><span class="fin-orb sm"></span>Fin</div>';
+    } else if (step < n) {
+      const x = S.fin.ecrans[step];
+      if (step === 0) {
+        p = paras(x.b, 2.4);
+        h = '<div class="fin-orb fx" style="animation-delay:.2s"></div>' +
+          '<h1 class="fin-h1 fx" style="animation-delay:.7s">Bravo, vous avez résolu l\'enquête de Théo Lenoir\u00a0!</h1>' +
+          '<div class="fin-pill fx" style="animation-delay:1.5s"><i></i>' + fr(x.t) + '</div>';
+      } else {
+        p = paras(x.b, 1.4, true);
+        h = '<div class="fin-ic fx" style="animation-delay:.2s">' + LOCK_OPEN + '</div>' +
+          '<div class="fin-t fx" style="animation-delay:.6s">' + fr(x.t) + '</div>';
+      }
+      const d = (step === 0 ? 2.4 : 1.4) + p.length * 1.1;
+      h += '<div class="fin-card">' + p.join('') + '</div><div class="fin-go fx" style="animation-delay:' + (d + 0.4).toFixed(1) + 's">Toucher pour continuer</div>';
+    } else {
+      h = '<div class="fin-q"><h2 class="fin-h2 fx" style="animation-delay:.5s">' + fr(S.fin.question) + '</h2><p class="fx" style="animation-delay:1.4s">' + fr(S.fin.consigne) + '</p>' +
+        '<div class="fin-ch">' + S.fin.choix.map((c, i) => '<button class="fx" style="animation-delay:' + (2.3 + i * 0.35).toFixed(2) + 's" data-fin="' + esc(c.k) + '">' + fr(c.l) + '</button>').join('') + '</div></div>';
+    }
+    el.className = 'on';
+    el.innerHTML = '<div class="fin-sky"></div><div class="fin-in" data-fin="next"><div class="fin-col">' + h + '</div></div>' +
+      '<div class="fin-dots">' + Array.from({ length: n + 2 }, (_, i) => '<i class="' + (i === step ? 'on' : i < step ? 'done' : '') + '"></i>').join('') + '</div>';
+  }
+  let finBusy = false;
+  async function finAct(k) {
+    const box = $('fin').querySelector('.fin-in');
+    if (k === 'next') {
+      // Premier appui : tout le texte apparaît d'un coup ; appui suivant : écran suivant.
+      if (!box.classList.contains('all')) { box.classList.add('all'); return; }
+      if (S.end || !S.fin || (S.fs || 0) >= S.fin.ecrans.length) return;
+      S.fs = (S.fs || 0) + 1; save(); fin(); return;
+    }
+    if (finBusy || S.end) return;
+    finBusy = true;
+    $('fin').querySelectorAll('button').forEach(b => { b.disabled = true; b.classList.toggle('sel', b.dataset.fin === k); });
+    const r = await check('choix', k);
+    finBusy = false;
+    if (r && r.j.ok && r.j.fin) { S.end = r.j.fin; save(); }
+    else $('fin').querySelectorAll('button').forEach(b => { b.disabled = false; b.classList.remove('sel'); });
+    fin();
+  }
+  async function won(f) {
+    S.win = true; S.fin = f; S.fs = S.fs || 0;
+    // Page rechargée ou autre appareil : le choix est déjà fait, on va droit à la fin.
+    if (f.deja) { const r = await check('choix', f.deja); if (r && r.j.ok && r.j.fin) S.end = r.j.fin; }
+    save(); fin();
+  }
+
   function draw() {
     if (!D) return;
     const el = $('screen');
@@ -384,7 +514,7 @@
       el.innerHTML = '<div class="home">' + wall(D.wp) + sb() +
         '<div class="wid"><div class="w-cal" data-act="open" data-app="cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
         '<div class="w-ser" data-act="open" data-app="sereni"><i>' + SVG_MOON + '</i><small>Sérénité</small><b>' + (D.close ? 'Séance de clôture' : SER.hero[0]) + '</b><span>' + (D.close ? 'Cette nuit, 2 h 30' : SER.hero[1]) + '</span></div></div>' +
-        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone']].map(ic).join('') + '</div>' +
+        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['mail', 'Mail'], ['bank', 'Banque']].map(ic).join('') + '</div>' +
         '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['tel', 'Téléphone'], ['msg', 'Messages'], ['sereni', 'Sérénité'], ['set', 'Réglages']].map(ic).join('') + '</div></div>';
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
@@ -401,6 +531,8 @@
     const cv = $('cv'); if (cv) spectro(cv, D.memos[nav.i] && D.memos[nav.i].sp ? S.sp : '', nav.seuil);
   });
   document.addEventListener('click', async e => {
+    const f = e.target.closest('[data-fin]');
+    if (f) { finAct(f.dataset.fin); return; }
     const k = e.target.closest('[data-k]');
     if (k && $('lmsg')) { padKey(k.dataset.k); return; }
     const el = e.target.closest('[data-act]');
@@ -420,14 +552,17 @@
     else if (a === 'back') {
       if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
       else if (n.app === 'msg' && n.view === 'card') n.view = 'item';
+      else if (n.app === 'mail' && n.view === 'att') n.view = 'item';
       else if (n.view && n.view !== 'list') n.view = 'list';
       else nav = { app: null };
     }
-    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; }
+    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; }
+    else if (a === 'zoom') { n.zoom = !n.zoom; }
     else if (a === 'card') { n.view = 'card'; }
+    else if (a === 'lockopen') { if (n.lock) return; n.lock = true; }
     else if (a === 'logo') {
       taps++;
-      if (taps >= 7) { taps = 0; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
+      if (taps >= 7) { taps = 0; devOk = false; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
       else if (taps >= 3) { toast('Encore ' + (7 - taps) + ' appui' + (7 - taps > 1 ? 's' : '') + ' pour passer en mode développeur.'); return; }
       else return;
     }
@@ -435,16 +570,18 @@
     else if (a === 'calmo') { const t = dOf(CLOCK[2]); n.mo = Math.min(11, Math.max(9, (n.mo != null ? n.mo : t.getMonth()) + +el.dataset.m)); }
     else if (a === 'callist') n.list = !n.list;
     else if (a === 'telmiss') n.miss = el.dataset.v === '1';
+    else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
+    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; }
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
-    else if (a === 'dev') nav = { app: 'admin', view: 'main', tab: 'journal' };
+    else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; }
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
-    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; }
-    else if (a === 'pause') { S.pause = !S.pause; }
+    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; musicFor(el.dataset.m); }
+    else if (a === 'pause') { S.pause = !S.pause; if (music) { if (S.pause) music.pause(); else music.play().catch(() => {}); } }
     else if (a === 'mood') { S.mood = S.mood === el.dataset.m ? '' : el.dataset.m; save(); }
     else if (a === 'tab') n.tab = el.dataset.t;
     else if (a === 'adminlogin') {
       const r = await check('admin', val);
-      if (r && r.j.ok) { S.adm = r.j.data; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
+      if (r && r.j.ok) { S.adm = r.j.data; devOk = true; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
     }
     else if (a === 'doslogin') {
       const r = await check('dossier', val);
@@ -453,11 +590,11 @@
     else if (a === 'neutral') {
       fw = Array.from($('screen').querySelectorAll('.ser-words input')).map(i => i.value.trim());
       const r = await check('final', fw.join(' '));
-      if (r && r.j.ok) { S.win = true; save(); } else if (r) msg = r.j.error || 'Rémanence insuffisante.';
+      if (r && r.j.ok) { if (r.j.fin) await won(r.j.fin); else { S.win = true; save(); } } else if (r) msg = r.j.error || 'Rémanence insuffisante.';
     }
     else if (a === 'anagram') {
       const r = await check('anagram', val);
-      if (r && r.j.ok) { S.ana = true; save(); } else if (r) msg = r.j.error || "Ce n'est pas la bonne combinaison.";
+      if (r && r.j.ok) { S.ana = true; n.lock = false; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
     }
     else if (a === 'vmore') { n.more = !n.more; }
     else if (a === 'vnone') { n.more = false; toast('Indisponible pendant la séance de test.'); }
@@ -465,14 +602,34 @@
       n.more = false; n.spec = true; n.seuil = 0;
       if (D.memos[n.i] && D.memos[n.i].sp && !S.sp) { const r = await check('spectro'); if (r && r.j.ok) { S.sp = r.j.text; save(); } }
     }
+    if (music && !music.paused && !(nav.app === 'sereni' && nav.view === 'play')) music.pause();
     if (D) draw();
   });
 
+  // ---------- Accueil (ouvert dans le navigateur) ----------
+  // Avant l'installation sur l'écran d'accueil : titre du jeu + marche à suivre pour le plein écran.
+  const installed = () => navigator.standalone === true || ['standalone', 'fullscreen'].some(m => matchMedia('(display-mode: ' + m + ')').matches);
+  const SHARE_IC = '<svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function intro() {
+    const android = /android/i.test(navigator.userAgent);
+    const ios = '<div class="in-c' + (android ? '' : ' on') + '"><b>iPhone</b><ol><li>Ouvrez ce lien dans <em>Safari</em></li><li>Touchez Partager ' + SHARE_IC + '</li><li>Choisissez <em>Sur l\'écran d\'accueil</em></li><li>Ouvrez l\'icône <em>Théo ' + N + '</em></li></ol></div>';
+    const and = '<div class="in-c' + (android ? ' on' : '') + '"><b>Android</b><ol><li>Ouvrez ce lien dans <em>Chrome</em></li><li>Touchez le menu ⋮</li><li>Choisissez <em>Installer l\'appli</em> ou <em>Ajouter à l\'écran d\'accueil</em></li><li>Ouvrez l\'icône <em>Théo ' + N + '</em></li></ol></div>';
+    $('screen').className = 'screen';
+    $('screen').innerHTML = '<div class="intro">' + wall(N) + '<div class="in-in"><div class="in-k">Téléphone ' + N + '</div><h1>Bienvenue sur le téléphone de Théo.</h1>' +
+      '<ul class="in-r"><li>Ce jeu est coopératif : chacun a un téléphone, parlez-vous et comparez vos écrans.</li><li>Il n\'y a pas de limite de temps.</li><li>En cas de blocage, les maîtres du jeu sont là.</li></ul>' +
+      '<p>Pour jouer en plein écran, comme sur un vrai téléphone, installez-le d\'abord sur votre écran d\'accueil.</p>' + (android ? and + ios : ios + and) +
+      '<button class="in-skip" data-intro="1">Continuer dans le navigateur</button></div></div>';
+  }
+
   // ---------- Démarrage ----------
-  (async function boot() {
+  document.addEventListener('click', e => { if (e.target.closest('[data-intro]')) { S.intro = 1; save(); boot(); } });
+  (async function () {
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
+    if (!installed() && !S.intro) intro(); else boot();
+  })();
+  async function boot() {
     if (S.sess) {
       try {
         const r = await api('/api/phone/' + N);
@@ -481,5 +638,5 @@
       } catch (e) {}
     }
     lock();
-  })();
+  }
 })();

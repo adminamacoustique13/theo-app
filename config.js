@@ -23,14 +23,14 @@ module.exports = {
       'Mémo de 3 h 12 : menu « ⋯ », « Afficher le spectre », puis montez le curseur « Seuil » jusqu\'à ce qu\'un mot sorte du bruit.'
     ],
     3: [
-      'Comparez les heures : deux séances portent la même heure locale.',
-      'Le back-office compte en UTC. Regardez la colonne UTC pour ordonner les deux séances de 2 h 30.',
-      'Dans l\'ordre UTC, la dernière lettre de chaque identifiant donne D puis E. Le dossier ORCHIDÉE s\'ouvre avec le nom de la plante du bureau de Théo, en français (photo chez un autre joueur).'
+      'Deux séances portent la même heure, 2 h 30, la même nuit. Comment la même heure peut-elle arriver deux fois ?',
+      'Regardez le calendrier du 25 octobre : on change d\'heure cette nuit-là. Laquelle des deux séances a eu lieu en premier ?',
+      'D\'abord le 2 h 30 d\'heure d\'été (Descente), puis celui d\'heure d\'hiver (Effacement) : D puis E, comme les initiales soulignées. Le dossier ORCHIDÉE s\'ouvre avec le nom de la plante du bureau de Théo, en français (photo chez un autre joueur).'
     ],
     4: [
       'Ethel O. en sait beaucoup sur Théo. Regardez bien sa photo de profil.',
-      'Ce bracelet, un autre joueur l\'a vu au poignet de quelqu\'un, sur une photo de concert.',
-      'Ethel, c\'est Théo. Modifiez le contact et donnez-lui son vrai nom. Le mot de passe final assemble les quatre fragments dans l\'ordre chronologique des téléphones.'
+      'Ce tatouage, vous l\'avez déjà vu sur un avant-bras, dans les photos de Théo.',
+      'Ethel, c\'est Théo. Ouvrez la pièce jointe verrouillée de son dernier message : le mot de passe, c\'est qui elle est. Le mot de passe final assemble les quatre mots marqués d\'une lune, dans l\'ordre des lunes.'
     ]
   }
 };
