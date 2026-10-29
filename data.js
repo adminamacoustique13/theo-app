@@ -50,8 +50,7 @@ const PH = {
   ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
   desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
-  badge: ph('badge', 'Badge', 's-badge', '<br>PETROVEX<br><span style="font-weight:400;font-size:12px">VISITEUR · site 4</span><br><br>'),
-  blur: ph('blur', 'Flou', 's-blur', '<div></div>'),
+  badge: ph('badge', 'Jeudi 22 octobre · 16:40', 's-img', IMG('badge')),
   acc: ph('acc', 'Comptes', 's-acc', ACC),
   clock: ph('clock', 'Horloge', 's-clock', '02:30'),
   // Vraies photos sans indice.
@@ -66,7 +65,7 @@ const PH = {
 const PHT = [
   [PH.live, '2026-10-17 22:47', 1], [PH.postit, '2026-10-19 08:41', 1], [PH.jour, '2026-10-19 09:12', 1],
   [PH.board, '2026-10-19 11:30', 1],
-  [PH.badge, '2026-10-22 21:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2], [PH.blur, '2026-10-23 02:58', 2],
+  [PH.badge, '2026-10-22 16:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2],
   [PH.chat, '2026-10-23 18:20', 3], [PH.cine, '2026-10-24 19:52', 3], [PH.clock, '2026-10-25 02:30', 3]
 ];
 const photos = N => N === 4 ? [] : PHT.filter(x => x[2] <= N).sort((a, b) => a[1].localeCompare(b[1])).map(x => x[0]);
