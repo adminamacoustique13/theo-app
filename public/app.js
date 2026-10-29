@@ -67,6 +67,8 @@
   // ---------- Démarrage et temps réel ----------
   function start(data) {
     D = data; deadline = D.deadline; skew = 0;
+    // « Nouvelle partie » lancée pendant que l'appli était fermée : on efface la progression restée sur l'appareil.
+    if ((D.ep || 0) > (S.ep || 0)) { S = { sess: S.sess, intro: S.intro, ep: D.ep }; save(); }
     (S.live || []).forEach(addMsg);
     nav = { app: null };
     draw();
@@ -87,7 +89,7 @@
     if (e.type === 'fin') { if (!S.fin && !S.end) won(e.fin); return; }
     if (e.type === 'choix') { if (!S.end) { S.end = e.fin; save(); fin(); } return; }
     // Nouvelle partie lancée par les game masters : on oublie toute la progression, sauf le déverrouillage.
-    if (e.type === 'reset') { S = { sess: S.sess, intro: S.intro }; save(); devOk = false; taps = 0; fw = []; nav = { app: null }; draw(); fin(); return; }
+    if (e.type === 'reset') { S = { sess: S.sess, intro: S.intro, ep: e.ep || S.ep }; save(); devOk = false; taps = 0; fw = []; nav = { app: null }; draw(); fin(); return; }
     if (e.type === 'message') {
       e.h = e.h || hhmm();
       addMsg(e);
