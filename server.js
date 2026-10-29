@@ -24,7 +24,6 @@ const MIME = {
 
 const state = {
   deadline: null,
-  sessions: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
   clients: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
   gm: new Set(),
   log: [],
@@ -54,9 +53,16 @@ function limited(key, max, windowMs) {
   state.tries.set(key, a);
   return a.length > max;
 }
+// Jeton de session d'un téléphone : signé, donc toujours valable après un redémarrage du serveur
+// (Railway redéploie à chaque fusion ; avant, les joueurs retombaient sur l'écran verrouillé en pleine partie).
+const SESS_SECRET = process.env.SESSION_SECRET || config.gmToken + '|' + PHONES.map(n => config.lockCodes[n]).join('|');
+const sessTok = n => crypto.createHmac('sha256', SESS_SECRET).update('session:' + n).digest('hex');
 function authPhone(req, u) {
-  const s = req.headers['x-session'] || u.searchParams.get('s') || '';
-  for (const n of PHONES) if (state.sessions[n].has(s)) return n;
+  const s = String(req.headers['x-session'] || u.searchParams.get('s') || '');
+  for (const n of PHONES) {
+    const t = sessTok(n);
+    if (s.length === t.length && crypto.timingSafeEqual(Buffer.from(s), Buffer.from(t))) return n;
+  }
   return 0;
 }
 const gmOK = (req, u) => (req.headers['x-gm-token'] || u.searchParams.get('token')) === config.gmToken;
@@ -166,9 +172,7 @@ const server = http.createServer(async (req, res) => {
       const ok = String(b.code) === config.lockCodes[n];
       addLog({ phone: n, kind: 'lock', ok, v: ok ? '' : String(b.code || '').slice(0, 4) });
       if (!ok) return json(res, 401, { error: 'Code incorrect' });
-      const s = crypto.randomBytes(12).toString('hex');
-      state.sessions[n].add(s);
-      return json(res, 200, { session: s, data: pub(n) });
+      return json(res, 200, { session: sessTok(n), data: pub(n) });
     }
     if ((m = p.match(/^\/api\/phone\/([1-4])$/))) {
       const n = +m[1];
@@ -199,8 +203,9 @@ const server = http.createServer(async (req, res) => {
       }
       else if (kind === 'choix') {
         const c = FIN.choix.find(x => x.k === (state.choix || v));
-        ok = state.won && !!c;
-        if (ok) { const first = !state.choix; state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; if (first) toPhones('all', { type: 'choix', fin: out.fin }); }
+        // Le choix n'est proposé qu'après la fin trouvée ; si le serveur a redémarré entre les deux, on l'accepte quand même.
+        ok = !!c;
+        if (ok) { state.won = true; const first = !state.choix; state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; if (first) toPhones('all', { type: 'choix', fin: out.fin }); }
       }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
