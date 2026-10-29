@@ -219,13 +219,50 @@ const CALLS = [
 const cal = N => CAL.filter(e => e.p <= N).sort((a, b) => a.d.localeCompare(b.d)).map(({ p, ...e }) => e);
 const calls = N => CALLS.filter(c => c.p <= N).sort((a, b) => b.d.localeCompare(a.d)).map(({ p, ...c }) => c);
 
+// Appli Banque. Remplace la capture « Comptes » du tél. 3. p : premier téléphone où l'opération existe.
+// a : montant en euros (négatif = dépense). Le titulaire « M. Théo Lenoir » s'affiche sur les tél. 1 à 3,
+// pas sur le tél. 4 (le nom ne doit pas y apparaître, à cause de l'anagramme).
+const BANK_START = -144.84; // solde au 1er octobre : à découvert, le loyer attend
+const BANK = [
+  { p: 1, d: '2026-10-02', t: 'VIR CAF · APL octobre', a: 212.00 },
+  { p: 1, d: '2026-10-05', t: 'PRLV Spotify', a: -10.99 },
+  { p: 1, d: '2026-10-08', t: 'CB Carrefour City', a: -23.40 },
+  { p: 1, d: '2026-10-10', t: 'PRLV Free Mobile', a: -15.99 },
+  { p: 1, d: '2026-10-12', t: 'CB Biocoop', a: -38.60 },
+  { p: 1, d: '2026-10-15', t: 'PRLV EDF', a: -46.00 },
+  { p: 1, d: '2026-10-17', t: 'CB Billetterie · Les Nuits Molles', a: -18.00 },
+  { p: 1, d: '2026-10-17', t: 'CB Bar Le Comptoir', a: -14.50 },
+  { p: 1, d: '2026-10-18', t: 'CB Boulangerie du Marché', a: -4.20 },
+  { p: 1, d: '2026-10-19', t: 'CB Carrefour City', a: -17.85 },
+  { p: 2, d: '2026-10-20', t: "CB Monop' Daily", a: -8.90 },
+  { p: 2, d: '2026-10-21', t: 'CB Pharmacie des Lices', a: -6.30 },
+  { p: 2, d: '2026-10-22', t: 'VIR NOCTIS WELLBEING SAS · tranche 1', a: 1200.00 },
+  { p: 2, d: '2026-10-22', t: 'CB Pizza Da Marco', a: -13.00 },
+  { p: 3, d: '2026-10-23', t: 'VIR M. FABRE · loyer octobre', a: -780.00 },
+  { p: 3, d: '2026-10-23', t: 'CB Animalerie · croquettes', a: -11.90 },
+  { p: 3, d: '2026-10-24', t: 'CB Cinéma Le Méliès · 2 places', a: -19.80 },
+  { p: 3, d: '2026-10-24', t: 'CB Bar Le Comptoir', a: -22.00 },
+  { p: 4, d: '2026-10-25', t: 'CB Boulangerie du Marché', a: -6.40 },
+  { p: 4, d: '2026-10-26', t: 'CB Pharmacie des Lices', a: -12.90 },
+  { p: 4, d: '2026-10-27', t: 'CB Carrefour City', a: -31.20 },
+  { p: 4, d: '2026-10-28', t: 'CB Carrefour City', a: -31.20 },
+  { p: 4, d: '2026-10-29', t: 'CB Carrefour City', a: -29.85 },
+  { p: 4, d: '2026-10-30', t: 'VIR NOCTIS WELLBEING SAS · solde de tout compte', a: 4800.00 }
+];
+// Banque du téléphone N : titulaire, solde, opérations de la plus récente à la plus ancienne.
+const bank = N => {
+  const ops = BANK.filter(o => o.p <= N);
+  const solde = Math.round((BANK_START + ops.reduce((s, o) => s + o.a, 0)) * 100) / 100;
+  return { holder: N < 4 ? 'M. Théo Lenoir' : null, solde, ops: ops.slice().reverse().map(({ p, ...o }) => o) };
+};
+
 const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
       notes: notes8(),
       th: threads(1),
-      cal: cal(1), calls: calls(1),
+      cal: cal(1), calls: calls(1), bank: bank(1),
       ph: [PH.live, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
@@ -238,7 +275,7 @@ const phones = {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
       th: threads(2),
-      cal: cal(2), calls: calls(2),
+      cal: cal(2), calls: calls(2), bank: bank(2),
       ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
@@ -255,8 +292,8 @@ const phones = {
         { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
       ],
       th: threads(3),
-      cal: cal(3), calls: calls(3),
-      ph: [PH.chat, PH.cine, PH.acc, PH.clock], roll: ROLL,
+      cal: cal(3), calls: calls(3), bank: bank(3),
+      ph: [PH.chat, PH.cine, PH.clock], roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
@@ -273,7 +310,7 @@ const phones = {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
-      cal: cal(4), calls: calls(4),
+      cal: cal(4), calls: calls(4), bank: bank(4),
       ph: [], roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
