@@ -470,11 +470,29 @@
     if (D) draw();
   });
 
+  // ---------- Accueil (ouvert dans le navigateur) ----------
+  // Avant l'installation sur l'écran d'accueil : titre du jeu + marche à suivre pour le plein écran.
+  const installed = () => navigator.standalone === true || ['standalone', 'fullscreen'].some(m => matchMedia('(display-mode: ' + m + ')').matches);
+  const SHARE_IC = '<svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function intro() {
+    const android = /android/i.test(navigator.userAgent);
+    const ios = '<div class="in-c' + (android ? '' : ' on') + '"><b>iPhone</b><ol><li>Ouvrez ce lien dans <em>Safari</em></li><li>Touchez Partager ' + SHARE_IC + '</li><li>Choisissez <em>Sur l\'écran d\'accueil</em></li><li>Ouvrez l\'icône <em>Théo ' + N + '</em></li></ol></div>';
+    const and = '<div class="in-c' + (android ? ' on' : '') + '"><b>Android</b><ol><li>Ouvrez ce lien dans <em>Chrome</em></li><li>Touchez le menu ⋮</li><li>Choisissez <em>Installer l\'appli</em> ou <em>Ajouter à l\'écran d\'accueil</em></li><li>Ouvrez l\'icône <em>Théo ' + N + '</em></li></ol></div>';
+    $('screen').className = 'screen';
+    $('screen').innerHTML = '<div class="intro">' + wall(N) + '<div class="in-in"><div class="in-k">Téléphone ' + N + '</div><h1>Ce téléphone se souvient.<br>Lui, non.</h1>' +
+      '<p>Pour jouer en plein écran, comme sur un vrai téléphone, installez-le d\'abord sur votre écran d\'accueil.</p>' + (android ? and + ios : ios + and) +
+      '<button class="in-skip" data-intro="1">Continuer dans le navigateur</button></div></div>';
+  }
+
   // ---------- Démarrage ----------
-  (async function boot() {
+  document.addEventListener('click', e => { if (e.target.closest('[data-intro]')) { S.intro = 1; save(); boot(); } });
+  (async function () {
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
+    if (!installed() && !S.intro) intro(); else boot();
+  })();
+  async function boot() {
     if (S.sess) {
       try {
         const r = await api('/api/phone/' + N);
@@ -483,5 +501,5 @@
       } catch (e) {}
     }
     lock();
-  })();
+  }
 })();
