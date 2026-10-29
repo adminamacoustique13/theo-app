@@ -296,7 +296,9 @@ const MAIL = [
     body: 'Un virement de 4 800,00 € a été crédité sur votre compte courant.\nÉmetteur : NOCTIS WELLBEING SAS.' }
 ];
 // Mails du téléphone N, du plus récent au plus ancien.
-const mails = N => MAIL.filter(m => m.p <= N && !(m.gone && N >= m.gone)).sort((a, b) => b.d.localeCompare(a.d)).map(({ p, gone, ...m }) => m);
+const mails = N => MAIL.filter(m => m.p <= N && !(m.gone && N >= m.gone)).sort((a, b) => b.d.localeCompare(a.d))
+  // La facture jointe s'affiche avec l'image de la facture de Mélanie (public/photos/facture-001.jpg).
+  .map(({ p, gone, ...m }) => m.att ? Object.assign(m, { att: m.att.map(x => x.k === 'inv' ? Object.assign({ sz: 'PDF · 212 Ko', html: IMG('facture-001') }, x) : x) }) : m);
 
 const phones = {
   1: {
