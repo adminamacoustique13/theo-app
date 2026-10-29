@@ -11,6 +11,9 @@
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
   const nm = t => (t.n === 'Ethel O.' && S.ana) ? 'Moi (Théo Lenoir)' : t.n;
+  // Une phase de lune par mot du mot de passe final : à côté du mot à trouver, puis sur sa case.
+  const MOON = ['', '🌑', '🌒', '🌓', '🌕'];
+  const mk = i => i ? '<i class="mk">' + MOON[i] + '</i>' : '';
 
   async function api(path, opt) {
     opt = opt || {};
@@ -185,7 +188,7 @@
   function serHome() {
     const clos = D.close ? '<div class="ser-close"><div class="ser-close-h"><span class="ser-pill">Programmée</span><b>Séance de clôture</b></div>' +
       '<div class="ser-close-t">Cette nuit, 2 h 30. Une dernière séance pour refermer ce chapitre en douceur.</div><div class="ser-cd" id="cd">Programmée cette nuit</div>' +
-      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
+      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<label>' + MOON[i] + '</label><input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
       '<div class="ser-res">' + (S.win ? '<b class="ok">Rémanence : 100 %. Séance reportée. Vous vous souviendrez de Théo.</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '';
     const moods = MOODS.map(m => '<span class="' + (S.mood === m ? 'on' : '') + '" data-act="mood" data-m="' + m + '">' + m + '</span>').join('');
     return '<div class="ser-body">' + serTop() +
@@ -231,7 +234,7 @@
     const tabs = ['journal', 'tickets', 'comptes', 'dossiers'].map(t => '<span class="' + (t === tab ? 'on' : '') + '" data-act="tab" data-t="' + t + '">' + t + '</span>').join('');
     let b = '';
     if (A.adm === 'revoked') b = '<div class="dev-box err"><b>Accès révoqué</b><small>Le compte t.lenoir n\'a plus de droits sur cet environnement.</small></div>';
-    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Local</th><th>UTC</th><th>Type</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + ' Z</td><td>' + esc(r[3]) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
+    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Heure</th><th>Séance</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + (r[6] ? '<br><span class="mut">' + esc(r[6]) + '</span>' : '') + '</td><td>' + (r[5] ? ul(r[3]) + ' ' + mk(r[5]) : esc(r[3])) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
     else if (tab === 'tickets') b = '<table class="dev-t">' + A.tk.map(r => '<tr><td><b>' + r[0] + '</b></td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>';
     else if (tab === 'comptes') b = A.accHtml ? '<div class="dev-box dev-acc">' + A.accHtml + '</div>' : '<div class="mut">Section réservée aux administrateurs système.</div>';
     else if (A.dos === 'locked') {
@@ -341,22 +344,28 @@
         '<small>' + esc((o.m.body || '').replace(/\s+/g, ' ')) + '</small></div>').join('') : '<div class="foot">Aucun message</div>') + '</div>';
   }
   // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
-  const ul = t => '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1));
+  function ul(t) { return '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1)); }
+  // Pièce jointe verrouillée d'Ethel : le mot de passe est « qui je suis » (moi, Théo, Théo Lenoir).
+  function lockBub(m) {
+    if (S.ana) return '<div class="bub in lockb"><small>🔓 ' + mk(4) + ' pièce jointe</small>c\'est moi. souviens-toi de moi</div>';
+    return '<div class="bub in lockb" data-act="lockopen"><small>🔒 ' + mk(4) + ' pièce jointe verrouillée</small>' + esc(m[1]) +
+      (nav.lock ? '<input type="text" placeholder="mot de passe" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Ouvrir</button><span class="bad">' + esc(msg) + '</span>' : '') + '</div>';
+  }
   function renderApp() {
     const n = nav;
     if (n.app === 'notes') {
-      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + '</h3>' + esc(x.b) + '</div></div>'; }
+      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + ' ' + mk(x.mk) + '</h3>' + esc(x.b) + '</div></div>'; }
       const list = D.notes.map((x, i) => ({ x, i })).sort((a, b) => b.x.h.localeCompare(a.x.h));
-      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
+      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + ' ' + mk(o.x.mk) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
     }
     if (n.app === 'msg') {
       if (n.view === 'card') {
         const t = D.th[n.i];
-        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Modifier le contact</small>' + (S.ana ? '<b class="ok">Contact enregistré : « Moi (Théo Lenoir) »</b>' : '<input type="text" placeholder="' + esc(t.n) + '" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Enregistrer</button><div style="margin-top:8px"><span class="bad">' + esc(msg) + '</span></div>') + '</div>' : '') + '</div>';
+        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div></div>';
       }
       if (n.view === 'item') {
         const t = D.th[n.i];
-        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
+        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : m[0] === 'lock' ? lockBub(m) : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
       }
       return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item mi" data-act="view" data-i="' + i + '"><i class="av-l">' + (t.av || esc(ini(nm(t)))) + '</i><div><b>' + esc(nm(t)) + '<span>' + t.h + ' ›</span></b><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div></div>').join('') + '</div>';
     }
@@ -378,7 +387,7 @@
         const more = '<button class="vm-more" data-act="vmore">⋯</button></div>';
         const sheet = n.more ? '<div class="sheet" data-act="vmore"><div>' + ['Partager', 'Modifier l\'enregistrement', 'Dupliquer', 'Afficher le spectre', 'Copier la transcription'].map(t => '<span data-act="' + (t === 'Afficher le spectre' ? 'spectro' : 'vnone') + '">' + t + '</span>').join('') + '<span class="del" data-act="vnone">Supprimer</span></div><div><span data-act="vmore"><b>Annuler</b></span></div></div>' : '';
         return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
-          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
+          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz' + (x.sp ? ' ' + mk(2) : '') + '</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
             '<label class="seuil"><span>Seuil</span><input id="seuil" type="range" min="0" max="100" value="' + (n.seuil || 0) + '"></label></div>' : '') + '</div>';
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
@@ -475,6 +484,7 @@
     else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; }
     else if (a === 'zoom') { n.zoom = !n.zoom; }
     else if (a === 'card') { n.view = 'card'; }
+    else if (a === 'lockopen') { if (n.lock) return; n.lock = true; }
     else if (a === 'logo') {
       taps++;
       if (taps >= 7) { taps = 0; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
@@ -509,7 +519,7 @@
     }
     else if (a === 'anagram') {
       const r = await check('anagram', val);
-      if (r && r.j.ok) { S.ana = true; save(); } else if (r) msg = r.j.error || "Ce n'est pas la bonne combinaison.";
+      if (r && r.j.ok) { S.ana = true; n.lock = false; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
     }
     else if (a === 'vmore') { n.more = !n.more; }
     else if (a === 'vnone') { n.more = false; toast('Indisponible pendant la séance de test.'); }
