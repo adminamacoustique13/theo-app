@@ -6,7 +6,7 @@
   try { S = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { S = {}; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [], devOk = false; // devOk : la console développeur redemande LETHE à chaque ouverture.
+  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [], player = null, devOk = false; // devOk : la console développeur redemande LETHE à chaque ouverture.
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
@@ -381,7 +381,7 @@
         const x = D.memos[n.i];
         const more = '<button class="vm-more" data-act="vmore">⋯</button></div>';
         const sheet = n.more ? '<div class="sheet" data-act="vmore"><div>' + ['Partager', 'Modifier l\'enregistrement', 'Dupliquer', 'Afficher le spectre', 'Copier la transcription'].map(t => '<span data-act="' + (t === 'Afficher le spectre' ? 'spectro' : 'vnone') + '">' + t + '</span>').join('') + '<span class="del" data-act="vnone">Supprimer</span></div><div><span data-act="vmore"><b>Annuler</b></span></div></div>' : '';
-        return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
+        return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b' + (x.a ? ' data-act="vplay" style="cursor:pointer"' : '') + '>' + (player && !player.paused ? '❚❚' : '▶') + '</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
           (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz' + (x.sp ? ' ' + mk(2) : '') + '</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
             '<label class="seuil"><span>Seuil</span><input id="seuil" type="range" min="0" max="100" value="' + (n.seuil || 0) + '"></label></div>' : '') + '</div>';
       }
@@ -541,7 +541,13 @@
     const inp = $('screen').querySelector('input');
     const val = inp ? inp.value : '';
     msg = '';
-    if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; }
+    if (player && (a === 'open' || a === 'home' || a === 'back')) { player.pause(); player = null; }
+    if (a === 'vplay') {
+      const x = D.memos[n.i];
+      if (!player) { player = new Audio(x.a); player.onended = () => { player = null; draw(); }; }
+      if (player.paused) player.play().catch(() => {}); else player.pause();
+    }
+    else if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; }
     else if (a === 'home') nav = { app: null };
     else if (a === 'back') {
       if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
