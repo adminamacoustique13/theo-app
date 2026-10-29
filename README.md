@@ -51,6 +51,15 @@ Le lecteur de séances joue en boucle un fichier de `public/musique/`, choisi se
 
 Tant qu'un fichier manque, la séance s'affiche sans son. Le dépôt est public : n'utiliser que des musiques libres de droits (licence Pixabay, CC0).
 
+Morceaux actuels, tous sous licence CC0 (domaine public, sans attribution obligatoire), raccourcis et fondus en boucle, mp3 96 kb/s, -20 LUFS :
+
+| Fichier | Morceau | Auteur | Source |
+| --- | --- | --- | --- |
+| `sommeil.mp3` | Synthwave 421k (3 min sur 7 min 54) | The Cynic Project (cynicmusic) | https://opengameart.org/content/calm-relax-1-synthwave-421k |
+| `respiration.mp3` | The Budding of Consciousness | Yoiyami | https://opengameart.org/content/the-budding-of-consciousness-%E2%80%93-cc0-ambient-minimalist-theme-yoiyami-blue-series-%E2%80%93-no4 |
+| `calme.mp3` | Synthwave 4k | The Cynic Project (cynicmusic) | https://opengameart.org/content/calm-ambient-1-synthwave-4k |
+| `page.mp3` | First Light Particles | Yoiyami | https://opengameart.org/content/first-light-particles-%E2%80%93-cc0-atmospheric-pianoambient-track |
+
 ## Fichiers
 
 - `server.js` : serveur, vérifications, temps réel (SSE).
