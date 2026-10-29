@@ -37,30 +37,50 @@ const ACC = '<b>Comptes actifs</b><div>d.marchal · Direction produit</div><div>
 // Le tatouage de Théo (avant-bras) : sur les portraits A et H de la pellicule (tous les téléphones)
 // et la photo de profil d'Ethel O. (tél. 2 à 4) est le symbole lui-même. C'est ce qui trahit Ethel.
 const AV_ETHEL = '<img src="/photos/ethel.jpg" alt="">';
+// Photos de contact : recadrées dans les photos du téléphone (Nora : portrait B, Lucile : selfie du ciné).
+const AV = f => '<img src="/photos/av-' + f + '.jpg" alt="">';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
 const IMG = f => '<img src="/photos/' + f + '.jpg" alt="">';
 // Pellicule d'avant l'histoire (portraits de Théo), la même sur les quatre téléphones (B et G : avec Nora), avant les photos de l'histoire.
 // Le tél. 4 n'a plus que celle-ci : tout ce qui date de la période NOCTIS a disparu (compteur à 164).
-const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c'].map(l => '/photos/vie-' + l + '.jpg');
+const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c', '03', '05', '06', '09', '10', '11', '12', '13', '14', '15', '16'].map(l => '/photos/vie-' + l + '.jpg');
 const PH = {
   // Vraie photo du post-it : même texte qu'avant, l'énigme LETHE ne bouge pas.
   postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),
-  board: ph('board', 'Tableau blanc', 's-board', 'Mode test<br>=&gt; 7 appuis sur le logo<br><br>☾ → v1.0 avant le 31 ?<br>tickets : T-101 / 102 / 103'),
+  board: ph('board', 'Lundi 19 octobre · 11:30', 's-img', IMG('tableau')),
   inv: ph('inv', 'Facture', 's-inv', "<b>FACTURE n° 001</b><br><br>LENOIR Théo, développeur freelance<br>à l'attention de NOCTIS Wellbeing SAS<br><br>10 h de développement · tranche 1<br><br><i>Merci.</i>"),
-  ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
+  // Photo d'écran : 9 étoiles, comme les 9 lettres d'ASPHODÈLE.
+  ticket: ph('ticket', 'Jeudi 22 octobre · 23:19', 's-img', IMG('t214')),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
   desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
-  badge: ph('badge', 'Badge', 's-badge', '<br>PETROVEX<br><span style="font-weight:400;font-size:12px">VISITEUR · site 4</span><br><br>'),
-  blur: ph('blur', 'Flou', 's-blur', '<div></div>'),
+  badge: ph('badge', 'Jeudi 22 octobre · 16:40', 's-img', IMG('badge')),
   acc: ph('acc', 'Comptes', 's-acc', ACC),
   clock: ph('clock', 'Horloge', 's-clock', '02:30'),
   // Vraies photos sans indice.
   live: ph('live', 'Samedi 17 octobre · 22:47', 's-img', IMG('concert')),
   jour: ph('jour', 'Lundi 19 octobre · 09:12', 's-img', IMG('bureau-jour')),
   chat: ph('chat', 'Vendredi 23 octobre · 18:20', 's-img', IMG('biscotte')),
-  cine: ph('cine', 'Samedi 24 octobre · 19:52', 's-img', IMG('cinema'))
+  // Selfie avec Lucile devant le ciné : après la séance (elle l'attendait encore à 19:58).
+  cine: ph('cine', 'Samedi 24 octobre · 22:41', 's-img', IMG('cinema')),
+  // Week-end du concert : Lucile à l'arrière-plan (20), puis le dimanche.
+  nuit1: ph('nuit1', 'Samedi 17 octobre · 23:31', 's-img', IMG('vie-20')),
+  nuit2: ph('nuit2', 'Samedi 17 octobre · 23:33', 's-img', IMG('vie-21')),
+  mer: ph('mer', 'Dimanche 18 octobre · 18:12', 's-img', IMG('vie-22')),
+  train: ph('train', 'Dimanche 18 octobre · 19:04', 's-img', IMG('vie-23')),
+  diner: ph('diner', 'Dimanche 18 octobre · 21:20', 's-img', IMG('vie-24'))
 };
+
+// Photos de l'histoire : [photo, date de prise, premier téléphone]. Comme les messages, une photo reste
+// sur les téléphones suivants. Exception : le tél. 4 a perdu toute la période NOCTIS (pellicule seule).
+const PHT = [
+  [PH.live, '2026-10-17 22:47', 1], [PH.nuit1, '2026-10-17 23:31', 1], [PH.nuit2, '2026-10-17 23:33', 1],
+  [PH.mer, '2026-10-18 18:12', 1], [PH.train, '2026-10-18 19:04', 1], [PH.diner, '2026-10-18 21:20', 1], [PH.postit, '2026-10-19 08:41', 1], [PH.jour, '2026-10-19 09:12', 1],
+  [PH.board, '2026-10-19 11:30', 1],
+  [PH.badge, '2026-10-22 16:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2],
+  [PH.chat, '2026-10-23 18:20', 3], [PH.cine, '2026-10-24 22:41', 3], [PH.clock, '2026-10-25 02:30', 3]
+];
+const photos = N => N === 4 ? [] : PHT.filter(x => x[2] <= N).sort((a, b) => a[1].localeCompare(b[1])).map(x => x[0]);
 
 // Conversations. Chaque contact a un segment par téléphone (1 à 4) : le téléphone N affiche
 // les segments 1 à N, donc l'historique se garde d'un téléphone à l'autre.
@@ -81,7 +101,7 @@ const CONV = {
     4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi"], ['lock', 'pour toi. mot de passe : qui je suis']] }
   },
   'Nora': {
-    num: '06 39 98 41 07',
+    num: '06 39 98 41 07', av: AV('nora'),
     1: { h: '21:58', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'oui chef'],
       ['in', "Nouveau jeu cette semaine : l'effet Mandela. Les trucs dont tout le monde se souvient… de travers."], ['in', 'Chacun note les siens. Celui qui en a le moins paie les croissants.'], ['out', 'pari tenu'],
       day('Lundi 19 octobre · 12:31'), ['in', 'Alors ce job ?'], ['out', 'une appli de méditation. ça paye bien'], ['in', 'Toi. Méditer.'], ['out', 'je la code, je la fais pas 😅'], ['in', 'Le moine.'],
@@ -116,7 +136,7 @@ const CONV = {
     4: { h: '20:15', m: [day('Vendredi 30 octobre · 20:03'), ['in', "Demain 21 h, t'as ton costume ?", 'Hugo'], ['out', 'quel costume ?']] }
   },
   'Lucile': {
-    num: '06 39 98 77 30',
+    num: '06 39 98 77 30', av: AV('lucile'),
     1: { h: '20:55', m: [day('Dimanche 18 octobre · 22:14'), ['in', "C'était cool de te croiser au concert hier 🙂"], ['out', "carrément. t'as d'autres groupes du genre ?"], ['in', 'Plein. Je te fais une playlist, à condition que tu la juges pas.'],
       day('Lundi 19 octobre · 20:48'), ['out', 'toujours pas de playlist. je juge déjà'], ['in', 'Patience 😏'], ['out', 'on se voit un de ces jours ?'], ['in', 'Samedi ?']] },
     2: { h: '00:15', m: [day('Mercredi 21 octobre · 19:30'), ['in', 'Playlist envoyée 🎧'], ['out', 'écoutée deux fois. samedi 20 h, ciné ?'], ['in', 'Deal. Tu choisis le film.'],
@@ -308,7 +328,7 @@ const phones = {
       notes: notes8(),
       th: threads(1),
       cal: cal(1), calls: calls(1), bank: bank(1), mail: mails(1),
-      ph: [PH.live, PH.postit, PH.jour, PH.board], roll: ROLL,
+      ph: photos(1), roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
@@ -321,7 +341,7 @@ const phones = {
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
       th: threads(2),
       cal: cal(2), calls: calls(2), bank: bank(2), mail: mails(2),
-      ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
+      ph: photos(2), roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
     },
@@ -338,7 +358,7 @@ const phones = {
       ],
       th: threads(3),
       cal: cal(3), calls: calls(3), bank: bank(3), mail: mails(3),
-      ph: [PH.chat, PH.cine, PH.clock], roll: ROLL,
+      ph: photos(3), roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
@@ -358,7 +378,7 @@ const phones = {
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
       cal: cal(4), calls: calls(4), bank: bank(4), mail: mails(4),
-      ph: [], roll: ROLL,
+      ph: photos(4), roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
     },

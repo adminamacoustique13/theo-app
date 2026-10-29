@@ -287,8 +287,8 @@
     const all = D.calls || [];
     const tabs = '<nav class="tel-tab">' + [['☆', 'Favoris'], ['◷', 'Récents'], ['◉', 'Contacts'], ['⠿', 'Clavier'], ['◎', 'Messagerie']].map(x => '<span class="' + (x[1] === 'Récents' ? 'on' : '') + '"><i>' + x[0] + '</i>' + x[1] + '</span>').join('') + '</nav>';
     if (nav.view === 'item') {
-      const g = nav.grp || [], c = g[0] || {};
-      return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + esc(ini(c.n || '')) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
+      const g = nav.grp || [], c = g[0] || {}, av = (D.th.find(t => t.n === c.n) || {}).av;
+      return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + (av || esc(ini(c.n || ''))) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
         '<div class="grp"><div class="row tel-d">' + longDay(c.d) + '</div>' + g.map(x => '<div class="row"><span>' + x.d.slice(11) + '</span><b class="' + (x.dir === 'miss' ? 'bad' : '') + '">' + callTxt(x) + '</b></div>').join('') + '</div></div>' + tabs;
     }
     // Appels consécutifs du même contact, même sens et même jour : regroupés comme sur iPhone.
