@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
-const { phones, MQ, NUM, SECRETS } = require('./data');
+const { phones, MQ, NUM, SECRETS, FIN } = require('./data');
 const config = require('./config');
 
 const PORT = +process.env.PORT || 3000;
@@ -28,6 +28,9 @@ const state = {
   clients: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
   gm: new Set(),
   log: [],
+  // Fin : énigme finale trouvée, puis choix commun des joueurs (un seul, définitif).
+  won: false,
+  choix: null,
   tries: new Map()
 };
 
@@ -109,6 +112,7 @@ const ERR = {
   dossier: 'Mot de passe incorrect.',
   anagram: 'Aucun contact connu sous ce nom.',
   final: 'Rémanence insuffisante. Séquence refusée.',
+  choix: 'Choix indisponible.',
   spectro: 'Rien à analyser.'
 };
 
@@ -169,7 +173,15 @@ const server = http.createServer(async (req, res) => {
         else if (v.startsWith(SECRETS.dossierLatin)) out.error = 'Mot de passe incorrect. Langue du compte : français.';
       }
       else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
-      else if (kind === 'final') { ok = v === SECRETS.final; }
+      else if (kind === 'final') {
+        ok = v === SECRETS.final;
+        if (ok) { state.won = true; out.fin = { ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix }; }
+      }
+      else if (kind === 'choix') {
+        const c = FIN.choix.find(x => x.k === (state.choix || v));
+        ok = state.won && !!c;
+        if (ok) { state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; }
+      }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
       addLog({ phone: n, kind, ok, v: kind === 'spectro' ? '' : String(b.value || '').slice(0, 40) });

@@ -320,6 +320,30 @@ const phones = {
   }
 };
 
+// Fin du jeu : envoyée par le serveur seulement quand « Souviens-toi de moi » est trouvé (tél. 4).
+// Trois écrans (l'histoire, ORCHIDÉE, le choix), puis une des trois fins selon le choix commun des joueurs.
+const FIN = {
+  ecrans: [
+    { t: 'Rémanence : 100 %. Séance de 2 h 30 annulée.',
+      b: "Le 19 octobre, Théo Lenoir, développeur freelance, commence une mission chez NOCTIS : finir Sérénité, une appli de méditation pour mieux dormir.\n\nSérénité ne fait pas que vous endormir. Sous les séances du soir tourne LETHE, un moteur qui efface ce qui pèse. Un souvenir, une personne, une nuit entière.\n\nLe 22 octobre, Théo ouvre par erreur le dossier ORCHIDÉE. Il y lit la liste des clients. Il change le mot de passe et note ce qu'il a vu. NOCTIS s'en aperçoit.\n\nAlors, chaque nuit, une séance le reprend un peu plus. Il a oublié Lucile. Il a oublié qu'il avait compris. Pour se prévenir lui-même, il s'est écrit sous un faux nom : Ethel, l'anagramme du fleuve de l'oubli.\n\nCette nuit, à 2 h 30, la séance « fin de mission » devait tout effacer, y compris Théo lui-même.\n\nVous vous êtes souvenus de lui à sa place." },
+    { t: 'Dossier ORCHIDÉE · déverrouillé',
+      b: "PETROVEX. Le 14 juin, le site 4 de Martigues pollue l'étang de Berre. Douze salariés de nuit ont tout vu. En septembre, on leur offre une « séance collective ». L'affaire est classée : faute de témoins.\n\nInstitution. Le 31 octobre, 340 personnes assisteront à la cérémonie. Le lendemain, elles n'en garderont presque rien.\n\nDouceur. 5 000 particuliers, qui pensent simplement mieux dormir.\n\nLe dossier tient dans un fichier. Théo l'a entre les mains." }
+  ],
+  question: 'Que fait Théo du dossier ?',
+  consigne: 'Mettez-vous d\'accord : un seul appui, pas de retour en arrière.',
+  choix: [
+    { k: 'MATINALE', l: "L'envoyer à La Matinale",
+      b: "Le mail part à 00:03. Destinataire : redaction@lamatinale.fr. Pièce jointe : ORCHIDEE.zip.\n\nLundi 2 novembre, 07:30 · La Matinale : « Révélations : une appli de sommeil au cœur d'un scandale. L'enquête sur l'étang de Berre rouverte. »\n\nNora : « tu fais la une. rendez-vous mardi 9h, je viens te chercher »",
+      m: "Théo ne retrouvera pas tout. Mais douze personnes vont pouvoir témoigner." },
+    { k: 'EFFACER', l: "L'effacer",
+      b: "ORCHIDÉE supprimé. 0 fichier.\n\nPlus de liste, plus de preuve. NOCTIS ne peut plus rien en faire, et personne ne saura rien.\n\nLucile, 00:41 : « je sais pas pourquoi je t'écris à cette heure. on se refait un ciné ? »",
+      m: 'Théo est libre. Les douze témoins, eux, ne se souviendront jamais.' },
+    { k: 'GARDER', l: 'Le garder',
+      b: "Dossier déplacé dans Notes. Verrouillé.\n\nThéo le garde, au cas où. Il se dit qu'il saura quoi en faire plus tard.\n\nLundi 2 novembre, 09:00 · Nouveau mail : « Bienvenue chez NOCTIS 🌙 Bonjour Théo, toute l'équipe est ravie de t'accueillir… »",
+      m: "Il ne se souvient pas de l'avoir déjà lu." }
+  ]
+};
+
 const SECRETS = {
   admin: 'LETHE',
   // Le dossier s'ouvre avec le nom français de la plante ; le nom latin reçoit un refus à part.
@@ -331,4 +355,4 @@ const SECRETS = {
   spectro: 'TOI'
 };
 
-module.exports = { phones, MQ, NUM, SECRETS };
+module.exports = { phones, MQ, NUM, SECRETS, FIN };
