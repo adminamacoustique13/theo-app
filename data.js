@@ -23,7 +23,8 @@ const M8 = [
   ['Nelson Mandela, mort en prison ?', '18:15', 'Non : mort en 2013, libre.'],
   ['Sex and the City', '21:40', 'Pas « Sex in the City ».']
 ];
-const notes8 = () => M8.map(n => ({ t: n[0], h: n[1], b: n[2] }));
+// mk : phase de lune du fragment (1 à 4), affichée à côté du mot à trouver et sur la case du mot de passe final.
+const notes8 = () => M8.map(n => ({ t: n[0], h: n[1], b: n[2], mk: 1 }));
 
 const T3 = [
   ['T-101', "Phase d'atténuation après la séance"],
@@ -36,30 +37,50 @@ const ACC = '<b>Comptes actifs</b><div>d.marchal · Direction produit</div><div>
 // Le tatouage de Théo (avant-bras) : sur les portraits A et H de la pellicule (tous les téléphones)
 // et la photo de profil d'Ethel O. (tél. 2 à 4) est le symbole lui-même. C'est ce qui trahit Ethel.
 const AV_ETHEL = '<img src="/photos/ethel.jpg" alt="">';
+// Photos de contact : recadrées dans les photos du téléphone (Nora : portrait B, Lucile : selfie du ciné).
+const AV = f => '<img src="/photos/av-' + f + '.jpg" alt="">';
 
 const ph = (k, c, cls, html) => ({ k, c, cls, html });
 const IMG = f => '<img src="/photos/' + f + '.jpg" alt="">';
 // Pellicule d'avant l'histoire (portraits de Théo), la même sur les quatre téléphones (B et G : avec Nora), avant les photos de l'histoire.
 // Le tél. 4 n'a plus que celle-ci : tout ce qui date de la période NOCTIS a disparu (compteur à 164).
-const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c'].map(l => '/photos/vie-' + l + '.jpg');
+const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c', '03', '05', '06', '09', '10', '11', '12', '13', '14', '15', '16'].map(l => '/photos/vie-' + l + '.jpg');
 const PH = {
   // Vraie photo du post-it : même texte qu'avant, l'énigme LETHE ne bouge pas.
   postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),
-  board: ph('board', 'Tableau blanc', 's-board', 'Mode test<br>=&gt; 7 appuis sur le logo<br><br>☾ → v1.0 avant le 31 ?<br>tickets : T-101 / 102 / 103'),
+  board: ph('board', 'Lundi 19 octobre · 11:30', 's-img', IMG('tableau')),
   inv: ph('inv', 'Facture', 's-inv', "<b>FACTURE n° 001</b><br><br>LENOIR Théo, développeur freelance<br>à l'attention de NOCTIS Wellbeing SAS<br><br>10 h de développement · tranche 1<br><br><i>Merci.</i>"),
-  ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
+  // Photo d'écran : 9 étoiles, comme les 9 lettres d'ASPHODÈLE.
+  ticket: ph('ticket', 'Jeudi 22 octobre · 23:19', 's-img', IMG('t214')),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
   desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
-  badge: ph('badge', 'Badge', 's-badge', '<br>PETROVEX<br><span style="font-weight:400;font-size:12px">VISITEUR · site 4</span><br><br>'),
-  blur: ph('blur', 'Flou', 's-blur', '<div></div>'),
+  badge: ph('badge', 'Jeudi 22 octobre · 16:40', 's-img', IMG('badge')),
   acc: ph('acc', 'Comptes', 's-acc', ACC),
   clock: ph('clock', 'Horloge', 's-clock', '02:30'),
   // Vraies photos sans indice.
   live: ph('live', 'Samedi 17 octobre · 22:47', 's-img', IMG('concert')),
   jour: ph('jour', 'Lundi 19 octobre · 09:12', 's-img', IMG('bureau-jour')),
   chat: ph('chat', 'Vendredi 23 octobre · 18:20', 's-img', IMG('biscotte')),
-  cine: ph('cine', 'Samedi 24 octobre · 19:52', 's-img', IMG('cinema'))
+  // Selfie avec Lucile devant le ciné : après la séance (elle l'attendait encore à 19:58).
+  cine: ph('cine', 'Samedi 24 octobre · 22:41', 's-img', IMG('cinema')),
+  // Week-end du concert : Lucile à l'arrière-plan (20), puis le dimanche.
+  nuit1: ph('nuit1', 'Samedi 17 octobre · 23:31', 's-img', IMG('vie-20')),
+  nuit2: ph('nuit2', 'Samedi 17 octobre · 23:33', 's-img', IMG('vie-21')),
+  mer: ph('mer', 'Dimanche 18 octobre · 18:12', 's-img', IMG('vie-22')),
+  train: ph('train', 'Dimanche 18 octobre · 19:04', 's-img', IMG('vie-23')),
+  diner: ph('diner', 'Dimanche 18 octobre · 21:20', 's-img', IMG('vie-24'))
 };
+
+// Photos de l'histoire : [photo, date de prise, premier téléphone]. Comme les messages, une photo reste
+// sur les téléphones suivants. Exception : le tél. 4 a perdu toute la période NOCTIS (pellicule seule).
+const PHT = [
+  [PH.live, '2026-10-17 22:47', 1], [PH.nuit1, '2026-10-17 23:31', 1], [PH.nuit2, '2026-10-17 23:33', 1],
+  [PH.mer, '2026-10-18 18:12', 1], [PH.train, '2026-10-18 19:04', 1], [PH.diner, '2026-10-18 21:20', 1], [PH.postit, '2026-10-19 08:41', 1], [PH.jour, '2026-10-19 09:12', 1],
+  [PH.board, '2026-10-19 11:30', 1],
+  [PH.badge, '2026-10-22 16:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2],
+  [PH.chat, '2026-10-23 18:20', 3], [PH.cine, '2026-10-24 22:41', 3], [PH.clock, '2026-10-25 02:30', 3]
+];
+const photos = N => N === 4 ? [] : PHT.filter(x => x[2] <= N).sort((a, b) => a[1].localeCompare(b[1])).map(x => x[0]);
 
 // Conversations. Chaque contact a un segment par téléphone (1 à 4) : le téléphone N affiche
 // les segments 1 à N, donc l'historique se garde d'un téléphone à l'autre.
@@ -76,11 +97,11 @@ const CONV = {
   'Ethel O.': {
     num: 'Numéro masqué', av: AV_ETHEL,
     2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'ne fais pas la séance ce soir. relis tes notes avant de répondre à direction']] },
-    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. regarde l'utc. ne dis rien à direction"]] },
-    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi. cherchez lenoir"]] }
+    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. ne dis rien à direction"]] },
+    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi"], ['lock', 'pour toi. mot de passe : qui je suis']] }
   },
   'Nora': {
-    num: '06 39 98 41 07',
+    num: '06 39 98 41 07', av: AV('nora'),
     1: { h: '21:58', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'oui chef'],
       ['in', "Nouveau jeu cette semaine : l'effet Mandela. Les trucs dont tout le monde se souvient… de travers."], ['in', 'Chacun note les siens. Celui qui en a le moins paie les croissants.'], ['out', 'pari tenu'],
       day('Lundi 19 octobre · 12:31'), ['in', 'Alors ce job ?'], ['out', 'une appli de méditation. ça paye bien'], ['in', 'Toi. Méditer.'], ['out', 'je la code, je la fais pas 😅'], ['in', 'Le moine.'],
@@ -115,7 +136,7 @@ const CONV = {
     4: { h: '20:15', m: [day('Vendredi 30 octobre · 20:03'), ['in', "Demain 21 h, t'as ton costume ?", 'Hugo'], ['out', 'quel costume ?']] }
   },
   'Lucile': {
-    num: '06 39 98 77 30',
+    num: '06 39 98 77 30', av: AV('lucile'),
     1: { h: '20:55', m: [day('Dimanche 18 octobre · 22:14'), ['in', "C'était cool de te croiser au concert hier 🙂"], ['out', "carrément. t'as d'autres groupes du genre ?"], ['in', 'Plein. Je te fais une playlist, à condition que tu la juges pas.'],
       day('Lundi 19 octobre · 20:48'), ['out', 'toujours pas de playlist. je juge déjà'], ['in', 'Patience 😏'], ['out', 'on se voit un de ces jours ?'], ['in', 'Samedi ?']] },
     2: { h: '00:15', m: [day('Mercredi 21 octobre · 19:30'), ['in', 'Playlist envoyée 🎧'], ['out', 'écoutée deux fois. samedi 20 h, ciné ?'], ['in', 'Deal. Tu choisis le film.'],
@@ -256,14 +277,58 @@ const bank = N => {
   return { holder: N < 4 ? 'M. Théo Lenoir' : null, solde, ops: ops.slice().reverse().map(({ p, ...o }) => o) };
 };
 
+// Appli Mail. p : premier téléphone où le mail existe ; gone : téléphone à partir duquel il a disparu
+// (les mails NOCTIS, qui montrent l'adresse et le nom de Théo, ne sont plus là au tél. 4).
+// box : 'in' (reçu) ou 'sent' (envoyé). att : pièces jointes ({ n: nom, k: type }). Aucun mail visible au tél. 4 ne contient « Lenoir ».
+const MAIL = [
+  { p: 1, d: '2026-10-16 10:12', box: 'in', gone: 4, from: 'Delphine Marchal · NOCTIS', addr: 'd.marchal@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Bienvenue chez NOCTIS 🌙',
+    body: "Bonjour Théo,\n\nToute l'équipe est ravie de t'accueillir. Rendez-vous lundi 19 à 9 h pour ton premier jour : Nicolas t'ouvrira tes accès.\n\nNotre mission tient en une phrase : alléger ce qui pèse.\n\nPetit rappel, le projet est confidentiel. Merci de n'en parler à personne, même à tes proches.\n\nÀ lundi !\nDelphine" },
+  { p: 1, d: '2026-10-17 09:00', box: 'in', from: 'Spotify', addr: 'no-reply@spotify.com', to: 'moi', subj: 'Ta sélection de la semaine est prête',
+    body: "30 titres choisis pour toi, d'après ce que tu as écouté cette semaine." },
+  { p: 1, d: '2026-10-18 11:30', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Merci pour samedi !',
+    body: "Vous étiez nombreux hier soir, merci !\n\nLes photos du concert sont en ligne sur notre page. Vous vous reconnaîtrez peut-être dans la foule.\n\nProchaine date annoncée bientôt." },
+  { p: 1, d: '2026-10-19 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Lundi 19 octobre : l'essentiel de l'actualité",
+    body: "Météo : gris et doux, 14 °C, éclaircies l'après-midi.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nÉconomie : le prix du gazole repasse sous les 1,70 €.\nMarseille : travaux sur la ligne 2 du métro, trafic interrompu le week-end jusqu'en décembre.\nRégion : à Martigues, la pêche reste interdite au nord de l'étang jusqu'à nouvel ordre.\nAubagne : la foire aux santons ouvre ses portes le 15 novembre.\nSanté : la campagne de vaccination contre la grippe a commencé.\nCulture : le retour des films d'horreur en salle avant Halloween.\nSport : l'OM se déplace à Lens dimanche." },
+  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 2026-001',
+    body: 'Bonjour,\n\nVeuillez trouver ci-joint ma facture pour la tranche 1.\n\nBonne soirée,\nThéo Lenoir', att: [{ n: 'Facture_001.pdf', k: 'inv' }] },
+  { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Accès préprod',
+    body: "Bonjour,\n\nTes identifiants préprod t'arrivent par un autre canal.\n\nLes séances de test se font le soir, hors des heures de bureau, casque sur les oreilles et téléphone en charge. Pense à ne pas couper la séance avant la fin.\n\nN. Aubry\nOpérations" },
+  { p: 2, d: '2026-10-21 08:15', box: 'in', from: 'Biocoop', addr: 'infos@biocoop.fr', to: 'moi', subj: 'Les courges sont arrivées 🎃',
+    body: "Potimarron, butternut, pâtisson : c'est la saison. -10 % sur les soupes toute la semaine." },
+  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'RE: Facture n° 2026-001',
+    body: 'Bonjour,\n\nLe virement de 1 200,00 € a été émis ce jour.\n\nCordialement,\nService comptabilité' },
+  { p: 3, d: '2026-10-23 10:15', box: 'in', from: 'Cinéma Le Méliès', addr: 'billetterie@lemelies.fr', to: 'moi', subj: 'Vos billets : samedi 24 octobre, 20:00',
+    body: "Séance de 20:00, salle 2.\n2 places plein tarif.\n\nPrésentez ce mail à l'entrée. Bonne séance !" },
+  { p: 3, d: '2026-10-24 09:00', box: 'in', from: 'Déguiz’Express', addr: 'promo@deguizexpress.fr', to: 'moi', subj: 'Halloween : -20 % sur tous les costumes',
+    body: "Vampire, zombie, momie… Il vous reste une semaine pour trouver le vôtre. Livraison en 48 h." },
+  { p: 3, d: '2026-10-24 17:40', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: "Mise à jour de ton profil d'écoute",
+    body: "Bonjour,\n\nSuite à une connexion inhabituelle sur ton compte, une séance de recalibrage est programmée cette nuit sur ton appareil.\n\nAucune action n'est requise de ta part.\n\nN. Aubry" },
+  { p: 4, d: '2026-10-26 08:00', box: 'in', from: 'Sérénité', addr: 'bonjour@serenite.app', to: 'moi', subj: 'Votre bilan de la semaine 🌙',
+    body: "Bonjour Théo,\n\nCette semaine : 4 séances, dont 2 séances de nuit.\nVotre sommeil : +38 %.\nCe qui pesait : -61 %.\n\nBravo, vous avez allégé votre semaine." },
+  { p: 4, d: '2026-10-27 15:20', box: 'in', from: 'EHPAD Les Tilleuls', addr: 'accueil@ehpad-lestilleuls.fr', to: 'moi', subj: 'Programme de la Toussaint',
+    body: "Chères familles,\n\nUne messe sera célébrée dimanche 1er novembre à 11 h dans la salle commune. Les familles sont les bienvenues.\n\nCette semaine, l'atelier chant a eu beaucoup de succès. Madame Odette nous a même appris une chanson de sa jeunesse.\n\nL'équipe des Tilleuls" },
+  { p: 4, d: '2026-10-28 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Mercredi 28 octobre : l'essentiel de l'actualité",
+    body: "Météo : pluie en fin de journée, 12 °C.\nÀ la une : cérémonie du 31 octobre, le parcours dévoilé et les rues fermées à la circulation.\nPolitique : le budget de la Métropole adopté de justesse.\nVacances : les bouchons attendus vendredi sur l'A7, Bison Futé voit rouge.\nJustice : étang de Berre, l'affaire de la pollution de juin classée sans suite, faute de témoins. « Un soulagement », réagit M. P., directeur du site.\nFaits divers : un sanglier en promenade sur la Corniche, la vidéo fait le tour des réseaux.\nConso : Halloween, les ventes de citrouilles en hausse de 12 %.\nSport : l'OM s'impose à domicile face à Nantes (2-0)." },
+  { p: 4, d: '2026-10-28 10:00', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Nouvelle date : 12 décembre',
+    body: 'On remet ça le samedi 12 décembre, même salle. Billetterie ouverte !' },
+  { p: 4, d: '2026-10-29 13:42', box: 'in', from: 'Doctolib', addr: 'no-reply@doctolib.fr', to: 'moi', subj: 'Rendez-vous confirmé : mardi 3 novembre à 09:00',
+    body: "Votre rendez-vous est confirmé.\n\nDr Claire Vasseur, neurologue\nMardi 3 novembre 2026 à 09:00\n\nRéservé pour vous par Nora Benali.\n\nPensez à apporter vos derniers examens." },
+  { p: 4, d: '2026-10-30 16:02', box: 'in', from: 'Ma Banque', addr: 'alertes@mabanque.fr', to: 'moi', subj: 'Vous avez reçu un virement',
+    body: 'Un virement de 4 800,00 € a été crédité sur votre compte courant.\nÉmetteur : NOCTIS WELLBEING SAS.' }
+];
+// Mails du téléphone N, du plus récent au plus ancien.
+const mails = N => MAIL.filter(m => m.p <= N && !(m.gone && N >= m.gone)).sort((a, b) => b.d.localeCompare(a.d))
+  // La facture jointe s'affiche avec l'image de la facture de Mélanie (public/photos/facture-001.jpg).
+  .map(({ p, gone, ...m }) => m.att ? Object.assign(m, { att: m.att.map(x => x.k === 'inv' ? Object.assign({ sz: 'PDF · 212 Ko', html: IMG('facture-001') }, x) : x) }) : m);
+
 const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
       notes: notes8(),
       th: threads(1),
-      cal: cal(1), calls: calls(1), bank: bank(1),
-      ph: [PH.live, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
+      cal: cal(1), calls: calls(1), bank: bank(1), mail: mails(1),
+      ph: photos(1), roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
@@ -275,8 +340,8 @@ const phones = {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
       th: threads(2),
-      cal: cal(2), calls: calls(2), bank: bank(2),
-      ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
+      cal: cal(2), calls: calls(2), bank: bank(2), mail: mails(2),
+      ph: photos(2), roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
     },
@@ -289,16 +354,18 @@ const phones = {
       notes: [
         { t: "Ce que j'ai vu", h: '23:12', b: 'ouvert par erreur un dossier. ce sont des gens bien' },
         { t: '2 h 30', h: '02:30', b: 'Séance.  Tout est calme.' },
-        { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
+        { t: '2 h 30 (bis)', h: '02:30', b: "Encore 2 h 30 ? J'ai l'impression d'avoir déjà écrit ça.  Mon réveil a reculé ou je deviens fou." }
       ],
       th: threads(3),
-      cal: cal(3), calls: calls(3), bank: bank(3),
-      ph: [PH.chat, PH.cine, PH.clock], roll: ROLL,
+      cal: cal(3), calls: calls(3), bank: bank(3), mail: mails(3),
+      ph: photos(3), roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
-    // Journal trié par heure locale : à égalité, E (01:30 UTC) s'affiche avant D (00:30 UTC).
-    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
+    // Deux séances à 02:30 la nuit du passage à l'heure d'hiver. Le journal affiche Effacement avant Descente ;
+    // les joueurs doivent comprendre que le 02:30 d'heure d'été a eu lieu d'abord : D puis E.
+    // Ligne : [id, heure locale, UTC (non affiché), séance, durée, phase de lune, étiquette d'heure].
+    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0914-4', '23:00', '21:00', 'Séance collective · lot P4 · 12 sujets · cible : nuit du 14/06', '40 min'], ['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-9c', '02:30', '01:30', 'Effacement · LETHE profond · sujet 0', '52 min', 3, "heure d'hiver"], ['S-0424-4f', '02:30', '00:30', 'Descente · sommeil standard', '18 min', 3, "heure d'été"]], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
     dossier: {
       rows: [['PETROVEX', 'Incident site 4', '12', '94 %'], ['Institution', 'Événement public du 31/10', '340', '87 %'], ['Douceur', 'Particuliers', '5 000', '40 %']],
       access: 't.lenoir, jeu. 23 h 08, ouverture non autorisée',
@@ -310,8 +377,8 @@ const phones = {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
-      cal: cal(4), calls: calls(4), bank: bank(4),
-      ph: [], roll: ROLL,
+      cal: cal(4), calls: calls(4), bank: bank(4), mail: mails(4),
+      ph: photos(4), roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
     },
@@ -320,15 +387,40 @@ const phones = {
   }
 };
 
+// Fin du jeu : envoyée par le serveur seulement quand « Souviens-toi de moi » est trouvé (tél. 4).
+// Trois écrans (l'histoire, ORCHIDÉE, le choix), puis une des trois fins selon le choix commun des joueurs.
+const FIN = {
+  ecrans: [
+    { t: 'Rémanence : 100 %. Séance de 2 h 30 annulée.',
+      b: "Le 19 octobre, Théo Lenoir, développeur freelance, commence une mission chez NOCTIS : finir Sérénité, une appli de méditation pour mieux dormir.\n\nSérénité ne fait pas que vous endormir. Sous les séances du soir tourne LETHE, un moteur qui efface ce qui pèse. Un souvenir, une personne, une nuit entière.\n\nLe 22 octobre, Théo ouvre par erreur le dossier ORCHIDÉE. Il y lit la liste des clients. Il change le mot de passe et note ce qu'il a vu. NOCTIS s'en aperçoit.\n\nAlors, chaque nuit, une séance le reprend un peu plus. Il a oublié Lucile. Il a oublié qu'il avait compris. Pour se prévenir lui-même, il s'est écrit sous un faux nom : Ethel, l'anagramme du fleuve de l'oubli.\n\nCette nuit, à 2 h 30, la séance « fin de mission » devait tout effacer, y compris Théo lui-même.\n\nVous vous êtes souvenus de lui à sa place." },
+    { t: 'Dossier ORCHIDÉE · déverrouillé',
+      b: "PETROVEX. Le 14 juin, le site 4 de Martigues pollue l'étang de Berre. Douze salariés de nuit ont tout vu. En septembre, on leur offre une « séance collective ». L'affaire est classée : faute de témoins.\n\nInstitution. Le 31 octobre, 340 personnes assisteront à la cérémonie. Le lendemain, elles n'en garderont presque rien.\n\nDouceur. 5 000 particuliers, qui pensent simplement mieux dormir.\n\nLe dossier tient dans un fichier. Théo l'a entre les mains." }
+  ],
+  question: 'Que fait Théo du dossier ?',
+  consigne: 'Mettez-vous d\'accord : un seul appui, pas de retour en arrière.',
+  choix: [
+    { k: 'MATINALE', l: "L'envoyer à La Matinale",
+      b: "Le mail part à 00:03. Destinataire : redaction@lamatinale.fr. Pièce jointe : ORCHIDEE.zip.\n\nLundi 2 novembre, 07:30 · La Matinale : « Révélations : une appli de sommeil au cœur d'un scandale. L'enquête sur l'étang de Berre rouverte. »\n\nNora : « tu fais la une. rendez-vous mardi 9h, je viens te chercher »",
+      m: "Théo ne retrouvera pas tout. Mais douze personnes vont pouvoir témoigner." },
+    { k: 'EFFACER', l: "L'effacer",
+      b: "ORCHIDÉE supprimé. 0 fichier.\n\nPlus de liste, plus de preuve. NOCTIS ne peut plus rien en faire, et personne ne saura rien.\n\nLucile, 00:41 : « je sais pas pourquoi je t'écris à cette heure. on se refait un ciné ? »",
+      m: 'Théo est libre. Les douze témoins, eux, ne se souviendront jamais.' },
+    { k: 'GARDER', l: 'Le garder',
+      b: "Dossier déplacé dans Notes. Verrouillé.\n\nThéo le garde, au cas où. Il se dit qu'il saura quoi en faire plus tard.\n\nLundi 2 novembre, 09:00 · Nouveau mail : « Bienvenue chez NOCTIS 🌙 Bonjour Théo, toute l'équipe est ravie de t'accueillir… »",
+      m: "Il ne se souvient pas de l'avoir déjà lu." }
+  ]
+};
+
 const SECRETS = {
   admin: 'LETHE',
   // Le dossier s'ouvre avec le nom français de la plante ; le nom latin reçoit un refus à part.
   dossier: ['ASPHODELE', 'ASPHODELES'],
   dossierLatin: 'ASPHODELUS',
   // Le contact Ethel O. se renomme quand on lui donne le vrai nom de Théo (ou « moi »).
-  anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME'],
-  final: 'SOUVIENSTOIDEMOI',
+  anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME', 'CESTMOI', 'CESTTHEO', 'JESUISTHEO'],
+  // Le dernier mot peut être « moi », « Théo » ou « Théo Lenoir ».
+  final: ['SOUVIENSTOIDEMOI', 'SOUVIENSTOIDETHEO', 'SOUVIENSTOIDETHEOLENOIR'],
   spectro: 'TOI'
 };
 
-module.exports = { phones, MQ, NUM, SECRETS };
+module.exports = { phones, MQ, NUM, SECRETS, FIN };
