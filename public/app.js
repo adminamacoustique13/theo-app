@@ -124,6 +124,7 @@
     set: '<svg viewBox="0 0 60 60"><defs><linearGradient id="ics" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4d7dc"/><stop offset="1" stop-color="#8f949b"/></linearGradient></defs><rect width="60" height="60" fill="url(#ics)"/><g fill="#4b4f55">' + Array.from({ length: 12 }, (_, i) => '<rect x="27.5" y="8" width="5" height="9" rx="1.5" transform="rotate(' + (i * 30) + ' 30 30)"/>').join('') + '<circle cx="30" cy="30" r="15.5"/></g><circle cx="30" cy="30" r="11" fill="#a9adb3"/><circle cx="30" cy="30" r="5.5" fill="#4b4f55"/></svg>'
   };
   IC.tel = '<svg viewBox="0 0 60 60"><defs><linearGradient id="ict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6bf27c"/><stop offset="1" stop-color="#0dbd2d"/></linearGradient></defs><rect width="60" height="60" fill="url(#ict)"/><path d="M21.5 14.5c1.4-.9 3.2-.5 4.1.9l3.3 5c.8 1.3.6 3-.6 4l-2.6 2.1c1.8 4 4.6 6.9 8.6 8.8l2.1-2.6c1-1.2 2.7-1.5 4-.6l5 3.3c1.4.9 1.8 2.7.9 4.1l-2 3c-1.3 1.9-3.6 2.8-5.8 2.2C26.9 42.300 17.7 33.100 15.3 21.500c-.5-2.200.4-4.500 2.300-5.800Z" fill="#fff"/></svg>';
+  IC.bank = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8a6b"/><stop offset="1" stop-color="#0b4a3a"/></linearGradient></defs><rect width="60" height="60" fill="url(#icb)"/><g fill="#fff"><path d="M30 12 47 21H13Z"/><rect x="13" y="22.5" width="34" height="3" rx="1"/><rect x="16" y="28" width="4" height="13"/><rect x="24" y="28" width="4" height="13"/><rect x="32" y="28" width="4" height="13"/><rect x="40" y="28" width="4" height="13"/><rect x="12" y="43" width="36" height="4" rx="1"/></g></svg>';
   const icCal = () => { const d = dOf(CLOCK[2]); return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff"/><text x="30" y="17" text-anchor="middle" font-size="9.5" font-weight="600" fill="#ff3b30" font-family="-apple-system,Helvetica,Arial">' + JOURS[d.getDay()].slice(0, 3).toUpperCase() + '.</text><text x="30" y="48" text-anchor="middle" font-size="32" font-weight="300" fill="#111" font-family="-apple-system,Helvetica,Arial">' + d.getDate() + '</text></svg>'; };
   const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : k === 'cal' ? icCal() : IC[k]) + '</i>';
   const SIG = '<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>';
@@ -134,7 +135,7 @@
   // Fond d'écran : la même photo sur les quatre téléphones (public/wallpaper.jpg), fond sombre si elle manque.
   const wall = () => '<div class="wp"></div>';
   const sb = () => sbar(true, D.bat);
-  const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
+  const APPN = { bank: 'Comptes', notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';
   const LOCK_IC = '<svg viewBox="0 0 14 18" width="14" height="18"><path d="M3 8V5.5a4 4 0 0 1 8 0V8" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="0" y="8" width="14" height="10" rx="2.5" fill="currentColor"/></svg>';
   const ini = s => s.replace(/\(.*\)/, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -304,6 +305,18 @@
       '<div class="body">' + grps.map((g, i) => '<div class="item call" data-act="callgrp" data-i="' + i + '"><div><b class="' + (g[0].dir === 'miss' ? 'bad' : '') + '">' + esc(g[0].n) + (g.length > 1 ? ' (' + g.length + ')' : '') + '</b>' +
         '<small>' + (g[0].dir === 'out' ? '↗ ' : g[0].dir === 'in' ? '↙ ' : '') + callTxt(g[0]).replace('Appel manqué', 'mobile') + '</small></div><span>' + callWhen(g[0].d) + ' <em>ⓘ</em></span></div>').join('') + '</div>' + tabs;
   }
+  // Banque : un compte courant, opérations groupées par jour, de la plus récente à la plus ancienne.
+  // Le titulaire n'est pas affiché sur le tél. 4 (le nom LENOIR y gâcherait l'anagramme).
+  const eur = a => (a < 0 ? '−' : a > 0 ? '+' : '') + Math.abs(a).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+,)/g, ' ') + ' €';
+  function bankApp() {
+    const B = D.bank || { ops: [], solde: 0 };
+    const days = [];
+    B.ops.forEach(o => { const l = days[days.length - 1]; if (l && l[0].d === o.d) l.push(o); else days.push([o]); });
+    const card = '<div class="bk-card"><small>Compte courant</small>' + (B.holder ? '<span>' + esc(B.holder) + '</span>' : '') + '<em>FR76 •••• •••• •••• 4821</em>' +
+      '<small>Solde disponible</small><b class="' + (B.solde < 0 ? 'neg' : '') + '">' + eur(B.solde).replace('+', '') + '</b></div>';
+    return hd('Comptes') + '<div class="body">' + card + '<div class="bk-h">Opérations</div>' +
+      days.map(g => '<div class="bk-day">' + longDay(g[0].d) + '</div><div class="grp">' + g.map(o => '<div class="row"><span>' + esc(o.t) + '</span><b class="' + (o.a > 0 ? 'pos' : '') + '">' + eur(o.a) + '</b></div>').join('') + '</div>').join('') + '</div>';
+  }
   // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
   const ul = t => '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1));
   function renderApp() {
@@ -349,6 +362,7 @@
     }
     if (n.app === 'cal') return calApp();
     if (n.app === 'tel') return telApp();
+    if (n.app === 'bank') return bankApp();
     if (n.app === 'sereni') return sereni();
     if (n.app === 'admin') return admin();
     if (n.app === 'set') {
@@ -400,7 +414,7 @@
       el.innerHTML = '<div class="home">' + wall(D.wp) + sb() +
         '<div class="wid"><div class="w-cal" data-act="open" data-app="cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
         '<div class="w-ser" data-act="open" data-app="sereni"><i>' + SVG_MOON + '</i><small>Sérénité</small><b>' + (D.close ? 'Séance de clôture' : SER.hero[0]) + '</b><span>' + (D.close ? 'Cette nuit, 2 h 30' : SER.hero[1]) + '</span></div></div>' +
-        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone']].map(ic).join('') + '</div>' +
+        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['bank', 'Banque']].map(ic).join('') + '</div>' +
         '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['tel', 'Téléphone'], ['msg', 'Messages'], ['sereni', 'Sérénité'], ['set', 'Réglages']].map(ic).join('') + '</div></div>';
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
