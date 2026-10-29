@@ -383,33 +383,51 @@
     toastT = setTimeout(() => { x.className = ''; }, 1800);
   }
   // ---------- Fin du jeu ----------
-  // Plein écran noir par-dessus tout le téléphone : écran 1, écran 2, la question, puis la fin choisie.
+  // Plein écran de nuit par-dessus tout le téléphone : écran 1, écran 2, la question, puis la fin choisie.
   // S.fin = ce que renvoie le serveur pour « final », S.fs = l'écran affiché, S.end = la fin choisie (définitive).
-  const paras = (b, lead) => b.split('\n\n').map((p, i) => {
-    // Espaces insécables de la typographie française : jamais de « ou de : seul en bout de ligne.
-    let h = esc(p).replace(/ ([:;?!»])/g, '\u00a0$1').replace(/« /g, '«\u00a0').replace(/\n/g, '<br>');
+  // Espaces insécables de la typographie française : jamais de « ou de : seul en bout de ligne.
+  const fr = t => esc(t).replace(/ ([:;?!»%])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+  const fx = d => ' class="fx" style="animation-delay:' + d.toFixed(1) + 's"';
+  const paras = (b, d0, lead) => b.split('\n\n').map((p, i) => {
+    let h = fr(p).replace(/\n/g, '<br>');
     if (lead) h = h.replace(/^([A-ZÀ-Ÿa-zà-ÿ]+)\. /, '<b>$1.</b> ');
-    return '<p style="animation-delay:' + (0.6 + i * 1.1).toFixed(1) + 's">' + h + '</p>';
+    return '<p' + fx(d0 + i * 1.1) + '>' + h + '</p>';
   });
+  const LOCK_OPEN = '<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 7.6-1.7"/><circle cx="12" cy="15.5" r="1.3"/></svg>';
   function fin() {
     const el = $('fin');
     if (!S.fin && !S.end) { el.className = ''; el.innerHTML = ''; return; }
-    let h, d;
+    const n = S.fin ? S.fin.ecrans.length : 2, step = S.end ? n + 1 : Math.min(S.fs || 0, n);
+    let h, p;
     if (S.end) {
-      const p = paras(S.end.b);
-      d = 0.6 + p.length * 1.1;
-      h = '<div class="fin-t">' + esc(S.end.l) + '</div>' + p.join('') + '<p class="fin-m" style="animation-delay:' + (d + 0.8).toFixed(1) + 's">' + esc(S.end.m) + '</p>';
-    } else if ((S.fs || 0) < S.fin.ecrans.length) {
-      const x = S.fin.ecrans[S.fs || 0], p = paras(x.b, (S.fs || 0) > 0);
-      d = 0.6 + p.length * 1.1;
-      h = '<div class="fin-t">' + esc(x.t) + '</div>' + p.join('') + '<div class="fin-go" style="animation-delay:' + (d + 0.6).toFixed(1) + 's">Toucher pour continuer</div>';
+      p = paras(S.end.b, 1.6);
+      const d = 1.6 + p.length * 1.1;
+      h = '<div class="fin-k fx" style="animation-delay:.3s">Votre choix</div>' +
+        '<h2 class="fin-h2 fx" style="animation-delay:.8s">' + fr(S.end.l) + '</h2>' +
+        '<div class="fin-card">' + p.join('') + '</div>' +
+        '<div class="fin-m fx" style="animation-delay:' + (d + 0.6).toFixed(1) + 's"><i></i><p>' + fr(S.end.m) + '</p></div>' +
+        '<div class="fin-end fx" style="animation-delay:' + (d + 2).toFixed(1) + 's"><span class="fin-orb sm"></span>Fin</div>';
+    } else if (step < n) {
+      const x = S.fin.ecrans[step];
+      if (step === 0) {
+        p = paras(x.b, 2.4);
+        h = '<div class="fin-orb fx" style="animation-delay:.2s"></div>' +
+          '<h1 class="fin-h1 fx" style="animation-delay:.7s">Bravo, vous avez résolu l\'enquête de Théo Lenoir\u00a0!</h1>' +
+          '<div class="fin-pill fx" style="animation-delay:1.5s"><i></i>' + fr(x.t) + '</div>';
+      } else {
+        p = paras(x.b, 1.4, true);
+        h = '<div class="fin-ic fx" style="animation-delay:.2s">' + LOCK_OPEN + '</div>' +
+          '<div class="fin-t fx" style="animation-delay:.6s">' + fr(x.t) + '</div>';
+      }
+      const d = (step === 0 ? 2.4 : 1.4) + p.length * 1.1;
+      h += '<div class="fin-card">' + p.join('') + '</div><div class="fin-go fx" style="animation-delay:' + (d + 0.4).toFixed(1) + 's">Toucher pour continuer</div>';
     } else {
-      h = '<div class="fin-q"><h2 style="animation-delay:.6s">' + esc(S.fin.question) + '</h2><p style="animation-delay:1.6s">' + esc(S.fin.consigne) + '</p>' +
-        '<div class="fin-ch" style="animation-delay:2.6s">' + S.fin.choix.map(c => '<button data-fin="' + esc(c.k) + '">' + esc(c.l) + '</button>').join('') + '</div></div>';
+      h = '<div class="fin-q"><h2 class="fin-h2 fx" style="animation-delay:.5s">' + fr(S.fin.question) + '</h2><p class="fx" style="animation-delay:1.4s">' + fr(S.fin.consigne) + '</p>' +
+        '<div class="fin-ch">' + S.fin.choix.map((c, i) => '<button class="fx" style="animation-delay:' + (2.3 + i * 0.35).toFixed(2) + 's" data-fin="' + esc(c.k) + '">' + fr(c.l) + '</button>').join('') + '</div></div>';
     }
     el.className = 'on';
-    el.innerHTML = '<div class="fin-in" data-fin="next">' + h + '</div>';
-    el.scrollTop = 0;
+    el.innerHTML = '<div class="fin-sky"></div><div class="fin-in" data-fin="next"><div class="fin-col">' + h + '</div></div>' +
+      '<div class="fin-dots">' + Array.from({ length: n + 2 }, (_, i) => '<i class="' + (i === step ? 'on' : i < step ? 'done' : '') + '"></i>').join('') + '</div>';
   }
   let finBusy = false;
   async function finAct(k) {
