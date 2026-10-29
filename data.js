@@ -65,7 +65,7 @@ const PH = {
 // sur les téléphones suivants. Exception : le tél. 4 a perdu toute la période NOCTIS (pellicule seule).
 const PHT = [
   [PH.live, '2026-10-17 22:47', 1], [PH.postit, '2026-10-19 08:41', 1], [PH.jour, '2026-10-19 09:12', 1],
-  [PH.board, '2026-10-19 11:30', 1], [PH.inv, '2026-10-19 18:05', 1],
+  [PH.board, '2026-10-19 11:30', 1],
   [PH.badge, '2026-10-22 21:40', 2], [PH.desk, '2026-10-22 23:16', 2], [PH.ticket, '2026-10-22 23:19', 2], [PH.blur, '2026-10-23 02:58', 2],
   [PH.chat, '2026-10-23 18:20', 3], [PH.cine, '2026-10-24 19:52', 3], [PH.clock, '2026-10-25 02:30', 3]
 ];
