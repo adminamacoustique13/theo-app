@@ -287,7 +287,7 @@ const MAIL = [
   { p: 4, d: '2026-10-27 15:20', box: 'in', from: 'EHPAD Les Tilleuls', addr: 'accueil@ehpad-lestilleuls.fr', to: 'moi', subj: 'Programme de la Toussaint',
     body: "Chères familles,\n\nUne messe sera célébrée dimanche 1er novembre à 11 h dans la salle commune. Les familles sont les bienvenues.\n\nCette semaine, l'atelier chant a eu beaucoup de succès. Madame Odette nous a même appris une chanson de sa jeunesse.\n\nL'équipe des Tilleuls" },
   { p: 4, d: '2026-10-28 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Mercredi 28 octobre : l'essentiel de l'actualité",
-    body: "Météo : pluie en fin de journée, 12 °C.\nÀ la une : cérémonie du 31 octobre, le parcours dévoilé.\nJustice : étang de Berre, l'affaire de la pollution de juin classée sans suite, faute de témoins.\nSport : l'OM s'impose à domicile." },
+    body: "Météo : pluie en fin de journée, 12 °C.\nÀ la une : cérémonie du 31 octobre, le parcours dévoilé.\nJustice : étang de Berre, l'affaire de la pollution de juin classée sans suite, faute de témoins. « Un soulagement », réagit M. P., directeur du site.\nSport : l'OM s'impose à domicile." },
   { p: 4, d: '2026-10-28 10:00', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Nouvelle date : 12 décembre',
     body: 'On remet ça le samedi 12 décembre, même salle. Billetterie ouverte !' },
   { p: 4, d: '2026-10-29 13:42', box: 'in', from: 'Doctolib', addr: 'no-reply@doctolib.fr', to: 'moi', subj: 'Rendez-vous confirmé : mardi 3 novembre à 09:00',
