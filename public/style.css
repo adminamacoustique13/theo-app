@@ -1,5 +1,8 @@
 :root{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--bg:#000;--g1:#1c1c1e;--g2:#2c2c2e;--sep:#38383a;--t2:#98989f;--blue:#0a84ff;--acc:var(--blue)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* Appuis rapides (7 appuis sur le logo Sérénité, codes…) : pas de zoom au double-appui, pas de sélection de texte ni de loupe sur iPhone. */
+html,body,.phone,.screen{touch-action:manipulation}
+button,[data-act],[data-k],[data-fin],.ser-top,.hd,.dock,.icons,.hbar{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html,body{margin:0;height:100%;background:#000;overscroll-behavior:none}
 body{font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:#fff;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
 #stage{min-height:100%;display:flex;align-items:center;justify-content:center}
