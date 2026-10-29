@@ -8,12 +8,14 @@ const sansAccents = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 const notes = phones[1].public.notes.slice().sort((a, b) => a.h.localeCompare(b.h));
 assert.strictEqual(notes.map(n => sansAccents(n.t)[0].toUpperCase()).join(''), 'SOUVIENS');
 
-// 2. Les deux séances de 2 h 30, dans l'ordre UTC, se terminent par D puis E.
+// 2. Les deux séances de 2 h 30 : heure d'été d'abord, puis heure d'hiver, leurs initiales donnent D puis E.
 const deux = phones[3].admin.jr.filter(r => r[1] === '02:30').sort((a, b) => a[2].localeCompare(b[2]));
 assert.strictEqual(deux.length, 2);
-assert.strictEqual(deux.map(r => r[0].slice(-1)).join(''), 'DE');
-// Et l'affichage (trié par heure locale) les présente à l'envers : E avant D.
-assert.strictEqual(phones[3].admin.jr.filter(r => r[1] === '02:30').map(r => r[0].slice(-1)).join(''), 'ED');
+assert.deepStrictEqual(deux.map(r => r[6]), ["heure d'été", "heure d'hiver"]);
+assert.strictEqual(deux.map(r => r[3][0]).join(''), 'DE');
+assert.ok(deux.every(r => r[5] === 3));
+// Et l'affichage les présente à l'envers : E avant D.
+assert.strictEqual(phones[3].admin.jr.filter(r => r[1] === '02:30').map(r => r[3][0]).join(''), 'ED');
 
 // 3. « Ethel » est l'anagramme de LETHE (clin d'œil), et le contact accepte le vrai nom de Théo.
 const tri = s => sansAccents(s).toUpperCase().replace(/[^A-Z]/g, '').split('').sort().join('');
@@ -37,8 +39,14 @@ for (const n of [1, 2, 3, 4]) {
 }
 assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');
 
-// 4. Les quatre fragments, dans l'ordre des téléphones, donnent le mot de passe final.
-assert.strictEqual(['SOUVIENS', 'TOI', 'DE', 'MOI'].join(''), SECRETS.final);
+// 4. Les quatre fragments, dans l'ordre des lunes, donnent le mot de passe final (moi, Théo ou Théo Lenoir).
+assert.ok(SECRETS.final.includes(['SOUVIENS', 'TOI', 'DE', 'MOI'].join('')));
+assert.ok(SECRETS.final.includes('SOUVIENSTOIDETHEO') && SECRETS.final.includes('SOUVIENSTOIDETHEOLENOIR'));
+// Lune 1 sur les huit notes du tél. 1 ; pièce jointe verrouillée d'Ethel sur le tél. 4 seulement.
+assert.strictEqual(phones[1].public.notes.filter(n => n.mk === 1).length, 8);
+const lock = n => phones[n].public.th.find(t => t.n === 'Ethel O.').m.some(m => m[0] === 'lock');
+assert.ok(lock(4) && !lock(3) && !lock(2));
+assert.ok(SECRETS.anagram.includes('MOI') && SECRETS.anagram.includes('THEO'));
 
 // 5. Heure d'été (UTC+2) puis heure d'hiver (UTC+1) : 02:30 locale = 00:30 puis 01:30 UTC.
 assert.deepStrictEqual(deux.map(r => r[2]), ['00:30', '01:30']);

@@ -67,4 +67,4 @@ Morceaux actuels, tous sous licence CC0 (domaine public, sans attribution obliga
 - `config.js` : codes de déverrouillage, jeton game master, indices.
 - `public/` : l'appli (HTML, CSS, JS, service worker, icônes).
 - `private/gm.html` : la page game master.
-- `selftest.js` : vérifie l'acrostiche SOUVIENS, l'ordre UTC D puis E, les indices ASPHODÈLE et Ethel, et le mot de passe final.
+- `selftest.js` : vérifie l'acrostiche SOUVIENS, l'ordre heure d'été puis heure d'hiver (D puis E), les indices ASPHODÈLE et Ethel, et le mot de passe final.
