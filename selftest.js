@@ -39,8 +39,9 @@ for (const n of [1, 2, 3, 4]) {
 }
 assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');
 
-// 4. Les quatre fragments, dans l'ordre des lunes, donnent le mot de passe final.
-assert.deepStrictEqual(SECRETS.final, [['SOUVIENS', 'TOI', 'DE', 'MOI'].join('')]);
+// 4. Les quatre fragments, dans l'ordre des lunes, donnent le mot de passe final (moi, Théo ou Théo Lenoir).
+assert.ok(SECRETS.final.includes(['SOUVIENS', 'TOI', 'DE', 'MOI'].join('')));
+assert.ok(SECRETS.final.includes('SOUVIENSTOIDETHEO') && SECRETS.final.includes('SOUVIENSTOIDETHEOLENOIR'));
 // Lune 1 et soulignement sur les huit notes du tél. 1 seulement ; les notes restent lisibles sur les tél. 2 à 4.
 assert.strictEqual(phones[1].public.notes.filter(n => n.mk === 1 && n.ul).length, 8);
 for (const n of [2, 3, 4]) { assert.strictEqual(phones[n].public.notes.filter(n => n.mk || n.ul).length, 0); assert.ok(phones[n].public.notes.length >= 8); }

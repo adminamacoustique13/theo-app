@@ -424,8 +424,8 @@ const SECRETS = {
   dossierLatin: 'ASPHODELUS',
   // Le contact Ethel O. se renomme quand on lui donne le vrai nom de Théo (ou « moi »).
   anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME', 'CESTMOI', 'CESTTHEO', 'JESUISTHEO'],
-  // Le dernier mot est « moi » : c'est ce que révèle la pièce jointe d'Ethel (lune 4).
-  final: ['SOUVIENSTOIDEMOI'],
+  // Le dernier mot peut être « moi », « Théo » ou « Théo Lenoir » (demande de Mélanie, 29/10).
+  final: ['SOUVIENSTOIDEMOI', 'SOUVIENSTOIDETHEO', 'SOUVIENSTOIDETHEOLENOIR'],
   spectro: 'TOI'
 };
 
