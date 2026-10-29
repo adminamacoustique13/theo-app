@@ -78,72 +78,72 @@ const photos = N => N === 4 ? [] : PHT.filter(x => x[2] <= N).sort((a, b) => a[1
 const day = s => ['day', s];
 const CONV = {
   'Direction': {
-    1: { h: '08:50', m: [day('Lundi 19 octobre · 08:50'), ['in', "Bienvenue Théo ! 🌙 Ravis de t'avoir à bord."], ['in', 'Premiers tickets cette semaine : T-101, T-102, T-103.'], ['in', 'Pour le mode test : 7 appuis sur le logo. 😉'], ['out', "Merci, c'est noté."]] },
+    1: { h: '08:50', m: [day('Lundi 19 octobre · 08:50'), ['in', "Bienvenue Théo ! 🌙 Ravis de t'avoir à bord."], ['in', 'Premiers tickets cette semaine : T-101, T-102, T-103.'], ['in', 'Pour le mode test : 7 appuis sur le logo. 😉'], ['out', "merci, c'est noté"]] },
     2: { h: '20:05', m: [day('Jeudi 22 octobre · 20:05'), ['in', 'Ton test de ce soir est important, merci ! 🌙']] },
     3: { h: '02:20', m: [day('Dimanche 25 octobre · 02:20'), ['in', 'Séance de nuit validée ✔️']] },
     4: { h: '18:00', m: [day('Vendredi 30 octobre · 18:00'), ['in', 'Merci pour ton travail ! 🌙 Ta séance de clôture est programmée cette nuit.  Tu peux souffler.']] }
   },
   'Ethel O.': {
     num: 'Numéro masqué', av: AV_ETHEL,
-    2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'Ne fais pas la séance ce soir.  => Relis tes notes avant de répondre à Direction. ok.']] },
-    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "Il y a eu DEUX 2h30 cette nuit.  => Regarde l'UTC.  Ne dis rien à Direction. ok."]] },
-    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "Si quelqu'un lit ça après moi : souvenez-vous de moi.  => Cherchez Lenoir. ok."]] }
+    2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'ne fais pas la séance ce soir. relis tes notes avant de répondre à direction']] },
+    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. regarde l'utc. ne dis rien à direction"]] },
+    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi. cherchez lenoir"]] }
   },
   'Nora': {
     num: '06 39 98 41 07',
-    1: { h: '21:58', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'Oui chef.'],
-      ['in', "Nouveau jeu cette semaine : l'effet Mandela. Les trucs dont tout le monde se souvient… de travers."], ['in', 'Chacun note les siens. Celui qui en a le moins paie les croissants.'], ['out', 'Pari tenu. ok.'],
-      day('Lundi 19 octobre · 12:31'), ['in', 'Alors ce job ?'], ['out', 'Une appli de méditation.  Ça paye bien. ok.'], ['in', 'Toi. Méditer.'], ['out', 'Je la code, je la fais pas 😅'], ['in', 'Le moine.'],
-      ['in', 'Je suis de nuit jeudi et vendredi, tu peux nourrir Biscotte ?'], ['out', '=> vendredi. ok.'],
-      day('21:52'), ['out', 'Bilan de la journée : 8.  => tout est dans mes notes. ok.'], ['in', '8 ?! Tu triches.'], ['in', "Moi j'en ai 3. Ok, je paie les croissants 🥐"]] },
-    2: { h: '23:31', m: [day('Jeudi 22 octobre · 18:40'), ['in', 'Tu avais une drôle de voix au téléphone.'], ['out', 'Fatigué. Rien de grave.'],
-      day('23:20'), ['out', 'Tu bosses ?'], ['in', "Oui, nuit calme pour l'instant. Pourquoi ?"], ['out', "Je peux te déposer un truc demain ? Tu le gardes, c'est tout."], ['in', "C'est quoi ?"],
-      ['out', 'Rien.  => tu me le rendras quand je te le demanderai. ok.'], ['in', 'Mystérieux. Ok.']] },
+    1: { h: '21:58', m: [day('Dimanche 18 octobre · 19:02'), ['in', 'Brunch dimanche prochain chez moi, tu ramènes les croissants.'], ['out', 'oui chef'],
+      ['in', "Nouveau jeu cette semaine : l'effet Mandela. Les trucs dont tout le monde se souvient… de travers."], ['in', 'Chacun note les siens. Celui qui en a le moins paie les croissants.'], ['out', 'pari tenu'],
+      day('Lundi 19 octobre · 12:31'), ['in', 'Alors ce job ?'], ['out', 'une appli de méditation. ça paye bien'], ['in', 'Toi. Méditer.'], ['out', 'je la code, je la fais pas 😅'], ['in', 'Le moine.'],
+      ['in', 'Je suis de nuit jeudi et vendredi, tu peux nourrir Biscotte ?'], ['out', 'ok vendredi'],
+      day('21:52'), ['out', 'bilan de la journée : 8. tout est dans mes notes'], ['in', '8 ?! Tu triches.'], ['in', "Moi j'en ai 3. Ok, je paie les croissants 🥐"]] },
+    2: { h: '23:31', m: [day('Jeudi 22 octobre · 18:40'), ['in', 'Tu avais une drôle de voix au téléphone.'], ['out', 'fatigué. rien de grave'],
+      day('23:20'), ['out', 'tu bosses ?'], ['in', "Oui, nuit calme pour l'instant. Pourquoi ?"], ['out', "je peux te déposer un truc demain ? tu le gardes, c'est tout"], ['in', "C'est quoi ?"],
+      ['out', 'rien. tu me le rendras quand je te le demanderai'], ['in', 'Mystérieux. Ok.']] },
     3: { h: '21:14', m: [day('Vendredi 23 octobre · 09:15'), ['in', 'Ton truc est dans mon tiroir. Biscotte te dit merci.'],
-      day('Vendredi 23 octobre · 22:47'), ['out', "=> si je te parle d'une séance ce soir, dis-moi de pas la faire. ok."],
-      day('Samedi 24 octobre · 21:10'), ['in', "Hier soir tu m'as écrit de ne pas faire la séance, c'était quoi ?"], ['out', "Ah. J'étais crevé, laisse."], ['in', 'Brunch demain 11 h ?'], ['out', 'ok.']] },
-    4: { h: '19:20', m: [day('Lundi 26 octobre · 08:05'), ['in', "T'étais bizarre au brunch hier."], ['out', 'Fatigué.'],
-      day('Mardi 27 octobre · 20:10'), ['in', 'Effet Mandela du jour : Oscar Mayer ou Meyer ?'], ['out', 'Meyer, évidemment.'], ['in', 'Toi qui en avais trouvé 8…'],
-      day('Jeudi 29 octobre · 13:40'), ['in', "J'ai pris rdv pour toi mardi 9 h. Pas de discussion."], ['out', 'Pour quoi ?'], ['in', 'Pour me faire plaisir.'],
-      day('Vendredi 30 octobre · 19:12'), ['in', "Tu te souviens de ce qu'on s'est dit dimanche ?"], ['out', 'Non, rien.'], ['in', "Je passe demain matin après ma garde. J'ai un truc à toi."]] }
+      day('Vendredi 23 octobre · 22:47'), ['out', "si je te parle d'une séance ce soir, dis-moi de pas la faire"],
+      day('Samedi 24 octobre · 21:10'), ['in', "Hier soir tu m'as écrit de ne pas faire la séance, c'était quoi ?"], ['out', "ah. j'étais crevé, laisse"], ['in', 'Brunch demain 11 h ?'], ['out', 'ok']] },
+    4: { h: '19:20', m: [day('Lundi 26 octobre · 08:05'), ['in', "T'étais bizarre au brunch hier."], ['out', 'fatigué'],
+      day('Mardi 27 octobre · 20:10'), ['in', 'Effet Mandela du jour : Oscar Mayer ou Meyer ?'], ['out', 'meyer, évidemment'], ['in', 'Toi qui en avais trouvé 8…'],
+      day('Jeudi 29 octobre · 13:40'), ['in', "J'ai pris rdv pour toi mardi 9 h. Pas de discussion."], ['out', 'pour quoi ?'], ['in', 'Pour me faire plaisir.'],
+      day('Vendredi 30 octobre · 19:12'), ['in', "Tu te souviens de ce qu'on s'est dit dimanche ?"], ['out', 'non, rien'], ['in', "Je passe demain matin après ma garde. J'ai un truc à toi."]] }
   },
   'Maman': {
     num: '06 39 98 22 65',
-    1: { h: '18:41', m: [day('Lundi 19 octobre · 09:02'), ['in', 'Mon chéri, ton premier jour ? 😘🌸🙏'], ['out', "Tranquille. Ils ont l'air sympas."],
-      day('18:30'), ['in', 'Pense à appeler mamie, elle a demandé « le petit » trois fois cette semaine.'], ['in', 'Et dimanche 1er on va voir papy au cimetière, tu viens ?'], ['out', 'Je verrai selon le boulot.']] },
-    2: { h: '17:20', m: [day('Jeudi 22 octobre · 17:15'), ['in', "Mamie t'a pris pour ton père hier. Ça m'a fait drôle 😕"], ['out', "Je l'appelle ce week-end."]] },
+    1: { h: '18:41', m: [day('Lundi 19 octobre · 09:02'), ['in', 'Mon chéri, ton premier jour ? 😘🌸🙏'], ['out', "tranquille. ils ont l'air sympas"],
+      day('18:30'), ['in', 'Pense à appeler mamie, elle a demandé « le petit » trois fois cette semaine.'], ['in', 'Et dimanche 1er on va voir papy au cimetière, tu viens ?'], ['out', 'je verrai selon le boulot']] },
+    2: { h: '17:20', m: [day('Jeudi 22 octobre · 17:15'), ['in', "Mamie t'a pris pour ton père hier. Ça m'a fait drôle 😕"], ['out', "je l'appelle ce week-end"]] },
     3: { h: '16:02', m: [day('Samedi 24 octobre · 16:02'), ['in', 'Mamie a eu une bonne journée, elle a chanté avec moi 🎶']] },
-    4: { h: '17:52', m: [day('Mardi 27 octobre · 12:10'), ['in', 'Alors, dimanche ?'], ['out', 'Oui, je viens. ok.'],
-      day('Vendredi 30 octobre · 17:45'), ['in', 'Papa passe te prendre dimanche à 10 h, tu m\'as dit oui mardi 😘'], ['out', "J'ai dit oui ?"], ['in', 'Oui mon chéri.']] }
+    4: { h: '17:52', m: [day('Mardi 27 octobre · 12:10'), ['in', 'Alors, dimanche ?'], ['out', 'oui, je viens'],
+      day('Vendredi 30 octobre · 17:45'), ['in', 'Papa passe te prendre dimanche à 10 h, tu m\'as dit oui mardi 😘'], ['out', "j'ai dit oui ?"], ['in', 'Oui mon chéri.']] }
   },
   'Coinche du jeudi': {
     num: 'Groupe · Sami, Hugo, vous',
-    1: { h: '11:26', m: [day('Lundi 19 octobre · 11:20'), ['in', 'Jeudi 21 h chez moi. Hugo ramène la bière, Théo ramène son argent.', 'Sami'], ['in', 'Il a un vrai job maintenant, il peut perdre plus 😂', 'Hugo'], ['out', 'Je vais vous plumer. ok.']] },
+    1: { h: '11:26', m: [day('Lundi 19 octobre · 11:20'), ['in', 'Jeudi 21 h chez moi. Hugo ramène la bière, Théo ramène son argent.', 'Sami'], ['in', 'Il a un vrai job maintenant, il peut perdre plus 😂', 'Hugo'], ['out', 'je vais vous plumer']] },
     2: { h: '23:30', m: [day('Jeudi 22 octobre · 21:05'), ['in', 'On commence sans toi ?', 'Sami'], day('21:40'), ['in', 'Il nous lâche pour sa secte zen 🧘', 'Hugo'], day('22:30'), ['in', "Bon. Hugo a triché, comme d'hab.", 'Sami'],
-      day('23:30'), ['out', 'Désolé, boulot.  => la semaine pro. ok.']] },
-    3: { h: '14:20', m: [day('Samedi 24 octobre · 14:12'), ['in', 'Rattrapage le 31 : Halloween chez Hugo, déguisement obligatoire 🎃', 'Sami'], ['in', 'Pas de déguisement = pas de bière', 'Hugo'], ['out', 'Je note. ok.']] },
-    4: { h: '20:15', m: [day('Vendredi 30 octobre · 20:03'), ['in', "Demain 21 h, t'as ton costume ?", 'Hugo'], ['out', 'Quel costume ?']] }
+      day('23:30'), ['out', 'désolé, boulot. la semaine pro']] },
+    3: { h: '14:20', m: [day('Samedi 24 octobre · 14:12'), ['in', 'Rattrapage le 31 : Halloween chez Hugo, déguisement obligatoire 🎃', 'Sami'], ['in', 'Pas de déguisement = pas de bière', 'Hugo'], ['out', 'je note']] },
+    4: { h: '20:15', m: [day('Vendredi 30 octobre · 20:03'), ['in', "Demain 21 h, t'as ton costume ?", 'Hugo'], ['out', 'quel costume ?']] }
   },
   'Lucile': {
     num: '06 39 98 77 30',
-    1: { h: '20:55', m: [day('Dimanche 18 octobre · 22:14'), ['in', "C'était cool de te croiser au concert hier 🙂"], ['out', "Carrément. T'as d'autres groupes du genre ?"], ['in', 'Plein. Je te fais une playlist, à condition que tu la juges pas.'],
-      day('Lundi 19 octobre · 20:48'), ['out', 'Toujours pas de playlist. Je juge déjà.'], ['in', 'Patience 😏'], ['out', 'On se voit un de ces jours ?'], ['in', 'Samedi ?']] },
-    2: { h: '00:15', m: [day('Mercredi 21 octobre · 19:30'), ['in', 'Playlist envoyée 🎧'], ['out', 'Écoutée deux fois. Samedi 20 h, ciné ?'], ['in', 'Deal. Tu choisis le film.'],
-      day('Jeudi 22 octobre · 23:50'), ['out', 'Tu dors ?'], day('Vendredi 23 octobre · 00:12'), ['in', 'Non. Ça va ?'], ['out', "Oui. Envie de parler à quelqu'un, c'est tout."]] },
+    1: { h: '20:55', m: [day('Dimanche 18 octobre · 22:14'), ['in', "C'était cool de te croiser au concert hier 🙂"], ['out', "carrément. t'as d'autres groupes du genre ?"], ['in', 'Plein. Je te fais une playlist, à condition que tu la juges pas.'],
+      day('Lundi 19 octobre · 20:48'), ['out', 'toujours pas de playlist. je juge déjà'], ['in', 'Patience 😏'], ['out', 'on se voit un de ces jours ?'], ['in', 'Samedi ?']] },
+    2: { h: '00:15', m: [day('Mercredi 21 octobre · 19:30'), ['in', 'Playlist envoyée 🎧'], ['out', 'écoutée deux fois. samedi 20 h, ciné ?'], ['in', 'Deal. Tu choisis le film.'],
+      day('Jeudi 22 octobre · 23:50'), ['out', 'tu dors ?'], day('Vendredi 23 octobre · 00:12'), ['in', 'Non. Ça va ?'], ['out', "oui. envie de parler à quelqu'un, c'est tout"]] },
     3: { h: '00:11', m: [day('Samedi 24 octobre · 19:58'), ['in', "Devant le ciné, t'es où ?"], ['out', '2 min !'],
-      day('Samedi 24 octobre · 23:58'), ['in', 'Merci pour ce soir. Vraiment.'], day('Dimanche 25 octobre · 00:10'), ['out', 'Moi aussi. ok.'], ['in', 'Bonne nuit Théo 🙂']] },
+      day('Samedi 24 octobre · 23:58'), ['in', 'Merci pour ce soir. Vraiment.'], day('Dimanche 25 octobre · 00:10'), ['out', 'moi aussi'], ['in', 'Bonne nuit Théo 🙂']] },
     4: { h: 'mer.', m: [day('Lundi 26 octobre · 18:30'), ['in', 'Deuxième round ce week-end ? 🙂'], day('Mercredi 28 octobre · 22:05'), ['in', "Ok, j'ai compris."]] }
   },
   'Nicolas Aubry': {
     num: '01 39 98 50 12',
-    1: { h: '17:10', m: [day('Lundi 19 octobre · 17:05'), ['in', 'Bonjour Théo. Accès préprod demain 9 h. Les tests audio se font le soir, sur ton téléphone.'], ['out', 'Bien noté.']] },
-    2: { h: '20:12', m: [day('Jeudi 22 octobre · 20:10'), ['in', 'Test longue durée ce soir 22 h 40. Casque, téléphone en charge.'], ['out', 'Ok.']] },
-    3: { h: '18:05', m: [day('Samedi 24 octobre · 18:02'), ['in', 'Connexion inhabituelle sur ton compte jeudi soir. Rien de grave.'], ['in', "J'ai programmé une séance de nuit pour recalibrer ton profil."], ['out', 'Ok.']] },
+    1: { h: '17:10', m: [day('Lundi 19 octobre · 17:05'), ['in', 'Bonjour Théo. Accès préprod demain 9 h. Les tests audio se font le soir, sur ton téléphone.'], ['out', 'bien noté']] },
+    2: { h: '20:12', m: [day('Jeudi 22 octobre · 20:10'), ['in', 'Test longue durée ce soir 22 h 40. Casque, téléphone en charge.'], ['out', 'ok']] },
+    3: { h: '18:05', m: [day('Samedi 24 octobre · 18:02'), ['in', 'Connexion inhabituelle sur ton compte jeudi soir. Rien de grave.'], ['in', "J'ai programmé une séance de nuit pour recalibrer ton profil."], ['out', 'ok']] },
     4: { h: '18:20', m: [day('Vendredi 30 octobre · 18:20'), ['in', 'Compte t.lenoir révoqué. Séance de clôture cette nuit, 2 h 30. Appareil en charge, casque.'], ['in', 'Merci pour ta contribution.']] }
   },
   'M. Fabre': {
     num: '06 39 98 03 58',
-    1: { h: '10:30', m: [day('Lundi 19 octobre · 10:02'), ['in', "Bonjour Théo, le loyer d'octobre n'est toujours pas arrivé."], ['out', "Fin de semaine, promis. J'ai un nouveau client."]] },
+    1: { h: '10:30', m: [day('Lundi 19 octobre · 10:02'), ['in', "Bonjour Théo, le loyer d'octobre n'est toujours pas arrivé."], ['out', "fin de semaine, promis. j'ai un nouveau client"]] },
     3: { h: '11:00', m: [day('Samedi 24 octobre · 11:00'), ['in', 'Bien reçu le virement, merci.']] }
   },
   'Banque': {
@@ -229,13 +229,50 @@ const CALLS = [
 const cal = N => CAL.filter(e => e.p <= N).sort((a, b) => a.d.localeCompare(b.d)).map(({ p, ...e }) => e);
 const calls = N => CALLS.filter(c => c.p <= N).sort((a, b) => b.d.localeCompare(a.d)).map(({ p, ...c }) => c);
 
+// Appli Banque. Remplace la capture « Comptes » du tél. 3. p : premier téléphone où l'opération existe.
+// a : montant en euros (négatif = dépense). Le titulaire « M. Théo Lenoir » s'affiche sur les tél. 1 à 3,
+// pas sur le tél. 4 (le nom ne doit pas y apparaître, à cause de l'anagramme).
+const BANK_START = -144.84; // solde au 1er octobre : à découvert, le loyer attend
+const BANK = [
+  { p: 1, d: '2026-10-02', t: 'VIR CAF · APL octobre', a: 212.00 },
+  { p: 1, d: '2026-10-05', t: 'PRLV Spotify', a: -10.99 },
+  { p: 1, d: '2026-10-08', t: 'CB Carrefour City', a: -23.40 },
+  { p: 1, d: '2026-10-10', t: 'PRLV Free Mobile', a: -15.99 },
+  { p: 1, d: '2026-10-12', t: 'CB Biocoop', a: -38.60 },
+  { p: 1, d: '2026-10-15', t: 'PRLV EDF', a: -46.00 },
+  { p: 1, d: '2026-10-17', t: 'CB Billetterie · Les Nuits Molles', a: -18.00 },
+  { p: 1, d: '2026-10-17', t: 'CB Bar Le Comptoir', a: -14.50 },
+  { p: 1, d: '2026-10-18', t: 'CB Boulangerie du Marché', a: -4.20 },
+  { p: 1, d: '2026-10-19', t: 'CB Carrefour City', a: -17.85 },
+  { p: 2, d: '2026-10-20', t: "CB Monop' Daily", a: -8.90 },
+  { p: 2, d: '2026-10-21', t: 'CB Pharmacie des Lices', a: -6.30 },
+  { p: 2, d: '2026-10-22', t: 'VIR NOCTIS WELLBEING SAS · tranche 1', a: 1200.00 },
+  { p: 2, d: '2026-10-22', t: 'CB Pizza Da Marco', a: -13.00 },
+  { p: 3, d: '2026-10-23', t: 'VIR M. FABRE · loyer octobre', a: -780.00 },
+  { p: 3, d: '2026-10-23', t: 'CB Animalerie · croquettes', a: -11.90 },
+  { p: 3, d: '2026-10-24', t: 'CB Cinéma Le Méliès · 2 places', a: -19.80 },
+  { p: 3, d: '2026-10-24', t: 'CB Bar Le Comptoir', a: -22.00 },
+  { p: 4, d: '2026-10-25', t: 'CB Boulangerie du Marché', a: -6.40 },
+  { p: 4, d: '2026-10-26', t: 'CB Pharmacie des Lices', a: -12.90 },
+  { p: 4, d: '2026-10-27', t: 'CB Carrefour City', a: -31.20 },
+  { p: 4, d: '2026-10-28', t: 'CB Carrefour City', a: -31.20 },
+  { p: 4, d: '2026-10-29', t: 'CB Carrefour City', a: -29.85 },
+  { p: 4, d: '2026-10-30', t: 'VIR NOCTIS WELLBEING SAS · solde de tout compte', a: 4800.00 }
+];
+// Banque du téléphone N : titulaire, solde, opérations de la plus récente à la plus ancienne.
+const bank = N => {
+  const ops = BANK.filter(o => o.p <= N);
+  const solde = Math.round((BANK_START + ops.reduce((s, o) => s + o.a, 0)) * 100) / 100;
+  return { holder: N < 4 ? 'M. Théo Lenoir' : null, solde, ops: ops.slice().reverse().map(({ p, ...o }) => o) };
+};
+
 const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
       notes: notes8(),
       th: threads(1),
-      cal: cal(1), calls: calls(1),
+      cal: cal(1), calls: calls(1), bank: bank(1),
       ph: photos(1), roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
@@ -246,9 +283,9 @@ const phones = {
   2: {
     public: {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
-      notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "Ouvert par erreur un dossier.  J'ai changé son mot de passe => un mot que j'ai sous les yeux tous les jours. ok.\n\nClients : PETROVEX (incident site 4), puis un « État ».\n\nCe n'est pas de la méditation : ils font OUBLIER.\n\nNe plus faire la séance du soir. ok." }],
+      notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
       th: threads(2),
-      cal: cal(2), calls: calls(2),
+      cal: cal(2), calls: calls(2), bank: bank(2),
       ph: photos(2), roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
@@ -260,12 +297,12 @@ const phones = {
     public: {
       label: 'Téléphone 3', wp: 3, ver: '1.0', bat: 17, att: 'active', total: 238,
       notes: [
-        { t: "Ce que j'ai vu", h: '23:12', b: 'Ouvert par erreur un dossier.  Ce sont des gens bien. ok.' },
+        { t: "Ce que j'ai vu", h: '23:12', b: 'ouvert par erreur un dossier. ce sont des gens bien' },
         { t: '2 h 30', h: '02:30', b: 'Séance.  Tout est calme.' },
         { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
       ],
       th: threads(3),
-      cal: cal(3), calls: calls(3),
+      cal: cal(3), calls: calls(3), bank: bank(3),
       ph: photos(3), roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
@@ -283,7 +320,7 @@ const phones = {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
-      cal: cal(4), calls: calls(4),
+      cal: cal(4), calls: calls(4), bank: bank(4),
       ph: photos(4), roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
