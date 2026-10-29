@@ -305,7 +305,13 @@ canvas{width:100%;border-radius:8px;display:block}
 .ser-cd{font-family:var(--sf);font-size:26px;margin:4px 0 8px}
 .app.ser input[type=text]{background:rgba(10,6,30,.45);border-color:rgba(255,255,255,.18);border-radius:14px}
 .ser-lbl{font-size:12px;letter-spacing:.6px;color:#c9bfe6;margin:4px 0 2px}
-.ser-words{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin-bottom:8px}
+.ser-words{display:grid;grid-template-columns:auto 1fr auto 1fr;align-items:center;gap:0 6px;margin-bottom:8px}
+.ser-words label{font-size:16px;padding-top:4px}
+.mk{font-style:normal;font-size:.9em}
+.lockb{cursor:pointer}
+.lockb small{display:block;font-size:12px;opacity:.7;margin-bottom:3px}
+.lockb input{display:block;width:100%;margin:8px 0 4px}
+.lockb .bad{display:block;font-size:13px}
 .app.ser .ser-words input[type=text]{margin:4px 0 0;padding:10px 6px;text-align:center;font-size:16px}
 .ser-btn{width:100%;border:0;border-radius:14px;padding:12px;font-size:15px;background:#f3d9c9;color:#3a2464;font-weight:600;cursor:pointer}
 .ser-res{margin-top:8px;line-height:1.4;font-size:13.5px}

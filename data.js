@@ -23,7 +23,8 @@ const M8 = [
   ['Nelson Mandela, mort en prison ?', '18:15', 'Non : mort en 2013, libre.'],
   ['Sex and the City', '21:40', 'Pas « Sex in the City ».']
 ];
-const notes8 = () => M8.map(n => ({ t: n[0], h: n[1], b: n[2] }));
+// mk : phase de lune du fragment (1 à 4), affichée à côté du mot à trouver et sur la case du mot de passe final.
+const notes8 = () => M8.map(n => ({ t: n[0], h: n[1], b: n[2], mk: 1 }));
 
 const T3 = [
   ['T-101', "Phase d'atténuation après la séance"],
@@ -76,8 +77,8 @@ const CONV = {
   'Ethel O.': {
     num: 'Numéro masqué', av: AV_ETHEL,
     2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'ne fais pas la séance ce soir. relis tes notes avant de répondre à direction']] },
-    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. regarde l'utc. ne dis rien à direction"]] },
-    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi. cherchez lenoir"]] }
+    3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. ne dis rien à direction"]] },
+    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi"], ['lock', 'pour toi. mot de passe : qui je suis']] }
   },
   'Nora': {
     num: '06 39 98 41 07',
@@ -289,7 +290,7 @@ const phones = {
       notes: [
         { t: "Ce que j'ai vu", h: '23:12', b: 'ouvert par erreur un dossier. ce sont des gens bien' },
         { t: '2 h 30', h: '02:30', b: 'Séance.  Tout est calme.' },
-        { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
+        { t: '2 h 30 (bis)', h: '02:30', b: "Encore 2 h 30 ? J'ai l'impression d'avoir déjà écrit ça.  Mon réveil a reculé ou je deviens fou." }
       ],
       th: threads(3),
       cal: cal(3), calls: calls(3), bank: bank(3),
@@ -297,8 +298,10 @@ const phones = {
       memos: [],
       drift: { 0: 'Oui' }, close: false
     },
-    // Journal trié par heure locale : à égalité, E (01:30 UTC) s'affiche avant D (00:30 UTC).
-    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
+    // Deux séances à 02:30 la nuit du passage à l'heure d'hiver. Le journal affiche Effacement avant Descente ;
+    // les joueurs doivent comprendre que le 02:30 d'heure d'été a eu lieu d'abord : D puis E.
+    // Ligne : [id, heure locale, UTC (non affiché), séance, durée, phase de lune, étiquette d'heure].
+    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-9c', '02:30', '01:30', 'Effacement · LETHE profond · sujet 0', '52 min', 3, "heure d'hiver"], ['S-0424-4f', '02:30', '00:30', 'Descente · sommeil standard', '18 min', 3, "heure d'été"]], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
     dossier: {
       rows: [['PETROVEX', 'Incident site 4', '12', '94 %'], ['Institution', 'Événement public du 31/10', '340', '87 %'], ['Douceur', 'Particuliers', '5 000', '40 %']],
       access: 't.lenoir, jeu. 23 h 08, ouverture non autorisée',
@@ -326,8 +329,9 @@ const SECRETS = {
   dossier: ['ASPHODELE', 'ASPHODELES'],
   dossierLatin: 'ASPHODELUS',
   // Le contact Ethel O. se renomme quand on lui donne le vrai nom de Théo (ou « moi »).
-  anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME'],
-  final: 'SOUVIENSTOIDEMOI',
+  anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME', 'CESTMOI', 'CESTTHEO', 'JESUISTHEO'],
+  // Le dernier mot peut être « moi », « Théo » ou « Théo Lenoir ».
+  final: ['SOUVIENSTOIDEMOI', 'SOUVIENSTOIDETHEO', 'SOUVIENSTOIDETHEOLENOIR'],
   spectro: 'TOI'
 };
 

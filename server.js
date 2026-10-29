@@ -107,7 +107,7 @@ function serveStatic(res, p) {
 const ERR = {
   admin: 'Mot de passe incorrect.',
   dossier: 'Mot de passe incorrect.',
-  anagram: 'Aucun contact connu sous ce nom.',
+  anagram: 'Mot de passe incorrect.',
   final: 'Rémanence insuffisante. Séquence refusée.',
   spectro: 'Rien à analyser.'
 };
@@ -169,7 +169,7 @@ const server = http.createServer(async (req, res) => {
         else if (v.startsWith(SECRETS.dossierLatin)) out.error = 'Mot de passe incorrect. Langue du compte : français.';
       }
       else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
-      else if (kind === 'final') { ok = v === SECRETS.final; }
+      else if (kind === 'final') { ok = SECRETS.final.includes(v); }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
       addLog({ phone: n, kind, ok, v: kind === 'spectro' ? '' : String(b.value || '').slice(0, 40) });
