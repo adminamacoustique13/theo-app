@@ -47,7 +47,8 @@ const PH = {
   postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),
   board: ph('board', 'Lundi 19 octobre · 11:30', 's-img', IMG('tableau')),
   inv: ph('inv', 'Facture', 's-inv', "<b>FACTURE n° 001</b><br><br>LENOIR Théo, développeur freelance<br>à l'attention de NOCTIS Wellbeing SAS<br><br>10 h de développement · tranche 1<br><br><i>Merci.</i>"),
-  ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
+  // Photo d'écran : 9 étoiles, comme les 9 lettres d'ASPHODÈLE.
+  ticket: ph('ticket', 'Jeudi 22 octobre · 23:19', 's-img', IMG('t214')),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
   desk: ph('desk', 'Jeudi 22 octobre · 23:16', 's-img', IMG('bureau-nuit')),
   badge: ph('badge', 'Jeudi 22 octobre · 16:40', 's-img', IMG('badge')),
