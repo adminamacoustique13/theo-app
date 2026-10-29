@@ -11,6 +11,9 @@
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
   const nm = t => (t.n === 'Ethel O.' && S.ana) ? 'Moi (Théo Lenoir)' : t.n;
+  // Une phase de lune par mot du mot de passe final : à côté du mot à trouver, puis sur sa case.
+  const MOON = ['', '🌑', '🌒', '🌓', '🌕'];
+  const mk = i => i ? '<i class="mk">' + MOON[i] + '</i>' : '';
 
   async function api(path, opt) {
     opt = opt || {};
@@ -124,6 +127,8 @@
     set: '<svg viewBox="0 0 60 60"><defs><linearGradient id="ics" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4d7dc"/><stop offset="1" stop-color="#8f949b"/></linearGradient></defs><rect width="60" height="60" fill="url(#ics)"/><g fill="#4b4f55">' + Array.from({ length: 12 }, (_, i) => '<rect x="27.5" y="8" width="5" height="9" rx="1.5" transform="rotate(' + (i * 30) + ' 30 30)"/>').join('') + '<circle cx="30" cy="30" r="15.5"/></g><circle cx="30" cy="30" r="11" fill="#a9adb3"/><circle cx="30" cy="30" r="5.5" fill="#4b4f55"/></svg>'
   };
   IC.tel = '<svg viewBox="0 0 60 60"><defs><linearGradient id="ict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6bf27c"/><stop offset="1" stop-color="#0dbd2d"/></linearGradient></defs><rect width="60" height="60" fill="url(#ict)"/><path d="M21.5 14.5c1.4-.9 3.2-.5 4.1.9l3.3 5c.8 1.3.6 3-.6 4l-2.6 2.1c1.8 4 4.6 6.9 8.6 8.8l2.1-2.6c1-1.2 2.7-1.5 4-.6l5 3.3c1.4.9 1.8 2.7.9 4.1l-2 3c-1.3 1.9-3.6 2.8-5.8 2.2C26.9 42.300 17.7 33.100 15.3 21.500c-.5-2.200.4-4.500 2.300-5.800Z" fill="#fff"/></svg>';
+  IC.bank = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8a6b"/><stop offset="1" stop-color="#0b4a3a"/></linearGradient></defs><rect width="60" height="60" fill="url(#icb)"/><g fill="#fff"><path d="M30 12 47 21H13Z"/><rect x="13" y="22.5" width="34" height="3" rx="1"/><rect x="16" y="28" width="4" height="13"/><rect x="24" y="28" width="4" height="13"/><rect x="32" y="28" width="4" height="13"/><rect x="40" y="28" width="4" height="13"/><rect x="12" y="43" width="36" height="4" rx="1"/></g></svg>';
+  IC.mail = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ac8fa"/><stop offset="1" stop-color="#0a6cff"/></linearGradient></defs><rect width="60" height="60" fill="url(#icl)"/><rect x="11" y="18" width="38" height="25" rx="3" fill="#fff"/><path d="M12 20 30 33l18-13" fill="none" stroke="#2b8cff" stroke-width="2.4" stroke-linejoin="round"/></svg>';
   const icCal = () => { const d = dOf(CLOCK[2]); return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff"/><text x="30" y="17" text-anchor="middle" font-size="9.5" font-weight="600" fill="#ff3b30" font-family="-apple-system,Helvetica,Arial">' + JOURS[d.getDay()].slice(0, 3).toUpperCase() + '.</text><text x="30" y="48" text-anchor="middle" font-size="32" font-weight="300" fill="#111" font-family="-apple-system,Helvetica,Arial">' + d.getDate() + '</text></svg>'; };
   const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : k === 'cal' ? icCal() : IC[k]) + '</i>';
   const SIG = '<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>';
@@ -134,7 +139,7 @@
   // Fond d'écran : la même photo sur les quatre téléphones (public/wallpaper.jpg), fond sombre si elle manque.
   const wall = () => '<div class="wp"></div>';
   const sb = () => sbar(true, D.bat);
-  const APPN = { notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
+  const APPN = { bank: 'Comptes', mail: 'Mail', notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';
   const LOCK_IC = '<svg viewBox="0 0 14 18" width="14" height="18"><path d="M3 8V5.5a4 4 0 0 1 8 0V8" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="0" y="8" width="14" height="10" rx="2.5" fill="currentColor"/></svg>';
   const ini = s => s.replace(/\(.*\)/, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -177,7 +182,7 @@
   function serHome() {
     const clos = D.close ? '<div class="ser-close"><div class="ser-close-h"><span class="ser-pill">Programmée</span><b>Séance de clôture</b></div>' +
       '<div class="ser-close-t">Cette nuit, 2 h 30. Une dernière séance pour refermer ce chapitre en douceur.</div><div class="ser-cd" id="cd">Programmée cette nuit</div>' +
-      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
+      '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<label>' + MOON[i] + '</label><input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
       '<div class="ser-res">' + (S.win ? '<b class="ok">Rémanence : 100 %. Séance reportée. Vous vous souviendrez de Théo.</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '';
     const moods = MOODS.map(m => '<span class="' + (S.mood === m ? 'on' : '') + '" data-act="mood" data-m="' + m + '">' + m + '</span>').join('');
     return '<div class="ser-body">' + serTop() +
@@ -222,7 +227,7 @@
     const tabs = ['journal', 'tickets', 'comptes', 'dossiers'].map(t => '<span class="' + (t === tab ? 'on' : '') + '" data-act="tab" data-t="' + t + '">' + t + '</span>').join('');
     let b = '';
     if (A.adm === 'revoked') b = '<div class="dev-box err"><b>Accès révoqué</b><small>Le compte t.lenoir n\'a plus de droits sur cet environnement.</small></div>';
-    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Local</th><th>UTC</th><th>Type</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + ' Z</td><td>' + esc(r[3]) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
+    else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Heure</th><th>Séance</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + (r[6] ? '<br><span class="mut">' + esc(r[6]) + '</span>' : '') + '</td><td>' + (r[5] ? ul(r[3]) + ' ' + mk(r[5]) : esc(r[3])) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
     else if (tab === 'tickets') b = '<table class="dev-t">' + A.tk.map(r => '<tr><td><b>' + r[0] + '</b></td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>';
     else if (tab === 'comptes') b = A.accHtml ? '<div class="dev-box dev-acc">' + A.accHtml + '</div>' : '<div class="mut">Section réservée aux administrateurs système.</div>';
     else if (A.dos === 'locked') {
@@ -297,23 +302,63 @@
       '<div class="body">' + grps.map((g, i) => '<div class="item call" data-act="callgrp" data-i="' + i + '"><div><b class="' + (g[0].dir === 'miss' ? 'bad' : '') + '">' + esc(g[0].n) + (g.length > 1 ? ' (' + g.length + ')' : '') + '</b>' +
         '<small>' + (g[0].dir === 'out' ? '↗ ' : g[0].dir === 'in' ? '↙ ' : '') + callTxt(g[0]).replace('Appel manqué', 'mobile') + '</small></div><span>' + callWhen(g[0].d) + ' <em>ⓘ</em></span></div>').join('') + '</div>' + tabs;
   }
+  // Banque : un compte courant, opérations groupées par jour, de la plus récente à la plus ancienne.
+  // Le titulaire n'est pas affiché sur le tél. 4 (le nom LENOIR y gâcherait l'anagramme).
+  const eur = a => (a < 0 ? '−' : a > 0 ? '+' : '') + Math.abs(a).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+,)/g, ' ') + ' €';
+  function bankApp() {
+    const B = D.bank || { ops: [], solde: 0 };
+    const days = [];
+    B.ops.forEach(o => { const l = days[days.length - 1]; if (l && l[0].d === o.d) l.push(o); else days.push([o]); });
+    const card = '<div class="bk-card"><small>Compte courant</small>' + (B.holder ? '<span>' + esc(B.holder) + '</span>' : '') + '<em>FR76 •••• •••• •••• 4821</em>' +
+      '<small>Solde disponible</small><b class="' + (B.solde < 0 ? 'neg' : '') + '">' + eur(B.solde).replace('+', '') + '</b></div>';
+    return hd('Comptes') + '<div class="body">' + card + '<div class="bk-h">Opérations</div>' +
+      days.map(g => '<div class="bk-day">' + longDay(g[0].d) + '</div><div class="grp">' + g.map(o => '<div class="row"><span>' + esc(o.t) + '</span><b class="' + (o.a > 0 ? 'pos' : '') + '">' + eur(o.a) + '</b></div>').join('') + '</div>').join('') + '</div>';
+  }
+  // Mail : reçus et envoyés, du plus récent au plus ancien ; une pièce jointe s'ouvre comme un PDF.
+  function mailApp() {
+    const box = nav.box || 'in', all = D.mail || [];
+    const list = all.map((m, i) => ({ m, i })).filter(o => (o.m.box || 'in') === box);
+    const who = m => m.box === 'sent' ? 'À : ' + (m.to || '') : m.from || m.addr || '';
+    if (nav.view === 'att') {
+      const m = all[nav.i], a = (m.att || [])[nav.att] || {};
+      return hd(a.n || '') + '<div class="body"><div class="ml-pdf' + (nav.zoom ? ' zoom' : '') + '" data-act="zoom">' + (a.html || esc(a.n || '')) + '</div></div>';
+    }
+    if (nav.view === 'item') {
+      const m = all[nav.i];
+      return hd('') + '<div class="body"><div class="ml-v"><h2>' + esc(m.subj || '(Sans objet)') + '</h2>' +
+        '<div class="ml-from"><i class="av-l">' + esc(ini(m.box === 'sent' ? (m.to || '') : (m.from || m.addr || ''))) + '</i><div><b>' + esc(m.box === 'sent' ? 'Moi' : (m.from || m.addr || '')) + '</b>' +
+        (m.addr && m.box !== 'sent' ? '<small>' + esc(m.addr) + '</small>' : '') + (m.to ? '<small>À : ' + esc(m.to) + '</small>' : '') + '</div><span>' + esc(longDay(m.d)) + (m.d.length > 10 ? ' · ' + m.d.slice(11, 16) : '') + '</span></div>' +
+        '<div class="ml-body">' + esc(m.body || '').replace(/\n/g, '<br>') + '</div>' +
+        (m.att || []).map((a, k) => '<div class="ml-att" data-act="att" data-i="' + k + '"><i>PDF</i><div><b>' + esc(a.n) + '</b><small>' + esc(a.sz || 'Document PDF') + '</small></div></div>').join('') + '</div></div>';
+    }
+    return hd(box === 'sent' ? 'Envoyés' : 'Réception') + '<div class="seg"><span class="' + (box === 'in' ? 'on' : '') + '" data-act="mailbox" data-v="in">Reçus</span><span class="' + (box === 'sent' ? 'on' : '') + '" data-act="mailbox" data-v="sent">Envoyés</span></div>' +
+      '<div class="body">' + (list.length ? list.map(o => '<div class="item ml" data-act="view" data-i="' + o.i + '">' + (o.m.unread ? '<em class="ml-dot"></em>' : '') +
+        '<b>' + esc(who(o.m)) + '<span>' + callWhen(o.m.d) + ' ›</span></b><div class="ml-s">' + esc(o.m.subj || '(Sans objet)') + (o.m.att && o.m.att.length ? ' 📎' : '') + '</div>' +
+        '<small>' + esc((o.m.body || '').replace(/\s+/g, ' ')) + '</small></div>').join('') : '<div class="foot">Aucun message</div>') + '</div>';
+  }
   // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
-  const ul = t => '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1));
+  function ul(t) { return '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1)); }
+  // Pièce jointe verrouillée d'Ethel : le mot de passe est « qui je suis » (moi, Théo, Théo Lenoir).
+  function lockBub(m) {
+    if (S.ana) return '<div class="bub in lockb"><small>🔓 ' + mk(4) + ' pièce jointe</small>c\'est moi. souviens-toi de moi</div>';
+    return '<div class="bub in lockb" data-act="lockopen"><small>🔒 ' + mk(4) + ' pièce jointe verrouillée</small>' + esc(m[1]) +
+      (nav.lock ? '<input type="text" placeholder="mot de passe" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Ouvrir</button><span class="bad">' + esc(msg) + '</span>' : '') + '</div>';
+  }
   function renderApp() {
     const n = nav;
     if (n.app === 'notes') {
-      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + '</h3>' + esc(x.b) + '</div></div>'; }
+      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + ' ' + mk(x.mk) + '</h3>' + esc(x.b) + '</div></div>'; }
       const list = D.notes.map((x, i) => ({ x, i })).sort((a, b) => b.x.h.localeCompare(a.x.h));
-      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
+      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + ' ' + mk(o.x.mk) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
     }
     if (n.app === 'msg') {
       if (n.view === 'card') {
         const t = D.th[n.i];
-        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div>' + (t.card ? '<div class="cardx"><small style="margin:0 0 6px">Modifier le contact</small>' + (S.ana ? '<b class="ok">Contact enregistré : « Moi (Théo Lenoir) »</b>' : '<input type="text" placeholder="' + esc(t.n) + '" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Enregistrer</button><div style="margin-top:8px"><span class="bad">' + esc(msg) + '</span></div>') + '</div>' : '') + '</div>';
+        return hd('Contact') + '<div class="body">' + (t.av ? '<div class="av">' + t.av + '</div>' : '') + '<div class="cardx"><b>' + esc(nm(t)) + '</b><small>' + esc(t.num || 'Numéro masqué') + '</small></div></div>';
       }
       if (n.view === 'item') {
         const t = D.th[n.i];
-        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
+        return '<div class="hd"><button data-act="back">‹</button><span data-act="card" style="cursor:pointer;display:flex;align-items:center;gap:8px">' + (t.av ? '<i class="av-s">' + t.av + '</i>' : '') + esc(nm(t)) + ' ⓘ</span></div><div class="body">' + (t.m[0] && t.m[0][0] === 'day' ? '' : '<div class="tm">' + t.h + '</div>') + t.m.map(m => m[0] === 'day' ? '<div class="tm">' + esc(m[1]) + '</div>' : m[0] === 'lock' ? lockBub(m) : '<div class="bub ' + m[0] + '">' + (m[2] ? '<span class="au">' + esc(m[2]) + '</span>' : '') + esc(m[1]) + '</div>').join('') + '</div>';
       }
       return hd('Messages') + '<div class="body">' + D.th.map((t, i) => '<div class="item mi" data-act="view" data-i="' + i + '"><i class="av-l">' + (t.av || esc(ini(nm(t)))) + '</i><div><b>' + esc(nm(t)) + '<span>' + t.h + ' ›</span></b><small>' + esc((t.m.filter(m => m[0] !== 'day').pop() || ['', ''])[1]) + '</small></div></div>').join('') + '</div>';
     }
@@ -335,13 +380,15 @@
         const more = '<button class="vm-more" data-act="vmore">⋯</button></div>';
         const sheet = n.more ? '<div class="sheet" data-act="vmore"><div>' + ['Partager', 'Modifier l\'enregistrement', 'Dupliquer', 'Afficher le spectre', 'Copier la transcription'].map(t => '<span data-act="' + (t === 'Afficher le spectre' ? 'spectro' : 'vnone') + '">' + t + '</span>').join('') + '<span class="del" data-act="vnone">Supprimer</span></div><div><span data-act="vmore"><b>Annuler</b></span></div></div>' : '';
         return hd('').replace(/<\/div>$/, more) + sheet + '<div class="body"><div class="vm-h"><b>' + esc(x.n) + '</b><small>' + CLOCK[0] + ' · ' + x.h + '</small></div><div class="wave">' + wave(x.n) + '</div><div class="vm-t"><span>0:00</span><span>-' + x.d + '</span></div><div class="vm-c"><span>↺</span><b>▶</b><span>↻</span></div><div class="cardx tr"><small>Transcription</small>' + esc(x.x) + '</div>' +
-          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
+          (n.spec ? '<div class="cardx spec"><small>Spectre · 0 – 20 kHz' + (x.sp ? ' ' + mk(2) : '') + '</small><canvas id="cv" width="300" height="150"></canvas><div class="axis"><span>20 kHz</span><span>temps →</span><span>0</span></div>' +
             '<label class="seuil"><span>Seuil</span><input id="seuil" type="range" min="0" max="100" value="' + (n.seuil || 0) + '"></label></div>' : '') + '</div>';
       }
       return hd('Dictaphone') + '<div class="body">' + (D.memos.length ? D.memos.map((x, i) => '<div class="item" data-act="view" data-i="' + i + '"><b>' + esc(x.n) + '</b><small><span>' + x.h + '</span><span>' + x.d + '</span></small></div>').join('') : '<div class="foot">Aucun enregistrement</div>') + '</div>';
     }
     if (n.app === 'cal') return calApp();
     if (n.app === 'tel') return telApp();
+    if (n.app === 'bank') return bankApp();
+    if (n.app === 'mail') return mailApp();
     if (n.app === 'sereni') return sereni();
     if (n.app === 'admin') return admin();
     if (n.app === 'set') {
@@ -393,7 +440,7 @@
       el.innerHTML = '<div class="home">' + wall(D.wp) + sb() +
         '<div class="wid"><div class="w-cal" data-act="open" data-app="cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
         '<div class="w-ser" data-act="open" data-app="sereni"><i>' + SVG_MOON + '</i><small>Sérénité</small><b>' + (D.close ? 'Séance de clôture' : SER.hero[0]) + '</b><span>' + (D.close ? 'Cette nuit, 2 h 30' : SER.hero[1]) + '</span></div></div>' +
-        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone']].map(ic).join('') + '</div>' +
+        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['mail', 'Mail'], ['bank', 'Banque']].map(ic).join('') + '</div>' +
         '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['tel', 'Téléphone'], ['msg', 'Messages'], ['sereni', 'Sérénité'], ['set', 'Réglages']].map(ic).join('') + '</div></div>';
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
@@ -423,12 +470,14 @@
     else if (a === 'back') {
       if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
       else if (n.app === 'msg' && n.view === 'card') n.view = 'item';
+      else if (n.app === 'mail' && n.view === 'att') n.view = 'item';
       else if (n.view && n.view !== 'list') n.view = 'list';
       else nav = { app: null };
     }
     else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; }
     else if (a === 'zoom') { n.zoom = !n.zoom; }
     else if (a === 'card') { n.view = 'card'; }
+    else if (a === 'lockopen') { if (n.lock) return; n.lock = true; }
     else if (a === 'logo') {
       taps++;
       if (taps >= 7) { taps = 0; devOk = false; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
@@ -439,6 +488,8 @@
     else if (a === 'calmo') { const t = dOf(CLOCK[2]); n.mo = Math.min(11, Math.max(9, (n.mo != null ? n.mo : t.getMonth()) + +el.dataset.m)); }
     else if (a === 'callist') n.list = !n.list;
     else if (a === 'telmiss') n.miss = el.dataset.v === '1';
+    else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
+    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; }
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
     else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; }
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
@@ -461,7 +512,7 @@
     }
     else if (a === 'anagram') {
       const r = await check('anagram', val);
-      if (r && r.j.ok) { S.ana = true; save(); } else if (r) msg = r.j.error || "Ce n'est pas la bonne combinaison.";
+      if (r && r.j.ok) { S.ana = true; n.lock = false; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
     }
     else if (a === 'vmore') { n.more = !n.more; }
     else if (a === 'vnone') { n.more = false; toast('Indisponible pendant la séance de test.'); }

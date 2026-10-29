@@ -127,7 +127,7 @@ function serveStatic(req, res, p) {
 const ERR = {
   admin: 'Mot de passe incorrect.',
   dossier: 'Mot de passe incorrect.',
-  anagram: 'Aucun contact connu sous ce nom.',
+  anagram: 'Mot de passe incorrect.',
   final: 'Rémanence insuffisante. Séquence refusée.',
   choix: 'Choix indisponible.',
   spectro: 'Rien à analyser.'
@@ -191,7 +191,7 @@ const server = http.createServer(async (req, res) => {
       }
       else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
       else if (kind === 'final') {
-        ok = v === SECRETS.final;
+        ok = SECRETS.final.includes(v);
         if (ok) { state.won = true; out.fin = { ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix }; }
       }
       else if (kind === 'choix') {
