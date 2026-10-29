@@ -53,7 +53,8 @@
     if (code.length === 4) {
       try {
         const r = await api('/api/unlock', { body: { phone: N, code } });
-        if (r.ok) { S.sess = r.j.session; save(); start(r.j.data); return; }
+        // Nouveau déverrouillage = nouvelle partie côté serveur : on oublie une fin restée d'une partie précédente.
+        if (r.ok) { S.sess = r.j.session; delete S.fin; delete S.fs; delete S.end; delete S.win; save(); start(r.j.data); return; }
         m.textContent = r.j.error || 'Code incorrect';
       } catch (e) { m.textContent = 'Réseau indisponible. Reconnectez-vous au wifi du jeu.'; }
       code = '';
@@ -69,6 +70,7 @@
     (S.live || []).forEach(addMsg);
     nav = { app: null };
     draw();
+    fin();
     connect();
   }
   function connect() {
@@ -183,7 +185,7 @@
     const clos = D.close ? '<div class="ser-close"><div class="ser-close-h"><span class="ser-pill">Programmée</span><b>Séance de clôture</b></div>' +
       '<div class="ser-close-t">Cette nuit, 2 h 30. Une dernière séance pour refermer ce chapitre en douceur.</div><div class="ser-cd" id="cd">Programmée cette nuit</div>' +
       '<div class="ser-lbl">Mot de passe de neutralisation · 4 mots</div><div class="ser-words">' + [1, 2, 3, 4].map(i => '<label>' + MOON[i] + '</label><input type="text" placeholder="mot ' + i + '" value="' + esc(fw[i - 1] || '').replace(/"/g, '&quot;') + '" autocapitalize="off" autocorrect="off" spellcheck="false">').join('') + '</div><button class="ser-btn" data-act="neutral">Neutraliser</button>' +
-      '<div class="ser-res">' + (S.win ? '<b class="ok">Rémanence : 100 %. Séance reportée. Vous vous souviendrez de Théo.</b>' : '<span class="bad">' + esc(msg) + '</span>') + '</div></div>' : '';
+      '<div class="ser-res">' + '<span class="bad">' + esc(msg) + '</span>' + '</div></div>' : '';
     const moods = MOODS.map(m => '<span class="' + (S.mood === m ? 'on' : '') + '" data-act="mood" data-m="' + m + '">' + m + '</span>').join('');
     return '<div class="ser-body">' + serTop() +
       '<h1 class="ser-hi">' + SER.hi + '</h1><div class="ser-sub">' + SER.sub + '</div>' + clos +
@@ -429,6 +431,78 @@
     clearTimeout(toastT);
     toastT = setTimeout(() => { x.className = ''; }, 1800);
   }
+  // ---------- Fin du jeu ----------
+  // Plein écran de nuit par-dessus tout le téléphone : écran 1, écran 2, la question, puis la fin choisie.
+  // S.fin = ce que renvoie le serveur pour « final », S.fs = l'écran affiché, S.end = la fin choisie (définitive).
+  // Espaces insécables de la typographie française : jamais de « ou de : seul en bout de ligne.
+  const fr = t => esc(t).replace(/ ([:;?!»%])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+  const fx = d => ' class="fx" style="animation-delay:' + d.toFixed(1) + 's"';
+  const paras = (b, d0, lead) => b.split('\n\n').map((p, i) => {
+    let h = fr(p).replace(/\n/g, '<br>');
+    if (lead) h = h.replace(/^([A-ZÀ-Ÿa-zà-ÿ]+)\. /, '<b>$1.</b> ');
+    return '<p' + fx(d0 + i * 1.1) + '>' + h + '</p>';
+  });
+  const LOCK_OPEN = '<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 7.6-1.7"/><circle cx="12" cy="15.5" r="1.3"/></svg>';
+  function fin() {
+    const el = $('fin');
+    if (!S.fin && !S.end) { el.className = ''; el.innerHTML = ''; return; }
+    const n = S.fin ? S.fin.ecrans.length : 2, step = S.end ? n + 1 : Math.min(S.fs || 0, n);
+    let h, p;
+    if (S.end) {
+      p = paras(S.end.b, 1.6);
+      const d = 1.6 + p.length * 1.1;
+      h = '<div class="fin-k fx" style="animation-delay:.3s">Votre choix</div>' +
+        '<h2 class="fin-h2 fx" style="animation-delay:.8s">' + fr(S.end.l) + '</h2>' +
+        '<div class="fin-card">' + p.join('') + '</div>' +
+        '<div class="fin-m fx" style="animation-delay:' + (d + 0.6).toFixed(1) + 's"><i></i><p>' + fr(S.end.m) + '</p></div>' +
+        '<div class="fin-end fx" style="animation-delay:' + (d + 2).toFixed(1) + 's"><span class="fin-orb sm"></span>Fin</div>';
+    } else if (step < n) {
+      const x = S.fin.ecrans[step];
+      if (step === 0) {
+        p = paras(x.b, 2.4);
+        h = '<div class="fin-orb fx" style="animation-delay:.2s"></div>' +
+          '<h1 class="fin-h1 fx" style="animation-delay:.7s">Bravo, vous avez résolu l\'enquête de Théo Lenoir\u00a0!</h1>' +
+          '<div class="fin-pill fx" style="animation-delay:1.5s"><i></i>' + fr(x.t) + '</div>';
+      } else {
+        p = paras(x.b, 1.4, true);
+        h = '<div class="fin-ic fx" style="animation-delay:.2s">' + LOCK_OPEN + '</div>' +
+          '<div class="fin-t fx" style="animation-delay:.6s">' + fr(x.t) + '</div>';
+      }
+      const d = (step === 0 ? 2.4 : 1.4) + p.length * 1.1;
+      h += '<div class="fin-card">' + p.join('') + '</div><div class="fin-go fx" style="animation-delay:' + (d + 0.4).toFixed(1) + 's">Toucher pour continuer</div>';
+    } else {
+      h = '<div class="fin-q"><h2 class="fin-h2 fx" style="animation-delay:.5s">' + fr(S.fin.question) + '</h2><p class="fx" style="animation-delay:1.4s">' + fr(S.fin.consigne) + '</p>' +
+        '<div class="fin-ch">' + S.fin.choix.map((c, i) => '<button class="fx" style="animation-delay:' + (2.3 + i * 0.35).toFixed(2) + 's" data-fin="' + esc(c.k) + '">' + fr(c.l) + '</button>').join('') + '</div></div>';
+    }
+    el.className = 'on';
+    el.innerHTML = '<div class="fin-sky"></div><div class="fin-in" data-fin="next"><div class="fin-col">' + h + '</div></div>' +
+      '<div class="fin-dots">' + Array.from({ length: n + 2 }, (_, i) => '<i class="' + (i === step ? 'on' : i < step ? 'done' : '') + '"></i>').join('') + '</div>';
+  }
+  let finBusy = false;
+  async function finAct(k) {
+    const box = $('fin').querySelector('.fin-in');
+    if (k === 'next') {
+      // Premier appui : tout le texte apparaît d'un coup ; appui suivant : écran suivant.
+      if (!box.classList.contains('all')) { box.classList.add('all'); return; }
+      if (S.end || !S.fin || (S.fs || 0) >= S.fin.ecrans.length) return;
+      S.fs = (S.fs || 0) + 1; save(); fin(); return;
+    }
+    if (finBusy || S.end) return;
+    finBusy = true;
+    $('fin').querySelectorAll('button').forEach(b => { b.disabled = true; b.classList.toggle('sel', b.dataset.fin === k); });
+    const r = await check('choix', k);
+    finBusy = false;
+    if (r && r.j.ok && r.j.fin) { S.end = r.j.fin; save(); }
+    else $('fin').querySelectorAll('button').forEach(b => { b.disabled = false; b.classList.remove('sel'); });
+    fin();
+  }
+  async function won(f) {
+    S.win = true; S.fin = f; S.fs = S.fs || 0;
+    // Page rechargée ou autre appareil : le choix est déjà fait, on va droit à la fin.
+    if (f.deja) { const r = await check('choix', f.deja); if (r && r.j.ok && r.j.fin) S.end = r.j.fin; }
+    save(); fin();
+  }
+
   function draw() {
     if (!D) return;
     const el = $('screen');
@@ -457,6 +531,8 @@
     const cv = $('cv'); if (cv) spectro(cv, D.memos[nav.i] && D.memos[nav.i].sp ? S.sp : '', nav.seuil);
   });
   document.addEventListener('click', async e => {
+    const f = e.target.closest('[data-fin]');
+    if (f) { finAct(f.dataset.fin); return; }
     const k = e.target.closest('[data-k]');
     if (k && $('lmsg')) { padKey(k.dataset.k); return; }
     const el = e.target.closest('[data-act]');
@@ -508,7 +584,7 @@
     else if (a === 'neutral') {
       fw = Array.from($('screen').querySelectorAll('.ser-words input')).map(i => i.value.trim());
       const r = await check('final', fw.join(' '));
-      if (r && r.j.ok) { S.win = true; save(); } else if (r) msg = r.j.error || 'Rémanence insuffisante.';
+      if (r && r.j.ok) { if (r.j.fin) await won(r.j.fin); else { S.win = true; save(); } } else if (r) msg = r.j.error || 'Rémanence insuffisante.';
     }
     else if (a === 'anagram') {
       const r = await check('anagram', val);

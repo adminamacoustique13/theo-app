@@ -373,6 +373,51 @@ canvas{width:100%;border-radius:8px;display:block}
 .s-img.zoom{overflow:auto;cursor:zoom-out;max-height:calc(100vh - 140px)}
 .s-img.zoom img{width:300%;max-width:none}
 .av img,.av-s img,.av-l img{width:100%;height:100%;object-fit:cover;display:block}
+/* Fin du jeu : ciel de nuit plein écran, texte qui apparaît doucement */
+#fin{display:none}
+#fin.on{display:block;position:absolute;inset:0;z-index:40;background:radial-gradient(120% 70% at 50% 0%,#1d1840 0%,#0b0a1c 45%,#030308 100%);animation:fin-bg 1.8s ease both;color:#ebebf0}
+.fin-sky{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 18%,#fff8,transparent),radial-gradient(1px 1px at 78% 9%,#fff9,transparent),radial-gradient(1.5px 1.5px at 64% 27%,#fffa,transparent),radial-gradient(1px 1px at 30% 41%,#fff6,transparent),radial-gradient(1px 1px at 88% 52%,#fff7,transparent),radial-gradient(1.5px 1.5px at 8% 66%,#fff8,transparent),radial-gradient(1px 1px at 46% 78%,#fff5,transparent),radial-gradient(1px 1px at 92% 86%,#fff6,transparent),radial-gradient(1px 1px at 22% 92%,#fff5,transparent),radial-gradient(1px 1px at 55% 6%,#fff7,transparent);animation:fin-tw 6s ease-in-out infinite alternate}
+.fin-sky::after{content:"";position:absolute;left:50%;bottom:-30%;width:140%;height:60%;transform:translateX(-50%);background:radial-gradient(closest-side,#f3b57a22,transparent);filter:blur(10px)}
+.fin-in{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fin-col{min-height:100%;box-sizing:border-box;padding:calc(var(--st) + 44px) 24px calc(env(safe-area-inset-bottom) + 64px);display:flex;flex-direction:column;justify-content:center;font-size:15.5px;line-height:1.62}
+.fx{opacity:0;animation:fin-in 1.4s cubic-bezier(.2,.7,.2,1) forwards}
+.fin-in.all .fx{animation-delay:0s!important;animation-duration:.4s}
+.fin-orb{width:56px;height:56px;border-radius:50%;margin:0 auto 22px;background:radial-gradient(circle at 38% 34%,#fff8e6 0%,#ffd394 38%,#f39a63 100%);box-shadow:0 0 40px 10px #f6a76a55,0 0 90px 30px #f6a76a22;flex:none}
+.fin-orb.fx{animation:fin-in 1.4s ease forwards,fin-pulse 4s 1.4s ease-in-out infinite}
+.fin-orb.sm{display:inline-block;width:10px;height:10px;margin:0 10px 0 0;vertical-align:middle;box-shadow:0 0 12px 3px #f6a76a66}
+.fin-h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:30px;line-height:1.22;text-align:center;margin:0 0 16px;background:linear-gradient(180deg,#fff 30%,#f7d3a8);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.01em}
+.fin-pill{align-self:center;display:flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.04em;color:#c9c6dc;background:#ffffff0d;border:1px solid #ffffff1a;border-radius:99px;padding:6px 12px;margin-bottom:26px;text-align:center;line-height:1.35}
+.fin-pill i{width:7px;height:7px;border-radius:50%;background:#30d158;box-shadow:0 0 8px #30d158;flex:none}
+.fin-ic{width:44px;height:44px;border-radius:14px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:#ffffff0f;border:1px solid #ffffff1f}
+.fin-ic svg{width:22px;height:22px;fill:none;stroke:#f7d3a8;stroke-width:1.6;stroke-linecap:round}
+.fin-t,.fin-k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#9d99b8;text-align:center;margin-bottom:20px;line-height:1.5}
+.fin-k{margin-bottom:8px}
+.fin-card{background:linear-gradient(180deg,#ffffff0d,#ffffff06);border:1px solid #ffffff14;border-radius:22px;padding:20px 20px 6px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.fin-card p{margin:0 0 14px}
+.fin-card p b{color:#f7d3a8;font-weight:600}
+.fin-go{margin-top:22px;font-size:11.5px;color:#8b88a3;text-align:center;letter-spacing:.12em;text-transform:uppercase}
+.fin-go.fx{animation:fin-in 1.4s ease forwards,fin-blink 2.4s 1.4s ease-in-out infinite}
+.fin-h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:26px;line-height:1.25;color:#fff;text-align:center;margin:0 0 20px}
+.fin-q{text-align:center}
+.fin-q p{font-size:14px;color:#a7a3bf;margin:0 0 30px}
+.fin-ch{display:flex;flex-direction:column;gap:12px}
+.fin-ch button{font:inherit;font-size:16px;color:#fff;background:#ffffff0d;border:1px solid #ffffff2e;border-radius:16px;padding:16px 18px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .3s,border-color .3s,box-shadow .3s}
+.fin-ch button:active{background:#ffffff1f}
+.fin-ch button:disabled{opacity:.3!important}
+.fin-ch button.sel{opacity:1!important;border-color:#f7d3a8;background:#f7d3a81a;box-shadow:0 0 24px #f6a76a44}
+.fin-m{margin:26px 4px 0;text-align:center}
+.fin-m i{display:block;width:40px;height:1px;margin:0 auto 18px;background:linear-gradient(90deg,transparent,#f7d3a8,transparent)}
+.fin-m p{margin:0;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:19px;line-height:1.45;color:#fff}
+.fin-end{margin-top:34px;text-align:center;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:#9d99b8}
+.fin-dots{position:absolute;left:0;right:0;bottom:0;padding:34px 0 calc(env(safe-area-inset-bottom) + 18px);background:linear-gradient(180deg,#03030800,#030308e6 60%);display:flex;justify-content:center;gap:7px;pointer-events:none}
+.fin-dots i{width:6px;height:6px;border-radius:3px;background:#ffffff2e;transition:width .4s}
+.fin-dots i.done{background:#ffffff66}
+.fin-dots i.on{width:18px;background:#f7d3a8}
+@keyframes fin-in{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fin-bg{from{opacity:0}to{opacity:1}}
+@keyframes fin-tw{from{opacity:.55}to{opacity:1}}
+@keyframes fin-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes fin-blink{0%,100%{opacity:1}50%{opacity:.45}}
 .a-bank{--acc:#30d158}
 .bk-card{margin:6px 16px 22px;padding:18px 18px 16px;border-radius:16px;background:linear-gradient(140deg,#1f8a6b,#0b3f33);display:flex;flex-direction:column;gap:2px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .bk-card small{font-size:12px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.6px}
