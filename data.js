@@ -344,7 +344,7 @@ const phones = {
   2: {
     public: {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
-      notes: [{ t: "Ce que j'ai vu", h: '23:12', d: '2026-10-22', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }].concat(notes8()),
+      notes: [{ t: "Ce que j'ai vu", h: '23:12', d: '2026-10-22', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. relire cette note demain, mot pour mot\n\nne plus faire la séance du soir" }].concat(notes8()),
       th: threads(2),
       cal: cal(2), calls: calls(2), bank: bank(2), mail: mails(2),
       ph: photos(2), roll: ROLL,
