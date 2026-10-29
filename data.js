@@ -267,7 +267,7 @@ const MAIL = [
   { p: 1, d: '2026-10-18 11:30', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Merci pour samedi !',
     body: "Vous étiez nombreux hier soir, merci !\n\nLes photos du concert sont en ligne sur notre page. Vous vous reconnaîtrez peut-être dans la foule.\n\nProchaine date annoncée bientôt." },
   { p: 1, d: '2026-10-19 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Lundi 19 octobre : l'essentiel de l'actualité",
-    body: "Météo : gris et doux, 14 °C.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nCulture : le retour des films d'horreur en salle avant Halloween." },
+    body: "Météo : gris et doux, 14 °C, éclaircies l'après-midi.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nÉconomie : le prix du gazole repasse sous les 1,70 €.\nMarseille : travaux sur la ligne 2 du métro, trafic interrompu le week-end jusqu'en décembre.\nRégion : à Martigues, la pêche reste interdite au nord de l'étang jusqu'à nouvel ordre.\nAubagne : la foire aux santons ouvre ses portes le 15 novembre.\nSanté : la campagne de vaccination contre la grippe a commencé.\nCulture : le retour des films d'horreur en salle avant Halloween.\nSport : l'OM se déplace à Lens dimanche." },
   { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 2026-001',
     body: 'Bonjour,\n\nVeuillez trouver ci-joint ma facture pour la tranche 1.\n\nBonne soirée,\nThéo Lenoir', att: [{ n: 'Facture_001.pdf', k: 'inv' }] },
   { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Accès préprod',
@@ -286,6 +286,8 @@ const MAIL = [
     body: "Bonjour Théo,\n\nCette semaine : 4 séances, dont 2 séances de nuit.\nVotre sommeil : +38 %.\nCe qui pesait : -61 %.\n\nBravo, vous avez allégé votre semaine." },
   { p: 4, d: '2026-10-27 15:20', box: 'in', from: 'EHPAD Les Tilleuls', addr: 'accueil@ehpad-lestilleuls.fr', to: 'moi', subj: 'Programme de la Toussaint',
     body: "Chères familles,\n\nUne messe sera célébrée dimanche 1er novembre à 11 h dans la salle commune. Les familles sont les bienvenues.\n\nCette semaine, l'atelier chant a eu beaucoup de succès. Madame Odette nous a même appris une chanson de sa jeunesse.\n\nL'équipe des Tilleuls" },
+  { p: 4, d: '2026-10-28 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Mercredi 28 octobre : l'essentiel de l'actualité",
+    body: "Météo : pluie en fin de journée, 12 °C.\nÀ la une : cérémonie du 31 octobre, le parcours dévoilé et les rues fermées à la circulation.\nPolitique : le budget de la Métropole adopté de justesse.\nVacances : les bouchons attendus vendredi sur l'A7, Bison Futé voit rouge.\nJustice : étang de Berre, l'affaire de la pollution de juin classée sans suite, faute de témoins. « Un soulagement », réagit M. P., directeur du site.\nFaits divers : un sanglier en promenade sur la Corniche, la vidéo fait le tour des réseaux.\nConso : Halloween, les ventes de citrouilles en hausse de 12 %.\nSport : l'OM s'impose à domicile face à Nantes (2-0)." },
   { p: 4, d: '2026-10-28 10:00', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Nouvelle date : 12 décembre',
     body: 'On remet ça le samedi 12 décembre, même salle. Billetterie ouverte !' },
   { p: 4, d: '2026-10-29 13:42', box: 'in', from: 'Doctolib', addr: 'no-reply@doctolib.fr', to: 'moi', subj: 'Rendez-vous confirmé : mardi 3 novembre à 09:00',
@@ -338,7 +340,7 @@ const phones = {
       drift: { 0: 'Oui' }, close: false
     },
     // Journal trié par heure locale : à égalité, E (01:30 UTC) s'affiche avant D (00:30 UTC).
-    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
+    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0914-4', '23:00', '21:00', 'Séance collective · lot P4 · 12 sujets · cible : nuit du 14/06', '40 min'], ['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
     dossier: {
       rows: [['PETROVEX', 'Incident site 4', '12', '94 %'], ['Institution', 'Événement public du 31/10', '340', '87 %'], ['Douceur', 'Particuliers', '5 000', '40 %']],
       access: 't.lenoir, jeu. 23 h 08, ouverture non autorisée',
