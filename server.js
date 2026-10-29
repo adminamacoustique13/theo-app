@@ -78,7 +78,9 @@ function toPhones(target, evt) {
   return n;
 }
 const stateEvt = () => ({ type: 'state', deadline: state.deadline, now: Date.now() });
-const pub = n => Object.assign({}, phones[n].public, { n, num: NUM, mq: MQ, deadline: state.deadline });
+// Fin déjà trouvée (page rechargée, autre téléphone) : elle part avec les données, pour s'afficher sur les quatre.
+const finPub = () => ({ ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix });
+const pub = n => Object.assign({}, phones[n].public, { n, num: NUM, mq: MQ, deadline: state.deadline }, state.won ? { fin: finPub() } : {});
 
 function lanIPs() {
   const out = [];
@@ -192,12 +194,13 @@ const server = http.createServer(async (req, res) => {
       else if (kind === 'anagram') { ok = n === 4 && SECRETS.anagram.includes(v); }
       else if (kind === 'final') {
         ok = SECRETS.final.includes(v);
-        if (ok) { state.won = true; out.fin = { ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix }; }
+        // La fin s'affiche en même temps sur les quatre téléphones.
+        if (ok) { state.won = true; out.fin = finPub(); toPhones('all', { type: 'fin', fin: out.fin }); }
       }
       else if (kind === 'choix') {
         const c = FIN.choix.find(x => x.k === (state.choix || v));
         ok = state.won && !!c;
-        if (ok) { state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; }
+        if (ok) { const first = !state.choix; state.choix = c.k; out.fin = { k: c.k, l: c.l, b: c.b, m: c.m }; if (first) toPhones('all', { type: 'choix', fin: out.fin }); }
       }
       else if (kind === 'spectro') { ok = n === 2; if (ok) out.text = SECRETS.spectro; }
       else return json(res, 400, { error: 'Vérification inconnue' });
@@ -245,6 +248,15 @@ const server = http.createServer(async (req, res) => {
         toPhones('all', stateEvt());
         addLog({ phone: 'all', kind: 'gm-countdown', ok: true, v: b.stop ? 'arrêt' : (b.minutes || config.clotureMinutes) + ' min' });
         return json(res, 200, { ok: true, deadline: state.deadline });
+      }
+      // Nouvelle partie : on oublie la fin et le choix, le compte à rebours, et les téléphones effacent leur progression.
+      // Les codes de déverrouillage déjà saisis restent valables.
+      if (p === '/api/gm/reset' && req.method === 'POST') {
+        state.won = false; state.choix = null; state.deadline = null;
+        const sent = toPhones('all', { type: 'reset' });
+        toPhones('all', stateEvt());
+        addLog({ phone: 'all', kind: 'gm-reset', ok: true, v: 'nouvelle partie' });
+        return json(res, 200, { ok: true, sent });
       }
       return json(res, 404, { error: 'Inconnu' });
     }

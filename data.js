@@ -23,8 +23,9 @@ const M8 = [
   ['Nelson Mandela, mort en prison ?', '18:15', 'Non : mort en 2013, libre.'],
   ['Sex and the City', '21:40', 'Pas « Sex in the City ».']
 ];
-// mk : phase de lune du fragment (1 à 4), affichée à côté du mot à trouver et sur la case du mot de passe final.
-const notes8 = () => M8.map(n => ({ t: n[0], h: n[1], b: n[2], mk: 1 }));
+// d : jour de la note (affiché quand ce n'est pas le jour du téléphone). Les huit notes datent du 19/10 et restent
+// sur les téléphones suivants ; seul le tél. 1 souligne les initiales et porte la lune 1 (mk : phase de lune du fragment).
+const notes8 = mark => M8.map(n => Object.assign({ t: n[0], h: n[1], b: n[2], d: '2026-10-19' }, mark ? { mk: 1, ul: true } : {}));
 
 const T3 = [
   ['T-101', "Phase d'atténuation après la séance"],
@@ -96,9 +97,9 @@ const CONV = {
   },
   'Ethel O.': {
     num: 'Numéro masqué', av: AV_ETHEL,
-    2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'ne fais pas la séance ce soir. relis tes notes avant de répondre à direction']] },
+    2: { h: '23:12', m: [day('Jeudi 22 octobre · 23:12'), ['in', 'ne fais plus la séance du soir. relis tes notes avant de répondre à direction']] },
     3: { h: '03:20', m: [day('Dimanche 25 octobre · 03:20'), ['in', "il y a eu deux 2h30 cette nuit. ne dis rien à direction"]] },
-    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si quelqu'un lit ça après moi : souvenez-vous de moi"], ['lock', 'pour toi. mot de passe : qui je suis']] }
+    4: { h: '07:40', m: [day('Vendredi 30 octobre · 07:40'), ['in', "si tu lis ça et que tu ne te souviens pas : ouvre la pièce jointe"], ['lock', 'pour toi. mot de passe : qui je suis']] }
   },
   'Nora': {
     num: '06 39 98 41 07', av: AV('nora'),
@@ -113,7 +114,7 @@ const CONV = {
     3: { h: '21:14', m: [day('Vendredi 23 octobre · 09:15'), ['in', 'Ton truc est dans mon tiroir. Biscotte te dit merci.'],
       day('Vendredi 23 octobre · 22:47'), ['out', "si je te parle d'une séance ce soir, dis-moi de pas la faire"],
       day('Samedi 24 octobre · 21:10'), ['in', "Hier soir tu m'as écrit de ne pas faire la séance, c'était quoi ?"], ['out', "ah. j'étais crevé, laisse"], ['in', 'Brunch demain 11 h ?'], ['out', 'ok']] },
-    4: { h: '19:20', m: [day('Lundi 26 octobre · 08:05'), ['in', "T'étais bizarre au brunch hier."], ['out', 'fatigué'],
+    4: { h: '19:12', m: [day('Lundi 26 octobre · 08:05'), ['in', "T'étais bizarre au brunch hier."], ['out', 'fatigué'],
       day('Mardi 27 octobre · 20:10'), ['in', 'Effet Mandela du jour : Oscar Mayer ou Meyer ?'], ['out', 'meyer, évidemment'], ['in', 'Toi qui en avais trouvé 8…'],
       day('Jeudi 29 octobre · 13:40'), ['in', "J'ai pris rdv pour toi mardi 9 h. Pas de discussion."], ['out', 'pour quoi ?'], ['in', 'Pour me faire plaisir.'],
       day('Vendredi 30 octobre · 19:12'), ['in', "Tu te souviens de ce qu'on s'est dit dimanche ?"], ['out', 'non, rien'], ['in', "Je passe demain matin après ma garde. J'ai un truc à toi."]] }
@@ -150,7 +151,7 @@ const CONV = {
     1: { h: '17:10', m: [day('Lundi 19 octobre · 17:05'), ['in', 'Bonjour Théo. Accès préprod demain 9 h. Les tests audio se font le soir, sur ton téléphone.'], ['out', 'bien noté']] },
     2: { h: '20:12', m: [day('Jeudi 22 octobre · 20:10'), ['in', 'Test longue durée ce soir 22 h 40. Casque, téléphone en charge.'], ['out', 'ok']] },
     3: { h: '18:05', m: [day('Samedi 24 octobre · 18:02'), ['in', 'Connexion inhabituelle sur ton compte jeudi soir. Rien de grave.'], ['in', "J'ai programmé une séance de nuit pour recalibrer ton profil."], ['out', 'ok']] },
-    4: { h: '18:20', m: [day('Vendredi 30 octobre · 18:20'), ['in', 'Compte t.lenoir révoqué. Séance de clôture cette nuit, 2 h 30. Appareil en charge, casque.'], ['in', 'Merci pour ta contribution.']] }
+    4: { h: '18:20', m: [day('Vendredi 30 octobre · 18:20'), ['in', 'Ton accès préprod est révoqué. Séance de clôture cette nuit, 2 h 30. Appareil en charge, casque.'], ['in', 'Merci pour ta contribution.']] }
   },
   'M. Fabre': {
     num: '06 39 98 03 58',
@@ -159,7 +160,7 @@ const CONV = {
   },
   'Banque': {
     num: 'Service client',
-    2: { h: '09:00', m: [day('Jeudi 22 octobre · 09:00'), ['in', 'Virement reçu : NOCTIS WELLBEING SAS, +1 200,00 €.']] },
+    2: { h: '15:00', m: [day('Jeudi 22 octobre · 15:00'), ['in', 'Virement reçu : NOCTIS WELLBEING SAS, +1 200,00 €.']] },
     3: { h: 'ven.', m: [day('Vendredi 23 octobre · 10:12'), ['in', 'Virement émis : M. FABRE, loyer octobre, −780,00 €.']] },
     4: { h: '16:00', m: [day('Vendredi 30 octobre · 16:00'), ['in', 'Virement reçu : NOCTIS WELLBEING SAS, +4 800,00 €. Libellé : solde de tout compte.']] }
   },
@@ -175,12 +176,17 @@ const ORDER = {
   3: ['Ethel O.', 'Direction', 'Lucile', 'Nora', 'Nicolas Aubry', 'Maman', 'Coinche du jeudi', 'M. Fabre', 'Banque'],
   4: ['Coinche du jeudi', 'Nora', 'Nicolas Aubry', 'Direction', 'Maman', 'Banque', 'Ethel O.', 'Doctolib', 'Lucile', 'M. Fabre']
 };
-// Fils du téléphone N : segments 1 à N de chaque contact.
+// Jour (d'octobre) où chaque téléphone est figé, pour l'heure affichée dans la liste des conversations.
+const JOUR = { 1: 19, 2: 23, 3: 25, 4: 31 };
+const ABR = { 19: 'lun.', 20: 'mar.', 21: 'mer.', 22: 'jeu.', 23: 'ven.', 24: 'sam.', 25: 'dim.', 26: 'lun.', 27: 'mar.', 28: 'mer.', 29: 'jeu.', 30: 'ven.', 31: 'sam.' };
+// Fils du téléphone N : segments 1 à N de chaque contact. Dans la liste, un fil dont le dernier message
+// n'est pas du jour affiche « Hier », le jour de la semaine, puis la date, comme sur iPhone.
 const threads = N => ORDER[N].map(n => {
   const c = CONV[n], seg = [1, 2, 3, 4].filter(i => i <= N && c[i]), m = [].concat(...seg.map(i => c[i].m));
   const last = seg[seg.length - 1];
   let h = c[last].h;
-  if (last < N) { const d = m.filter(x => x[0] === 'day' && / \d+ /.test(x[1])).pop(); h = d ? d[1].match(/ (\d+) /)[1] + '/10' : h; }
+  const d = m.filter(x => x[0] === 'day' && / \d+ /.test(x[1])).pop(), j = d ? +d[1].match(/ (\d+) /)[1] : JOUR[N], diff = JOUR[N] - j;
+  if (diff === 1) h = 'Hier'; else if (diff > 1 && diff < 7) h = ABR[j]; else if (diff >= 7) h = j + '/10';
   const t = { n, h, m };
   if (c.num) t.num = c.num;
   if (c.av) t.av = c.av;
@@ -205,7 +211,7 @@ const CAL = [
   { p: 1, d: '2026-11-01', t: 'Toussaint', sys: true },
   { p: 2, d: '2026-10-22 22:40', t: 'Séance Sérénité : test longue durée', by: 'n.aubry' },
   { p: 2, d: '2026-10-24 20:00', t: 'Ciné avec Lucile' },
-  { p: 3, d: '2026-10-24 21:50', t: 'Séance Sérénité : séance du soir', by: 'n.aubry' },
+  { p: 3, d: '2026-10-25 00:20', t: 'Séance Sérénité : séance du soir', by: 'n.aubry' },
   { p: 3, d: '2026-10-25 02:30', t: 'Séance Sérénité : séance de nuit', by: 'n.aubry' },
   { p: 3, d: '2026-10-25 03:00', t: "Passage à l'heure d'hiver : 3 h 00 devient 2 h 00", sys: true },
   { p: 3, d: '2026-10-31 21:00', t: 'Halloween chez Hugo (déguisé !)' },
@@ -289,13 +295,13 @@ const MAIL = [
     body: "Vous étiez nombreux hier soir, merci !\n\nLes photos du concert sont en ligne sur notre page. Vous vous reconnaîtrez peut-être dans la foule.\n\nProchaine date annoncée bientôt." },
   { p: 1, d: '2026-10-19 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Lundi 19 octobre : l'essentiel de l'actualité",
     body: "Météo : gris et doux, 14 °C, éclaircies l'après-midi.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nÉconomie : le prix du gazole repasse sous les 1,70 €.\nMarseille : travaux sur la ligne 2 du métro, trafic interrompu le week-end jusqu'en décembre.\nRégion : à Martigues, la pêche reste interdite au nord de l'étang jusqu'à nouvel ordre.\nAubagne : la foire aux santons ouvre ses portes le 15 novembre.\nSanté : la campagne de vaccination contre la grippe a commencé.\nCulture : le retour des films d'horreur en salle avant Halloween.\nSport : l'OM se déplace à Lens dimanche." },
-  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 2026-001',
+  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 001',
     body: 'Bonjour,\n\nVeuillez trouver ci-joint ma facture pour la tranche 1.\n\nBonne soirée,\nThéo Lenoir', att: [{ n: 'Facture_001.pdf', k: 'inv' }] },
   { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Accès préprod',
     body: "Bonjour,\n\nTes identifiants préprod t'arrivent par un autre canal.\n\nLes séances de test se font le soir, hors des heures de bureau, casque sur les oreilles et téléphone en charge. Pense à ne pas couper la séance avant la fin.\n\nN. Aubry\nOpérations" },
   { p: 2, d: '2026-10-21 08:15', box: 'in', from: 'Biocoop', addr: 'infos@biocoop.fr', to: 'moi', subj: 'Les courges sont arrivées 🎃',
     body: "Potimarron, butternut, pâtisson : c'est la saison. -10 % sur les soupes toute la semaine." },
-  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'RE: Facture n° 2026-001',
+  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'RE: Facture n° 001',
     body: 'Bonjour,\n\nLe virement de 1 200,00 € a été émis ce jour.\n\nCordialement,\nService comptabilité' },
   { p: 3, d: '2026-10-23 10:15', box: 'in', from: 'Cinéma Le Méliès', addr: 'billetterie@lemelies.fr', to: 'moi', subj: 'Vos billets : samedi 24 octobre, 20:00',
     body: "Séance de 20:00, salle 2.\n2 places plein tarif.\n\nPrésentez ce mail à l'entrée. Bonne séance !" },
@@ -325,7 +331,7 @@ const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
-      notes: notes8(),
+      notes: notes8(true),
       th: threads(1),
       cal: cal(1), calls: calls(1), bank: bank(1), mail: mails(1),
       ph: photos(1), roll: ROLL,
@@ -338,7 +344,7 @@ const phones = {
   2: {
     public: {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
-      notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
+      notes: [{ t: "Ce que j'ai vu", h: '23:12', d: '2026-10-22', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }].concat(notes8()),
       th: threads(2),
       cal: cal(2), calls: calls(2), bank: bank(2), mail: mails(2),
       ph: photos(2), roll: ROLL,
@@ -352,10 +358,10 @@ const phones = {
     public: {
       label: 'Téléphone 3', wp: 3, ver: '1.0', bat: 17, att: 'active', total: 238,
       notes: [
-        { t: "Ce que j'ai vu", h: '23:12', b: 'ouvert par erreur un dossier. ce sont des gens bien' },
-        { t: '2 h 30', h: '02:30', b: 'Séance.  Tout est calme.' },
-        { t: '2 h 30 (bis)', h: '02:30', b: "Encore 2 h 30 ? J'ai l'impression d'avoir déjà écrit ça.  Mon réveil a reculé ou je deviens fou." }
-      ],
+        { t: "Ce que j'ai vu", h: '23:12', d: '2026-10-22', b: 'ouvert par erreur un dossier. ce sont des gens bien' },
+        { t: '2 h 30', h: '02:30', d: '2026-10-25', b: 'Séance.  Tout est calme.' },
+        { t: '2 h 30 (bis)', h: '02:30', d: '2026-10-25', b: "Encore 2 h 30 ? J'ai l'impression d'avoir déjà écrit ça.  Mon réveil a reculé ou je deviens fou." }
+      ].concat(notes8()),
       th: threads(3),
       cal: cal(3), calls: calls(3), bank: bank(3), mail: mails(3),
       ph: photos(3), roll: ROLL,
@@ -365,7 +371,7 @@ const phones = {
     // Deux séances à 02:30 la nuit du passage à l'heure d'hiver. Le journal affiche Effacement avant Descente ;
     // les joueurs doivent comprendre que le 02:30 d'heure d'été a eu lieu d'abord : D puis E.
     // Ligne : [id, heure locale, UTC (non affiché), séance, durée, phase de lune, étiquette d'heure].
-    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0914-4', '23:00', '21:00', 'Séance collective · lot P4 · 12 sujets · cible : nuit du 14/06', '40 min'], ['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-9c', '02:30', '01:30', 'Effacement · LETHE profond · sujet 0', '52 min', 3, "heure d'hiver"], ['S-0424-4f', '02:30', '00:30', 'Descente · sommeil standard', '18 min', 3, "heure d'été"]], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
+    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0914-4', '23:00', '21:00', 'Séance collective · lot P4 · 12 sujets · cible : nuit du 14/06', '40 min'], ['S-0424-1', '00:20', '22:20', 'Séance du soir', '24 min'], ['S-0424-9c', '02:30', '01:30', 'Effacement · LETHE profond · sujet 0', '52 min', 3, "heure d'hiver"], ['S-0424-4f', '02:30', '00:30', 'Descente · sommeil standard', '18 min', 3, "heure d'été"]], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
     dossier: {
       rows: [['PETROVEX', 'Incident site 4', '12', '94 %'], ['Institution', 'Événement public du 31/10', '340', '87 %'], ['Douceur', 'Particuliers', '5 000', '40 %']],
       access: 't.lenoir, jeu. 23 h 08, ouverture non autorisée',
@@ -375,7 +381,7 @@ const phones = {
   4: {
     public: {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
-      notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
+      notes: notes8().concat([{ t: "Rien d'important", h: '07:45', d: '2026-10-30', b: "Rien d'important." }]),
       th: threads(4),
       cal: cal(4), calls: calls(4), bank: bank(4), mail: mails(4),
       ph: photos(4), roll: ROLL,
@@ -418,7 +424,7 @@ const SECRETS = {
   dossierLatin: 'ASPHODELUS',
   // Le contact Ethel O. se renomme quand on lui donne le vrai nom de Théo (ou « moi »).
   anagram: ['THEOLENOIR', 'LENOIRTHEO', 'THEOL', 'THEO', 'LENOIR', 'MOI', 'MOIMEME', 'CESTMOI', 'CESTTHEO', 'JESUISTHEO'],
-  // Le dernier mot peut être « moi », « Théo » ou « Théo Lenoir ».
+  // Le dernier mot peut être « moi », « Théo » ou « Théo Lenoir » (demande de Mélanie, 29/10).
   final: ['SOUVIENSTOIDEMOI', 'SOUVIENSTOIDETHEO', 'SOUVIENSTOIDETHEOLENOIR'],
   spectro: 'TOI'
 };

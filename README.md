@@ -24,6 +24,8 @@ La fiche vérité complète (solutions, chronologie, indices) est dans le docume
 - Chaque téléphone n'a accès qu'à **ses propres données**, après son **code de déverrouillage** (`config.js`, à imprimer sur des cartes).
 - Les réponses (LETHE, ASPHODÈLE, vrai nom d'Ethel, mot de passe final) ne sont **jamais envoyées au navigateur** : elles sont vérifiées par le serveur. Un joueur qui lit le code source ne trouve rien.
 - La page game master permet d'envoyer des indices (3 niveaux par téléphone), de faire arriver un message ou une notification en direct, de lancer le compte à rebours de la clôture et de voir ce que tapent les joueurs.
+- Quand le mot de passe final est trouvé sur le téléphone 4, la fin (récit, dossier ORCHIDÉE, choix commun) s'affiche sur les **quatre** téléphones.
+- **Avant la vraie partie**, après un test : bouton « Nouvelle partie » sur la page game master. Il efface la fin et le choix gardés par le serveur et remet à zéro la progression des quatre téléphones (les codes de déverrouillage restent valables).
 
 ## Limites actuelles
 
@@ -67,4 +69,4 @@ Morceaux actuels, tous sous licence CC0 (domaine public, sans attribution obliga
 - `config.js` : codes de déverrouillage, jeton game master, indices.
 - `public/` : l'appli (HTML, CSS, JS, service worker, icônes).
 - `private/gm.html` : la page game master.
-- `selftest.js` : vérifie l'acrostiche SOUVIENS, l'ordre heure d'été puis heure d'hiver (D puis E), les indices ASPHODÈLE et Ethel, et le mot de passe final.
+- `selftest.js` : vérifie l'acrostiche SOUVIENS, l'ordre heure d'été puis heure d'hiver (D puis E), les indices ASPHODÈLE et Ethel, l'absence de « Lenoir » sur le téléphone 4 et le mot de passe final.

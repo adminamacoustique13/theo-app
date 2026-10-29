@@ -43,6 +43,12 @@ textarea{width:100%;min-height:60px}
   <div class="sub">Le compte à rebours s'affiche sur le téléphone 4, dans Sérénité.</div>
 </div>
 
+<h2>Nouvelle partie</h2>
+<div class="card">
+  <div class="sub">À faire avant la vraie partie, après un test : efface la fin et le choix retenus par le serveur, arrête le compte à rebours et remet à zéro la progression des quatre téléphones (mode développeur, dossier, Ethel, mot de passe final). Les joueurs gardent leur code de déverrouillage.</div>
+  <button class="btn red" onclick="reset()">Nouvelle partie</button>
+</div>
+
 <h2>Les quatre téléphones : liens, QR codes et codes de déverrouillage</h2>
 <div class="grid" id="phones"></div>
 
@@ -126,6 +132,12 @@ function preset(text, thread) {
   $('evText').value = text;
   $('evType').value = 'message';
   $('evThread').value = thread || 'Direction';
+}
+async function reset() {
+  if (!confirm('Nouvelle partie : effacer la fin, le choix et la progression des quatre téléphones ?')) return;
+  const r = await post('/api/gm/reset', {});
+  deadline = null;
+  toast(r.ok ? 'Nouvelle partie (' + r.sent + ' appareil' + (r.sent > 1 ? 's' : '') + ' remis à zéro)' : 'Échec');
 }
 async function countdown(stop) {
   const r = await post('/api/gm/countdown', stop ? { stop: true } : { minutes: +$('min').value });
