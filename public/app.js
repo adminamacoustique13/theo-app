@@ -480,6 +480,7 @@
     const and = '<div class="in-c' + (android ? ' on' : '') + '"><b>Android</b><ol><li>Ouvrez ce lien dans <em>Chrome</em></li><li>Touchez le menu ⋮</li><li>Choisissez <em>Installer l\'appli</em> ou <em>Ajouter à l\'écran d\'accueil</em></li><li>Ouvrez l\'icône <em>Théo ' + N + '</em></li></ol></div>';
     $('screen').className = 'screen';
     $('screen').innerHTML = '<div class="intro">' + wall(N) + '<div class="in-in"><div class="in-k">Téléphone ' + N + '</div><h1>Bienvenue sur le téléphone de Théo.</h1>' +
+      '<ul class="in-r"><li>Ce jeu est coopératif : chacun a un téléphone, parlez-vous et comparez vos écrans.</li><li>Il n\'y a pas de limite de temps.</li><li>En cas de blocage, les maîtres du jeu sont là.</li></ul>' +
       '<p>Pour jouer en plein écran, comme sur un vrai téléphone, installez-le d\'abord sur votre écran d\'accueil.</p>' + (android ? and + ios : ios + and) +
       '<button class="in-skip" data-intro="1">Continuer dans le navigateur</button></div></div>';
   }
