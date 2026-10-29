@@ -316,7 +316,7 @@
     const who = m => m.box === 'sent' ? 'À : ' + (m.to || '') : m.from || m.addr || '';
     if (nav.view === 'att') {
       const m = all[nav.i], a = (m.att || [])[nav.att] || {};
-      return hd(a.n || '') + '<div class="body"><div class="ml-pdf">' + (a.html || esc(a.n || '')) + '</div></div>';
+      return hd(a.n || '') + '<div class="body"><div class="ml-pdf' + (nav.zoom ? ' zoom' : '') + '" data-act="zoom">' + (a.html || esc(a.n || '')) + '</div></div>';
     }
     if (nav.view === 'item') {
       const m = all[nav.i];
@@ -477,7 +477,7 @@
     else if (a === 'callist') n.list = !n.list;
     else if (a === 'telmiss') n.miss = el.dataset.v === '1';
     else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
-    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; }
+    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; }
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
     else if (a === 'dev') nav = { app: 'admin', view: 'main', tab: 'journal' };
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
