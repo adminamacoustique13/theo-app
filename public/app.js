@@ -387,8 +387,8 @@
         const x = D.ph[n.i];
         return hd(x.c) + '<div class="body"><div class="scene ' + x.cls + (n.zoom ? ' zoom' : '') + '"' + (x.cls === 's-img' ? ' data-act="zoom"' : '') + '>' + x.html + '</div></div>';
       }
-      const fill = Array.from({ length: (99 - roll.length - D.ph.length) % 3 }, (_, i) => '<div class="th plain f' + ((i * 5 + N) % 6) + '"></div>').join('') +
-        roll.map((u, i) => '<div class="th" data-act="view" data-i="' + (-1 - i) + '"><img src="' + u + '" alt="" loading="lazy"></div>').join('');
+      // La pellicule d'abord, puis les photos de l'histoire, sans case vide de remplissage.
+      const fill = roll.map((u, i) => '<div class="th" data-act="view" data-i="' + (-1 - i) + '"><img src="' + u + '" alt="" loading="lazy"></div>').join('');
       return hd('Photos') + '<div class="body"><div class="grid">' + fill + D.ph.map((x, i) => '<div class="th" data-act="view" data-i="' + i + '"><div class="mini scene ' + x.cls + '">' + x.html + '</div></div>').join('') + '</div><div class="foot">' + D.total + ' photos</div></div>';
     }
     if (n.app === 'dicta') {
