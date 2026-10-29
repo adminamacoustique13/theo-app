@@ -6,7 +6,7 @@
   try { S = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { S = {}; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [];
+  let D = null, nav = { app: null }, taps = 0, msg = '', es = null, deadline = null, skew = 0, code = '', toastT = null, fw = [], devOk = false; // devOk : la console développeur redemande LETHE à chaque ouverture.
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const hhmm = () => clock();
@@ -177,13 +177,7 @@
       .map(t => '<span class="' + (t[0] === cur ? 'on' : '') + '" data-act="stab" data-t="' + t[0] + '"><svg viewBox="0 0 24 24">' + t[2] + '</svg>' + t[1] + '</span>').join('') + '</nav>';
   }
   function serTop() {
-    return '<div class="ser-top"><div class="ser-logo" data-act="logo">' + SVG_MOON + '</div><div class="ser-word">sérénité<small>par NOCTIS</small></div><div class="ser-av" data-act="stab" data-t="profile">T</div></div>';
-  }
-  function mandela() {
-    return D.mq.map((x, i) => {
-      const d = D.drift[i];
-      return '<div class="ser-q"><span>' + esc(x.q) + '</span><b class="' + (d ? 'drift' : '') + '">' + esc(d || x.t) + '</b></div>';
-    }).join('');
+    return '<div class="ser-top"><button class="ser-x" data-act="home" aria-label="Quitter Sérénité">‹</button><div class="ser-logo" data-act="logo">' + SVG_MOON + '</div><div class="ser-word">sérénité<small>par NOCTIS</small></div><div class="ser-av" data-act="stab" data-t="profile">T</div></div>';
   }
   function serHome() {
     const clos = D.close ? '<div class="ser-close"><div class="ser-close-h"><span class="ser-pill">Programmée</span><b>Séance de clôture</b></div>' +
@@ -197,7 +191,6 @@
       '<div class="ser-hero" data-act="play" data-p="' + esc(SER.hero[0]) + '" data-m="' + SER.hero[2] + '">' + SVG_HERO + '<small>Recommandé pour vous</small><b>' + SER.hero[0] + '</b><span>' + SER.hero[1] + '</span><i>▶</i></div>' +
       '<div class="ser-stats">' + SER.st.map(s => '<div><b>' + s[0] + '</b><span>' + s[1] + '</span></div>').join('') + '</div>' +
       '<div class="ser-h2">Programmes</div><div class="ser-row">' + PROGS.map(p => '<div class="ser-prog ' + p[2] + '" data-act="play" data-p="' + p[0] + '" data-m="' + p[2] + '"><b>' + p[0] + '</b><span>' + p[1] + '</span></div>').join('') + '</div>' +
-      '<div class="ser-h2">Test de rémanence</div><div class="ser-card"><div class="ser-mut">Quelques questions pour mesurer ce que votre mémoire garde après chaque séance.</div>' + mandela() + '</div>' +
       '<div class="ser-foot">Version ' + D.ver + ' · atténuation ' + D.att + '<br>NOCTIS Wellbeing SAS</div></div>' + serTabs('home');
   }
   function serExplore() {
@@ -225,7 +218,7 @@
   }
   function admin() {
     const top = '<div class="dev-top"><button data-act="back">‹ Sérénité</button><span class="dev-pill">DEV</span></div>';
-    if (!S.adm) {
+    if (!S.adm || !devOk) {
       return top + '<div class="dev-body"><div class="dev-brand">NOCTIS<span>console développeur</span></div>' +
         '<div class="dev-kv"><span>environnement</span><b>préprod</b></div><div class="dev-kv"><span>utilisateur</span><b>t.lenoir</b></div>' +
         '<div class="dev-lbl">Mot de passe administrateur</div><input type="text" placeholder="••••••" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="adminlogin">Connexion</button><div class="bad dev-err">' + esc(msg) + '</div></div>';
@@ -487,7 +480,7 @@
     else if (a === 'lockopen') { if (n.lock) return; n.lock = true; }
     else if (a === 'logo') {
       taps++;
-      if (taps >= 7) { taps = 0; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
+      if (taps >= 7) { taps = 0; devOk = false; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
       else if (taps >= 3) { toast('Encore ' + (7 - taps) + ' appui' + (7 - taps > 1 ? 's' : '') + ' pour passer en mode développeur.'); return; }
       else return;
     }
@@ -498,7 +491,7 @@
     else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
     else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; }
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
-    else if (a === 'dev') nav = { app: 'admin', view: 'main', tab: 'journal' };
+    else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; }
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
     else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; musicFor(el.dataset.m); }
     else if (a === 'pause') { S.pause = !S.pause; if (music) { if (S.pause) music.pause(); else music.play().catch(() => {}); } }
@@ -506,7 +499,7 @@
     else if (a === 'tab') n.tab = el.dataset.t;
     else if (a === 'adminlogin') {
       const r = await check('admin', val);
-      if (r && r.j.ok) { S.adm = r.j.data; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
+      if (r && r.j.ok) { S.adm = r.j.data; devOk = true; save(); } else if (r) msg = r.j.error || 'Mot de passe incorrect.';
     }
     else if (a === 'doslogin') {
       const r = await check('dossier', val);
