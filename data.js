@@ -45,7 +45,7 @@ const ROLL = ['e', 'b', 'g', 'a', 'j', 'f', 'd', 'h', 'c'].map(l => '/photos/vie
 const PH = {
   // Vraie photo du post-it : même texte qu'avant, l'énigme LETHE ne bouge pas.
   postit: ph('postit', 'Lundi 19 octobre · 08:41', 's-img', IMG('postit')),
-  board: ph('board', 'Tableau blanc', 's-board', 'Mode test<br>=&gt; 7 appuis sur le logo<br><br>☾ → v1.0 avant le 31 ?<br>tickets : T-101 / 102 / 103'),
+  board: ph('board', 'Lundi 19 octobre · 11:30', 's-img', IMG('tableau')),
   inv: ph('inv', 'Facture', 's-inv', "<b>FACTURE n° 001</b><br><br>LENOIR Théo, développeur freelance<br>à l'attention de NOCTIS Wellbeing SAS<br><br>10 h de développement · tranche 1<br><br><i>Merci.</i>"),
   ticket: ph('ticket', 'Capture', 's-term', 'T-214  accès préprod\n---------------------\ndossier : ORCHIDEE\nutilisateur : t.lenoir\nmot de passe : *********\n\n[mot de passe modifié par t.lenoir · 22/10 23:18]'),
   // Le nouveau mot de passe d'ORCHIDÉE : la plante du bureau, dont seule l'étiquette latine (lisible en zoomant) donne le nom.
