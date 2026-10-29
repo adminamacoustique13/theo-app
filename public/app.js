@@ -143,10 +143,10 @@
   // ---------- Sérénité ----------
   // Textes de l'appli propres à chaque téléphone (salutation, séance mise en avant, statistiques).
   const SER = {
-    1: { hi: 'Bonjour, Théo', sub: 'Une pause de quelques minutes ?', hero: ['Respiration guidée', 'Détente · 10 min'], st: [['1', 'séance'], ['10', 'minutes'], ['—', 'série']] },
-    2: { hi: 'Bonne nuit, Théo', sub: 'Laissez la journée derrière vous.', hero: ['Séance du soir', 'Lâcher prise · 25 min'], st: [['4', 'séances'], ['96', 'minutes'], ['3', 'nuits']] },
-    3: { hi: 'Bonne nuit, Théo', sub: 'Tout est calme.', hero: ['Séance de nuit', 'Sommeil profond · 52 min'], st: [['7', 'séances'], ['212', 'minutes'], ['5', 'nuits']] },
-    4: { hi: 'Bonsoir, Théo', sub: 'Vous pouvez souffler.', hero: ['Séance du soir', 'Tourner la page · 24 min'], st: [['14', 'séances'], ['418', 'minutes'], ['11', 'nuits']] }
+    1: { hi: 'Bonjour, Théo', sub: 'Une pause de quelques minutes ?', hero: ['Respiration guidée', 'Détente · 10 min', 'p2'], st: [['1', 'séance'], ['10', 'minutes'], ['—', 'série']] },
+    2: { hi: 'Bonne nuit, Théo', sub: 'Laissez la journée derrière vous.', hero: ['Séance du soir', 'Lâcher prise · 25 min', 'p2'], st: [['4', 'séances'], ['96', 'minutes'], ['3', 'nuits']] },
+    3: { hi: 'Bonne nuit, Théo', sub: 'Tout est calme.', hero: ['Séance de nuit', 'Sommeil profond · 52 min', 'p1'], st: [['7', 'séances'], ['212', 'minutes'], ['5', 'nuits']] },
+    4: { hi: 'Bonsoir, Théo', sub: 'Vous pouvez souffler.', hero: ['Séance du soir', 'Tourner la page · 24 min', 'p4'], st: [['14', 'séances'], ['418', 'minutes'], ['11', 'nuits']] }
   }[N] || {};
   const PROGS = [
     ['Sommeil profond', '8 séances', 'p1'], ['Lâcher prise', '6 séances', 'p2'], ['Oublier le stress', '10 séances', 'p3'], ['Repartir à zéro', '5 séances', 'p4']
@@ -154,6 +154,15 @@
   const EXPLO = [
     ['Sommeil', 'p1'], ['Anxiété', 'p3'], ['Respiration', 'p2'], ['Tourner la page', 'p4'], ['Concentration', 'p3'], ['Oublier une rupture', 'p2']
   ];
+  // Musique de chaque séance, selon sa couleur : fichiers dans public/musique/ (rien ne joue tant qu'ils manquent).
+  const MUSIC = { p1: 'sommeil', p2: 'respiration', p3: 'calme', p4: 'page' };
+  let music = null;
+  function musicFor(p) {
+    if (!music) { music = new Audio(); music.loop = true; }
+    const src = '/musique/' + (MUSIC[p] || 'calme') + '.mp3';
+    if (!music.src.endsWith(src)) music.src = src;
+    music.play().catch(() => {});
+  }
   const MOODS = ['Serein', 'Fatigué', 'Tendu', 'Agité', 'Vide'];
   const SVG_MOON = '<svg viewBox="0 0 40 40"><path d="M25.5 6.5A14 14 0 1 0 33.5 27 11.5 11.5 0 0 1 25.5 6.5Z" fill="currentColor"/><circle cx="30" cy="10" r="1.3" fill="currentColor"/><circle cx="34" cy="16" r=".9" fill="currentColor"/></svg>';
   const SVG_HERO = '<svg class="ser-hero-art" viewBox="0 0 300 120" preserveAspectRatio="xMidYMax slice"><circle cx="232" cy="38" r="20" fill="#fff6e9" opacity=".9"/><path d="M0 92C50 70 90 72 150 88S250 104 300 82V120H0Z" fill="#fff" opacity=".16"/><path d="M0 104C60 88 110 94 170 104S260 112 300 100V120H0Z" fill="#fff" opacity=".22"/></svg>';
@@ -174,14 +183,14 @@
     return '<div class="ser-body">' + serTop() +
       '<h1 class="ser-hi">' + SER.hi + '</h1><div class="ser-sub">' + SER.sub + '</div>' + clos +
       '<div class="ser-h2">Comment vous sentez-vous ?</div><div class="ser-moods">' + moods + '</div>' +
-      '<div class="ser-hero" data-act="play" data-p="' + esc(SER.hero[0]) + '">' + SVG_HERO + '<small>Recommandé pour vous</small><b>' + SER.hero[0] + '</b><span>' + SER.hero[1] + '</span><i>▶</i></div>' +
+      '<div class="ser-hero" data-act="play" data-p="' + esc(SER.hero[0]) + '" data-m="' + SER.hero[2] + '">' + SVG_HERO + '<small>Recommandé pour vous</small><b>' + SER.hero[0] + '</b><span>' + SER.hero[1] + '</span><i>▶</i></div>' +
       '<div class="ser-stats">' + SER.st.map(s => '<div><b>' + s[0] + '</b><span>' + s[1] + '</span></div>').join('') + '</div>' +
-      '<div class="ser-h2">Programmes</div><div class="ser-row">' + PROGS.map(p => '<div class="ser-prog ' + p[2] + '" data-act="play" data-p="' + p[0] + '"><b>' + p[0] + '</b><span>' + p[1] + '</span></div>').join('') + '</div>' +
+      '<div class="ser-h2">Programmes</div><div class="ser-row">' + PROGS.map(p => '<div class="ser-prog ' + p[2] + '" data-act="play" data-p="' + p[0] + '" data-m="' + p[2] + '"><b>' + p[0] + '</b><span>' + p[1] + '</span></div>').join('') + '</div>' +
       '<div class="ser-foot">Version ' + D.ver + ' · atténuation ' + D.att + '<br>NOCTIS Wellbeing SAS</div></div>' + serTabs('home');
   }
   function serExplore() {
     return '<div class="ser-body">' + serTop() + '<h1 class="ser-hi">Explorer</h1><div class="ser-sub">Des séances pour chaque moment.</div>' +
-      '<div class="ser-grid">' + EXPLO.map(e => '<div class="ser-prog ' + e[1] + '" data-act="play" data-p="' + e[0] + '"><b>' + e[0] + '</b></div>').join('') + '</div></div>' + serTabs('explore');
+      '<div class="ser-grid">' + EXPLO.map(e => '<div class="ser-prog ' + e[1] + '" data-act="play" data-p="' + e[0] + '" data-m="' + e[1] + '"><b>' + e[0] + '</b></div>').join('') + '</div></div>' + serTabs('explore');
   }
   function serProfile() {
     const rows = [['Rappel du soir', '22:00'], ['Voix du guide', 'Douce'], ['Atténuation', D.att], ['Version', D.ver]];
@@ -433,8 +442,8 @@
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
     else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; }
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
-    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; }
-    else if (a === 'pause') { S.pause = !S.pause; }
+    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; musicFor(el.dataset.m); }
+    else if (a === 'pause') { S.pause = !S.pause; if (music) { if (S.pause) music.pause(); else music.play().catch(() => {}); } }
     else if (a === 'mood') { S.mood = S.mood === el.dataset.m ? '' : el.dataset.m; save(); }
     else if (a === 'tab') n.tab = el.dataset.t;
     else if (a === 'adminlogin') {
@@ -460,6 +469,7 @@
       n.more = false; n.spec = true; n.seuil = 0;
       if (D.memos[n.i] && D.memos[n.i].sp && !S.sp) { const r = await check('spectro'); if (r && r.j.ok) { S.sp = r.j.text; save(); } }
     }
+    if (music && !music.paused && !(nav.app === 'sereni' && nav.view === 'play')) music.pause();
     if (D) draw();
   });
 
