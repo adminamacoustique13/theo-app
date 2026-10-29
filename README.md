@@ -38,6 +38,19 @@ La fiche vérité complète (solutions, chronologie, indices) est dans le docume
 - Les icônes sont recréées au démarrage (`make-icons.js`).
 - Une fois en ligne, utiliser l'adresse https de Railway pour les QR codes : la page game master les génère à partir de l'adresse sur laquelle elle est ouverte.
 
+## Musiques de Sérénité
+
+Le lecteur de séances joue en boucle un fichier de `public/musique/`, choisi selon la couleur de la séance :
+
+| Fichier | Séances |
+| --- | --- |
+| `sommeil.mp3` | Sommeil profond, Sommeil, séance de nuit (tél. 3) |
+| `respiration.mp3` | Lâcher prise, Respiration, Oublier une rupture, séances mises en avant des tél. 1 et 2 |
+| `calme.mp3` | Oublier le stress, Anxiété, Concentration |
+| `page.mp3` | Repartir à zéro, Tourner la page, séance du soir (tél. 4) |
+
+Tant qu'un fichier manque, la séance s'affiche sans son. Le dépôt est public : n'utiliser que des musiques libres de droits (licence Pixabay, CC0).
+
 ## Fichiers
 
 - `server.js` : serveur, vérifications, temps réel (SSE).
