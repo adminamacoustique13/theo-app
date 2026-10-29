@@ -1,6 +1,6 @@
 'use strict';
 // Service worker : garde l'appli utilisable hors ligne (actif seulement en HTTPS ou sur localhost).
-const V = 'theo-v6';
+const V = 'theo-v7';
 const SHELL = ['/style.css', '/app.js', '/icons/icon-180.png', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', e => {

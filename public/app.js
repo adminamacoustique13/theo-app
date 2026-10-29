@@ -125,6 +125,7 @@
   };
   IC.tel = '<svg viewBox="0 0 60 60"><defs><linearGradient id="ict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6bf27c"/><stop offset="1" stop-color="#0dbd2d"/></linearGradient></defs><rect width="60" height="60" fill="url(#ict)"/><path d="M21.5 14.5c1.4-.9 3.2-.5 4.1.9l3.3 5c.8 1.3.6 3-.6 4l-2.6 2.1c1.8 4 4.6 6.9 8.6 8.8l2.1-2.6c1-1.2 2.7-1.5 4-.6l5 3.3c1.4.9 1.8 2.7.9 4.1l-2 3c-1.3 1.9-3.6 2.8-5.8 2.2C26.9 42.300 17.7 33.100 15.3 21.500c-.5-2.200.4-4.500 2.300-5.800Z" fill="#fff"/></svg>';
   IC.bank = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8a6b"/><stop offset="1" stop-color="#0b4a3a"/></linearGradient></defs><rect width="60" height="60" fill="url(#icb)"/><g fill="#fff"><path d="M30 12 47 21H13Z"/><rect x="13" y="22.5" width="34" height="3" rx="1"/><rect x="16" y="28" width="4" height="13"/><rect x="24" y="28" width="4" height="13"/><rect x="32" y="28" width="4" height="13"/><rect x="40" y="28" width="4" height="13"/><rect x="12" y="43" width="36" height="4" rx="1"/></g></svg>';
+  IC.mail = '<svg viewBox="0 0 60 60"><defs><linearGradient id="icl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ac8fa"/><stop offset="1" stop-color="#0a6cff"/></linearGradient></defs><rect width="60" height="60" fill="url(#icl)"/><rect x="11" y="18" width="38" height="25" rx="3" fill="#fff"/><path d="M12 20 30 33l18-13" fill="none" stroke="#2b8cff" stroke-width="2.4" stroke-linejoin="round"/></svg>';
   const icCal = () => { const d = dOf(CLOCK[2]); return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff"/><text x="30" y="17" text-anchor="middle" font-size="9.5" font-weight="600" fill="#ff3b30" font-family="-apple-system,Helvetica,Arial">' + JOURS[d.getDay()].slice(0, 3).toUpperCase() + '.</text><text x="30" y="48" text-anchor="middle" font-size="32" font-weight="300" fill="#111" font-family="-apple-system,Helvetica,Arial">' + d.getDate() + '</text></svg>'; };
   const icon = k => '<i class="ico">' + (k === 'sereni' ? '<b class="ico-ser">' + SVG_MOON + '</b>' : k === 'cal' ? icCal() : IC[k]) + '</i>';
   const SIG = '<svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>';
@@ -135,7 +136,7 @@
   // Fond d'écran : la même photo sur les quatre téléphones (public/wallpaper.jpg), fond sombre si elle manque.
   const wall = () => '<div class="wp"></div>';
   const sb = () => sbar(true, D.bat);
-  const APPN = { bank: 'Comptes', notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
+  const APPN = { bank: 'Comptes', mail: 'Mail', notes: 'Notes', msg: 'Messages', photos: 'Photos', dicta: 'Dictaphone', set: 'Réglages', tel: 'Récents' };
   const hd = t => '<div class="hd"><button data-act="back">‹<em>' + (nav.view && nav.view !== 'list' ? (nav.view === 'card' ? '' : APPN[nav.app] || '') : '') + '</em></button><span>' + esc(t) + '</span></div>';
   const LOCK_IC = '<svg viewBox="0 0 14 18" width="14" height="18"><path d="M3 8V5.5a4 4 0 0 1 8 0V8" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="0" y="8" width="14" height="10" rx="2.5" fill="currentColor"/></svg>';
   const ini = s => s.replace(/\(.*\)/, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -308,6 +309,28 @@
     return hd('Comptes') + '<div class="body">' + card + '<div class="bk-h">Opérations</div>' +
       days.map(g => '<div class="bk-day">' + longDay(g[0].d) + '</div><div class="grp">' + g.map(o => '<div class="row"><span>' + esc(o.t) + '</span><b class="' + (o.a > 0 ? 'pos' : '') + '">' + eur(o.a) + '</b></div>').join('') + '</div>').join('') + '</div>';
   }
+  // Mail : reçus et envoyés, du plus récent au plus ancien ; une pièce jointe s'ouvre comme un PDF.
+  function mailApp() {
+    const box = nav.box || 'in', all = D.mail || [];
+    const list = all.map((m, i) => ({ m, i })).filter(o => (o.m.box || 'in') === box);
+    const who = m => m.box === 'sent' ? 'À : ' + (m.to || '') : m.from || m.addr || '';
+    if (nav.view === 'att') {
+      const m = all[nav.i], a = (m.att || [])[nav.att] || {};
+      return hd(a.n || '') + '<div class="body"><div class="ml-pdf">' + (a.html || esc(a.n || '')) + '</div></div>';
+    }
+    if (nav.view === 'item') {
+      const m = all[nav.i];
+      return hd('') + '<div class="body"><div class="ml-v"><h2>' + esc(m.subj || '(Sans objet)') + '</h2>' +
+        '<div class="ml-from"><i class="av-l">' + esc(ini(m.box === 'sent' ? (m.to || '') : (m.from || m.addr || ''))) + '</i><div><b>' + esc(m.box === 'sent' ? 'Moi' : (m.from || m.addr || '')) + '</b>' +
+        (m.addr && m.box !== 'sent' ? '<small>' + esc(m.addr) + '</small>' : '') + (m.to ? '<small>À : ' + esc(m.to) + '</small>' : '') + '</div><span>' + esc(longDay(m.d)) + (m.d.length > 10 ? ' · ' + m.d.slice(11, 16) : '') + '</span></div>' +
+        '<div class="ml-body">' + esc(m.body || '').replace(/\n/g, '<br>') + '</div>' +
+        (m.att || []).map((a, k) => '<div class="ml-att" data-act="att" data-i="' + k + '"><i>PDF</i><div><b>' + esc(a.n) + '</b><small>' + esc(a.sz || 'Document PDF') + '</small></div></div>').join('') + '</div></div>';
+    }
+    return hd(box === 'sent' ? 'Envoyés' : 'Réception') + '<div class="seg"><span class="' + (box === 'in' ? 'on' : '') + '" data-act="mailbox" data-v="in">Reçus</span><span class="' + (box === 'sent' ? 'on' : '') + '" data-act="mailbox" data-v="sent">Envoyés</span></div>' +
+      '<div class="body">' + (list.length ? list.map(o => '<div class="item ml" data-act="view" data-i="' + o.i + '">' + (o.m.unread ? '<em class="ml-dot"></em>' : '') +
+        '<b>' + esc(who(o.m)) + '<span>' + callWhen(o.m.d) + ' ›</span></b><div class="ml-s">' + esc(o.m.subj || '(Sans objet)') + (o.m.att && o.m.att.length ? ' 📎' : '') + '</div>' +
+        '<small>' + esc((o.m.body || '').replace(/\s+/g, ' ')) + '</small></div>').join('') : '<div class="foot">Aucun message</div>') + '</div>';
+  }
   // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
   const ul = t => '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1));
   function renderApp() {
@@ -354,6 +377,7 @@
     if (n.app === 'cal') return calApp();
     if (n.app === 'tel') return telApp();
     if (n.app === 'bank') return bankApp();
+    if (n.app === 'mail') return mailApp();
     if (n.app === 'sereni') return sereni();
     if (n.app === 'admin') return admin();
     if (n.app === 'set') {
@@ -405,7 +429,7 @@
       el.innerHTML = '<div class="home">' + wall(D.wp) + sb() +
         '<div class="wid"><div class="w-cal" data-act="open" data-app="cal"><small>' + day[0].toUpperCase() + '</small><b>' + day[1] + '</b><span>' + day[2] + '</span></div>' +
         '<div class="w-ser" data-act="open" data-app="sereni"><i>' + SVG_MOON + '</i><small>Sérénité</small><b>' + (D.close ? 'Séance de clôture' : SER.hero[0]) + '</b><span>' + (D.close ? 'Cette nuit, 2 h 30' : SER.hero[1]) + '</span></div></div>' +
-        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['bank', 'Banque']].map(ic).join('') + '</div>' +
+        '<div class="icons">' + [['cal', 'Calendrier'], ['notes', 'Notes'], ['photos', 'Photos'], ['dicta', 'Dictaphone'], ['mail', 'Mail'], ['bank', 'Banque']].map(ic).join('') + '</div>' +
         '<div class="pdots"><i class="on"></i><i></i></div><div class="dock">' + [['tel', 'Téléphone'], ['msg', 'Messages'], ['sereni', 'Sérénité'], ['set', 'Réglages']].map(ic).join('') + '</div></div>';
     } else {
       el.innerHTML = sb() + '<div class="app' + (ser ? ' ser' : ' a-' + nav.app + (!nav.view || nav.view === 'list' ? ' lv' : '')) + '">' + renderApp() + '</div><div class="hbar" data-act="home"></div>';
@@ -435,6 +459,7 @@
     else if (a === 'back') {
       if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
       else if (n.app === 'msg' && n.view === 'card') n.view = 'item';
+      else if (n.app === 'mail' && n.view === 'att') n.view = 'item';
       else if (n.view && n.view !== 'list') n.view = 'list';
       else nav = { app: null };
     }
@@ -451,6 +476,8 @@
     else if (a === 'calmo') { const t = dOf(CLOCK[2]); n.mo = Math.min(11, Math.max(9, (n.mo != null ? n.mo : t.getMonth()) + +el.dataset.m)); }
     else if (a === 'callist') n.list = !n.list;
     else if (a === 'telmiss') n.miss = el.dataset.v === '1';
+    else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
+    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; }
     else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
     else if (a === 'dev') nav = { app: 'admin', view: 'main', tab: 'journal' };
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
