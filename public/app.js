@@ -70,7 +70,8 @@
     (S.live || []).forEach(addMsg);
     nav = { app: null };
     draw();
-    fin();
+    // Fin déjà trouvée (page rechargée, ou trouvée sur un autre téléphone) : on l'affiche ici aussi.
+    if (D.fin && !S.fin && !S.end) won(D.fin); else fin();
     connect();
   }
   function connect() {
@@ -82,6 +83,11 @@
     if (e.type === 'state') { deadline = e.deadline; skew = e.now ? e.now - Date.now() : 0; refreshCd(); return; }
     if (e.type === 'banner') { banner(e.title || 'Notification', e.text); return; }
     if (e.type === 'hint') { banner('Indice', e.text); return; }
+    // Fin trouvée sur le tél. 4 : elle s'affiche sur les quatre téléphones ; puis le choix commun, puis la fin choisie.
+    if (e.type === 'fin') { if (!S.fin && !S.end) won(e.fin); return; }
+    if (e.type === 'choix') { if (!S.end) { S.end = e.fin; save(); fin(); } return; }
+    // Nouvelle partie lancée par les game masters : on oublie toute la progression, sauf le déverrouillage.
+    if (e.type === 'reset') { S = { sess: S.sess, intro: S.intro }; save(); devOk = false; taps = 0; fw = []; nav = { app: null }; draw(); fin(); return; }
     if (e.type === 'message') {
       e.h = e.h || hhmm();
       addMsg(e);
@@ -117,7 +123,8 @@
   // ---------- Rendu ----------
   // ---------- Téléphone : horloge, icônes, fond d'écran ----------
   // Date et heure affichées par chaque téléphone au moment où on le déverrouille ; l'heure avance ensuite normalement.
-  const CLOCK = { 1: ['Lundi 19 octobre', 22 * 60 + 14, '2026-10-19'], 2: ['Vendredi 23 octobre', 3 * 60 + 26, '2026-10-23'], 3: ['Dimanche 25 octobre', 3 * 60 + 41, '2026-10-25'], 4: ['Vendredi 30 octobre', 23 * 60 + 58, '2026-10-30'] }[N] || ['', 0, '2026-10-19'];
+  // Le tél. 4 s'ouvre à 1 h 45, la nuit du 30 au 31 : le compte à rebours de 45 min des game masters tombe sur 2 h 30.
+  const CLOCK = { 1: ['Lundi 19 octobre', 22 * 60 + 14, '2026-10-19'], 2: ['Vendredi 23 octobre', 3 * 60 + 26, '2026-10-23'], 3: ['Dimanche 25 octobre', 3 * 60 + 41, '2026-10-25'], 4: ['Samedi 31 octobre', 1 * 60 + 45, '2026-10-31'] }[N] || ['', 0, '2026-10-19'];
   const T0 = Date.now();
   const clock = () => { const m = (CLOCK[1] + Math.floor((Date.now() - T0) / 60000)) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
   setInterval(() => { document.querySelectorAll('.clk').forEach(e => { e.textContent = clock(); }); }, 1000);
@@ -218,17 +225,19 @@
     if (nav.tab === 'profile') return serProfile();
     return serHome();
   }
+  // Identifiant du compte dans la console : jamais « t.lenoir » sur le tél. 4 (le nom est une réponse d'énigme).
+  const USER = N === 4 ? 'compte révoqué' : 't.lenoir';
   function admin() {
     const top = '<div class="dev-top"><button data-act="back">‹ Sérénité</button><span class="dev-pill">DEV</span></div>';
     if (!S.adm || !devOk) {
       return top + '<div class="dev-body"><div class="dev-brand">NOCTIS<span>console développeur</span></div>' +
-        '<div class="dev-kv"><span>environnement</span><b>préprod</b></div><div class="dev-kv"><span>utilisateur</span><b>t.lenoir</b></div>' +
+        '<div class="dev-kv"><span>environnement</span><b>préprod</b></div><div class="dev-kv"><span>utilisateur</span><b>' + USER + '</b></div>' +
         '<div class="dev-lbl">Mot de passe administrateur</div><input type="text" placeholder="••••••" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="adminlogin">Connexion</button><div class="bad dev-err">' + esc(msg) + '</div></div>';
     }
     const A = S.adm, tab = nav.tab || 'journal';
     const tabs = ['journal', 'tickets', 'comptes', 'dossiers'].map(t => '<span class="' + (t === tab ? 'on' : '') + '" data-act="tab" data-t="' + t + '">' + t + '</span>').join('');
     let b = '';
-    if (A.adm === 'revoked') b = '<div class="dev-box err"><b>Accès révoqué</b><small>Le compte t.lenoir n\'a plus de droits sur cet environnement.</small></div>';
+    if (A.adm === 'revoked') b = '<div class="dev-box err"><b>Accès révoqué</b><small>Ce compte n\'a plus de droits sur cet environnement.</small></div>';
     else if (tab === 'journal') b = '<div class="dev-mod">module LETHE : <b>' + esc(A.lethe) + '</b></div><table class="dev-t"><tr><th>ID</th><th>Heure</th><th>Séance</th></tr>' + A.jr.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + (r[6] ? '<br><span class="mut">' + esc(r[6]) + '</span>' : '') + '</td><td>' + (r[5] ? ul(r[3]) + ' ' + mk(r[5]) : esc(r[3])) + '<br><span class="mut">' + r[4] + '</span></td></tr>').join('') + '</table>';
     else if (tab === 'tickets') b = '<table class="dev-t">' + A.tk.map(r => '<tr><td><b>' + r[0] + '</b></td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>';
     else if (tab === 'comptes') b = A.accHtml ? '<div class="dev-box dev-acc">' + A.accHtml + '</div>' : '<div class="mut">Section réservée aux administrateurs système.</div>';
@@ -241,7 +250,7 @@
         b = '<div class="dev-box"><b>ORCHIDÉE</b><small>Dossier protégé' + (A.dosMod ? ' · mot de passe modifié par ' + esc(A.dosMod) : '') + '</small>' + (A.dosHint ? '<small>Indice : ' + esc(A.dosHint) + '</small>' : '') + '</div><input type="text" placeholder="Mot de passe du dossier" autocapitalize="off" autocorrect="off"><button class="dev-btn" data-act="doslogin">Ouvrir</button><div class="bad dev-err">' + esc(msg) + '</div>';
       }
     } else b = '<div class="mut">Aucun dossier partagé.</div>';
-    return top + '<div class="dev-body"><div class="dev-brand sm">NOCTIS<span>préprod · t.lenoir</span></div><div class="dev-tabs">' + tabs + '</div>' + b + '</div>';
+    return top + '<div class="dev-body"><div class="dev-brand sm">NOCTIS<span>préprod · ' + USER + '</span></div><div class="dev-tabs">' + tabs + '</div>' + b + '</div>';
   }
   // ---------- Calendrier et Téléphone ----------
   const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -287,7 +296,8 @@
   const callTxt = c => c.dir === 'miss' ? 'Appel manqué' : (c.dir === 'out' ? 'Appel sortant' : 'Appel entrant') + (c.dur === 0 ? ' · annulé' : c.dur != null ? ' · ' + c.dur + ' min' : '');
   function telApp() {
     const all = D.calls || [];
-    const tabs = '<nav class="tel-tab">' + [['☆', 'Favoris'], ['◷', 'Récents'], ['◉', 'Contacts'], ['⠿', 'Clavier'], ['◎', 'Messagerie']].map(x => '<span class="' + (x[1] === 'Récents' ? 'on' : '') + '"><i>' + x[0] + '</i>' + x[1] + '</span>').join('') + '</nav>';
+    // Seul l'onglet Récents existe : les autres sont grisés.
+    const tabs = '<nav class="tel-tab">' + [['☆', 'Favoris'], ['◷', 'Récents'], ['◉', 'Contacts'], ['⠿', 'Clavier'], ['◎', 'Messagerie']].map(x => '<span class="' + (x[1] === 'Récents' ? 'on' : 'off') + '"><i>' + x[0] + '</i>' + x[1] + '</span>').join('') + '</nav>';
     if (nav.view === 'item') {
       const g = nav.grp || [], c = g[0] || {}, av = (D.th.find(t => t.n === c.n) || {}).av;
       return hd('') + '<div class="body"><div class="tel-me"><i class="av-l big">' + (av || esc(ini(c.n || ''))) + '</i><b>' + esc(c.n || '') + '</b><small>mobile</small></div>' +
@@ -338,20 +348,25 @@
         '<b>' + esc(who(o.m)) + '<span>' + callWhen(o.m.d) + ' ›</span></b><div class="ml-s">' + esc(o.m.subj || '(Sans objet)') + (o.m.att && o.m.att.length ? ' 📎' : '') + '</div>' +
         '<small>' + esc((o.m.body || '').replace(/\s+/g, ' ')) + '</small></div>').join('') : '<div class="foot">Aucun message</div>') + '</div>';
   }
-  // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS du tél. 1).
+  // Première lettre soulignée dans les titres de notes (signale l'acrostiche SOUVIENS, sur le tél. 1 seulement).
   function ul(t) { return '<u>' + esc(t.charAt(0)) + '</u>' + esc(t.slice(1)); }
+  const nt = x => x.ul ? ul(x.t) : esc(x.t);
+  // Date d'une note dans la liste : l'heure si elle est du jour, sinon le jour (comme sur iPhone).
+  const ntWhen = x => (!x.d || x.d === CLOCK[2]) ? x.h : x.d.slice(8) + '/' + x.d.slice(5, 7);
   // Pièce jointe verrouillée d'Ethel : le mot de passe est « qui je suis » (moi, Théo, Théo Lenoir).
+  // Ouverte, elle ne dit que « c'est moi » : le quatrième mot, marqué de sa lune.
   function lockBub(m) {
-    if (S.ana) return '<div class="bub in lockb"><small>🔓 ' + mk(4) + ' pièce jointe</small>c\'est moi. souviens-toi de moi</div>';
+    if (S.ana) return '<div class="bub in lockb"><small>🔓 ' + mk(4) + ' pièce jointe</small>c\'est moi</div>';
     return '<div class="bub in lockb" data-act="lockopen"><small>🔒 ' + mk(4) + ' pièce jointe verrouillée</small>' + esc(m[1]) +
       (nav.lock ? '<input type="text" placeholder="mot de passe" autocapitalize="off" autocorrect="off"><button class="go alt" data-act="anagram">Ouvrir</button><span class="bad">' + esc(msg) + '</span>' : '') + '</div>';
   }
   function renderApp() {
     const n = nav;
     if (n.app === 'notes') {
-      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + x.h + '</span><h3>' + ul(x.t) + ' ' + mk(x.mk) + '</h3>' + esc(x.b) + '</div></div>'; }
-      const list = D.notes.map((x, i) => ({ x, i })).sort((a, b) => b.x.h.localeCompare(a.x.h));
-      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + ul(o.x.t) + ' ' + mk(o.x.mk) + '</b><small><span>' + o.x.h + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
+      if (n.view === 'item') { const x = D.notes[n.i]; return hd('') + '<div class="body"><div class="paper"><span class="nt-d">' + (x.d ? longDay(x.d) + ' · ' : '') + x.h + '</span><h3>' + nt(x) + ' ' + mk(x.mk) + '</h3>' + esc(x.b) + '</div></div>'; }
+      const key = x => (x.d || CLOCK[2]) + ' ' + x.h;
+      const list = D.notes.map((x, i) => ({ x, i })).sort((a, b) => key(b.x).localeCompare(key(a.x)));
+      return hd('Notes') + '<div class="body"><div class="grp">' + list.map(o => '<div class="item" data-act="view" data-i="' + o.i + '"><b>' + nt(o.x) + ' ' + mk(o.x.mk) + '</b><small><span>' + ntWhen(o.x) + '</span>' + esc(o.x.b.split('\n')[0]) + '</small></div>').join('') + '</div><div class="foot">' + D.notes.length + ' notes</div></div>';
     }
     if (n.app === 'msg') {
       if (n.view === 'card') {
@@ -475,7 +490,9 @@
         '<div class="fin-ch">' + S.fin.choix.map((c, i) => '<button class="fx" style="animation-delay:' + (2.3 + i * 0.35).toFixed(2) + 's" data-fin="' + esc(c.k) + '">' + fr(c.l) + '</button>').join('') + '</div></div>';
     }
     el.className = 'on';
-    el.innerHTML = '<div class="fin-sky"></div><div class="fin-in" data-fin="next"><div class="fin-col">' + h + '</div></div>' +
+    // Retour à l'écran précédent tant que le choix n'est pas fait (le choix, lui, est définitif).
+    el.innerHTML = '<div class="fin-sky"></div>' + (!S.end && step > 0 ? '<button class="fin-back" data-fin="back" aria-label="Écran précédent">‹</button>' : '') +
+      '<div class="fin-in" data-fin="next"><div class="fin-col">' + h + '</div></div>' +
       '<div class="fin-dots">' + Array.from({ length: n + 2 }, (_, i) => '<i class="' + (i === step ? 'on' : i < step ? 'done' : '') + '"></i>').join('') + '</div>';
   }
   let finBusy = false;
@@ -485,8 +502,9 @@
       // Premier appui : tout le texte apparaît d'un coup ; appui suivant : écran suivant.
       if (!box.classList.contains('all')) { box.classList.add('all'); return; }
       if (S.end || !S.fin || (S.fs || 0) >= S.fin.ecrans.length) return;
-      S.fs = (S.fs || 0) + 1; save(); fin(); return;
+      S.fs = (S.fs || 0) + 1; save(); push(); fin(); return;
     }
+    if (k === 'back') { if (hdepth > 0) history.back(); else goBack(); return; }
     if (finBusy || S.end) return;
     finBusy = true;
     $('fin').querySelectorAll('button').forEach(b => { b.disabled = true; b.classList.toggle('sel', b.dataset.fin === k); });
@@ -523,6 +541,39 @@
     refreshCd();
   }
 
+  // ---------- Retour ----------
+  // Chaque écran ouvert (appli, note, conversation, photo, séance…) ajoute une entrée à l'historique du navigateur.
+  // Le bouton ‹ de l'appli, le bouton retour d'Android et le geste de retour de Safari font donc tous la même chose :
+  // revenir d'un écran, sans jamais quitter le jeu tant qu'on n'est pas sur l'écran d'accueil.
+  let hdepth = 0, popSkip = 0;
+  function push() { hdepth++; try { history.pushState({ d: hdepth }, ''); } catch (e) {} }
+  function goBack() {
+    const n = nav;
+    if (S.fin && !S.end && (S.fs || 0) > 0 && $('fin').className === 'on') { S.fs--; save(); fin(); return; }
+    if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
+    else if (n.app === 'msg' && n.view === 'card') n.view = 'item';
+    else if (n.app === 'mail' && n.view === 'att') n.view = 'item';
+    else if (n.app === 'cal' && n.list) n.list = false;
+    else if (n.view && n.view !== 'list') n.view = 'list';
+    else nav = { app: null };
+    if (player) { player.pause(); player = null; }
+    if (music && !music.paused && !(nav.app === 'sereni' && nav.view === 'play')) music.pause();
+    draw();
+  }
+  function goHome() {
+    nav = { app: null };
+    if (player) { player.pause(); player = null; }
+    if (music && !music.paused) music.pause();
+    if (hdepth > 0) { popSkip = 1; const d = hdepth; hdepth = 0; try { history.go(-d); } catch (e) {} }
+    draw();
+  }
+  try { history.replaceState({ d: 0 }, ''); } catch (e) {}
+  window.addEventListener('popstate', e => {
+    const d = (e.state && e.state.d) || 0;
+    if (popSkip) { popSkip = 0; hdepth = d; return; }
+    if (d < hdepth && D) { hdepth = d; goBack(); } else hdepth = d;
+  });
+
   // ---------- Actions ----------
   // Curseur Seuil du spectre : on redessine seulement le canvas.
   document.addEventListener('input', e => {
@@ -541,41 +592,35 @@
     const inp = $('screen').querySelector('input');
     const val = inp ? inp.value : '';
     msg = '';
-    if (player && (a === 'open' || a === 'home' || a === 'back')) { player.pause(); player = null; }
+    if (a === 'home') { goHome(); return; }
+    if (a === 'back') { if (hdepth > 0) history.back(); else goBack(); return; }
+    if (player && a === 'open') { player.pause(); player = null; }
     if (a === 'vplay') {
       const x = D.memos[n.i];
       if (!player) { player = new Audio(x.a); player.onended = () => { player = null; draw(); }; }
       if (player.paused) player.play().catch(() => {}); else player.pause();
     }
-    else if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; }
-    else if (a === 'home') nav = { app: null };
-    else if (a === 'back') {
-      if (n.app === 'admin') nav = { app: 'sereni', view: 'list' };
-      else if (n.app === 'msg' && n.view === 'card') n.view = 'item';
-      else if (n.app === 'mail' && n.view === 'att') n.view = 'item';
-      else if (n.view && n.view !== 'list') n.view = 'list';
-      else nav = { app: null };
-    }
-    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; }
+    else if (a === 'open') { nav = { app: el.dataset.app, view: 'list', i: 0, tab: 'journal' }; push(); }
+    else if (a === 'view') { n.view = 'item'; n.i = +el.dataset.i; n.zoom = false; push(); }
     else if (a === 'zoom') { n.zoom = !n.zoom; }
-    else if (a === 'card') { n.view = 'card'; }
+    else if (a === 'card') { n.view = 'card'; push(); }
     else if (a === 'lockopen') { if (n.lock) return; n.lock = true; }
     else if (a === 'logo') {
       taps++;
-      if (taps >= 7) { taps = 0; devOk = false; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; }
+      if (taps >= 7) { taps = 0; devOk = false; toast('Vous êtes maintenant en mode développeur.'); nav = { app: 'admin', view: 'main', tab: 'journal' }; push(); }
       else if (taps >= 3) { toast('Encore ' + (7 - taps) + ' appui' + (7 - taps > 1 ? 's' : '') + ' pour passer en mode développeur.'); return; }
       else return;
     }
     else if (a === 'calday') n.sel = el.dataset.d;
     else if (a === 'calmo') { const t = dOf(CLOCK[2]); n.mo = Math.min(11, Math.max(9, (n.mo != null ? n.mo : t.getMonth()) + +el.dataset.m)); }
-    else if (a === 'callist') n.list = !n.list;
+    else if (a === 'callist') { if (n.list) { if (hdepth > 0) { history.back(); return; } n.list = false; } else { n.list = true; push(); } }
     else if (a === 'telmiss') n.miss = el.dataset.v === '1';
     else if (a === 'mailbox') { n.box = el.dataset.v; n.view = 'list'; }
-    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; }
-    else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; }
-    else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; }
+    else if (a === 'att') { n.view = 'att'; n.att = +el.dataset.i; n.zoom = false; push(); }
+    else if (a === 'callgrp') { n.grp = n.grps[+el.dataset.i]; n.view = 'item'; push(); }
+    else if (a === 'dev') { devOk = false; nav = { app: 'admin', view: 'main', tab: 'journal' }; push(); }
     else if (a === 'stab') { n.tab = el.dataset.t; n.view = 'list'; }
-    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; musicFor(el.dataset.m); }
+    else if (a === 'play') { n.view = 'play'; n.prog = el.dataset.p; S.pause = false; musicFor(el.dataset.m); push(); }
     else if (a === 'pause') { S.pause = !S.pause; if (music) { if (S.pause) music.pause(); else music.play().catch(() => {}); } }
     else if (a === 'mood') { S.mood = S.mood === el.dataset.m ? '' : el.dataset.m; save(); }
     else if (a === 'tab') n.tab = el.dataset.t;

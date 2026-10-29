@@ -39,11 +39,14 @@ for (const n of [1, 2, 3, 4]) {
 }
 assert.strictEqual(phones[3].admin.dosHint, 'la plante du bureau');
 
-// 4. Les quatre fragments, dans l'ordre des lunes, donnent le mot de passe final (moi, Théo ou Théo Lenoir).
-assert.ok(SECRETS.final.includes(['SOUVIENS', 'TOI', 'DE', 'MOI'].join('')));
-assert.ok(SECRETS.final.includes('SOUVIENSTOIDETHEO') && SECRETS.final.includes('SOUVIENSTOIDETHEOLENOIR'));
-// Lune 1 sur les huit notes du tél. 1 ; pièce jointe verrouillée d'Ethel sur le tél. 4 seulement.
-assert.strictEqual(phones[1].public.notes.filter(n => n.mk === 1).length, 8);
+// 4. Les quatre fragments, dans l'ordre des lunes, donnent le mot de passe final.
+assert.deepStrictEqual(SECRETS.final, [['SOUVIENS', 'TOI', 'DE', 'MOI'].join('')]);
+// Lune 1 et soulignement sur les huit notes du tél. 1 seulement ; les notes restent lisibles sur les tél. 2 à 4.
+assert.strictEqual(phones[1].public.notes.filter(n => n.mk === 1 && n.ul).length, 8);
+for (const n of [2, 3, 4]) { assert.strictEqual(phones[n].public.notes.filter(n => n.mk || n.ul).length, 0); assert.ok(phones[n].public.notes.length >= 8); }
+// Le tél. 4 ne montre jamais « Lenoir » ni l'identifiant t.lenoir avant la fin.
+assert.ok(!/lenoir/i.test(JSON.stringify(phones[4].public)));
+// Pièce jointe verrouillée d'Ethel sur le tél. 4 seulement.
 const lock = n => phones[n].public.th.find(t => t.n === 'Ethel O.').m.some(m => m[0] === 'lock');
 assert.ok(lock(4) && !lock(3) && !lock(2));
 assert.ok(SECRETS.anagram.includes('MOI') && SECRETS.anagram.includes('THEO'));
