@@ -366,3 +366,24 @@ canvas{width:100%;border-radius:8px;display:block}
 .s-img.zoom{overflow:auto;cursor:zoom-out;max-height:calc(100vh - 140px)}
 .s-img.zoom img{width:300%;max-width:none}
 .av img,.av-s img,.av-l img{width:100%;height:100%;object-fit:cover;display:block}
+/* Fin du jeu : plein écran noir, texte qui apparaît doucement */
+#fin{display:none}
+#fin.on{display:block;position:absolute;inset:0;z-index:40;background:#000;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:fin-bg 1.6s ease both}
+.fin-in{min-height:100%;box-sizing:border-box;padding:calc(var(--st) + 48px) 28px calc(env(safe-area-inset-bottom) + 48px);display:flex;flex-direction:column;justify-content:center;color:#e5e5ea;font-size:16px;line-height:1.6}
+.fin-in>*,.fin-q>*{opacity:0;animation:fin-in 1.4s ease forwards}
+.fin-in.all>*,.fin-in.all .fin-q>*{animation-delay:0s!important;animation-duration:.4s}
+.fin-t{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#8e8e93;margin-bottom:22px;line-height:1.5}
+.fin-in p{margin:0 0 16px}
+.fin-in p b{color:#fff;font-weight:600}
+.fin-m{font-style:italic;color:#fff;margin-top:14px!important}
+.fin-go{margin-top:26px;font-size:12px;color:#636366;text-align:center;letter-spacing:.06em}
+.fin-q{opacity:1!important;animation:none!important;text-align:center}
+.fin-q h2{font-size:24px;font-weight:600;color:#fff;margin:0 0 12px;line-height:1.3}
+.fin-q p{font-size:14px;color:#8e8e93;margin:0 0 34px}
+.fin-ch{display:flex;flex-direction:column;gap:12px}
+.fin-ch button{font:inherit;font-size:16px;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;padding:15px 18px;transition:background .3s,opacity .3s}
+.fin-ch button:active{background:rgba(255,255,255,.08)}
+.fin-ch button:disabled{opacity:.3}
+.fin-ch button.sel{opacity:1;background:rgba(255,255,255,.12);border-color:#fff}
+@keyframes fin-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fin-bg{from{opacity:0}to{opacity:1}}
