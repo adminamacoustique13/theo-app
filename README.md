@@ -30,7 +30,7 @@ La fiche vérité complète (solutions, chronologie, indices) est dans le docume
 ## Limites actuelles
 
 - En **http** (réseau local), l'appli s'installe mais le mode hors ligne ne fonctionne pas : il faut du **https** (Railway). Les vérifications de mots de passe exigent de toute façon que le serveur soit joignable.
-- Les sessions et le journal sont gardés en mémoire : si le serveur redémarre, les joueurs ressaisissent leur code de déverrouillage (leur progression reste sur leur appareil).
+- Les sessions des téléphones sont des jetons signés : un redémarrage du serveur (chaque fusion sur Railway) ne déverrouille plus les téléphones. Le journal, le compte à rebours et la fin trouvée restent en mémoire et repartent de zéro au redémarrage (la progression reste sur chaque appareil).
 - Les numéros de téléphone (06 39 98 …) sont fictifs.
 
 ## Passer sur Railway
