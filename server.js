@@ -30,6 +30,9 @@ const state = {
   // Fin : énigme finale trouvée, puis choix commun des joueurs (un seul, définitif).
   won: false,
   choix: null,
+  // Numéro de partie : l'heure de la dernière « Nouvelle partie » (0 au démarrage). Un téléphone qui a raté l'ordre de remise à zéro
+  // (appli fermée) le rattrape au chargement : s'il a un numéro plus ancien, il efface sa progression.
+  epoch: 0,
   tries: new Map()
 };
 
@@ -86,7 +89,7 @@ function toPhones(target, evt) {
 const stateEvt = () => ({ type: 'state', deadline: state.deadline, now: Date.now() });
 // Fin déjà trouvée (page rechargée, autre téléphone) : elle part avec les données, pour s'afficher sur les quatre.
 const finPub = () => ({ ecrans: FIN.ecrans, question: FIN.question, consigne: FIN.consigne, choix: FIN.choix.map(c => ({ k: c.k, l: c.l })), deja: state.choix });
-const pub = n => Object.assign({}, phones[n].public, { n, num: NUM, mq: MQ, deadline: state.deadline }, state.won ? { fin: finPub() } : {});
+const pub = n => Object.assign({}, phones[n].public, { n, num: NUM, mq: MQ, deadline: state.deadline, ep: state.epoch }, state.won ? { fin: finPub() } : {});
 
 function lanIPs() {
   const out = [];
@@ -257,8 +260,8 @@ const server = http.createServer(async (req, res) => {
       // Nouvelle partie : on oublie la fin et le choix, le compte à rebours, et les téléphones effacent leur progression.
       // Les codes de déverrouillage déjà saisis restent valables.
       if (p === '/api/gm/reset' && req.method === 'POST') {
-        state.won = false; state.choix = null; state.deadline = null;
-        const sent = toPhones('all', { type: 'reset' });
+        state.won = false; state.choix = null; state.deadline = null; state.epoch = Date.now();
+        const sent = toPhones('all', { type: 'reset', ep: state.epoch });
         toPhones('all', stateEvt());
         addLog({ phone: 'all', kind: 'gm-reset', ok: true, v: 'nouvelle partie' });
         return json(res, 200, { ok: true, sent });
