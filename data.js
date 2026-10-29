@@ -256,14 +256,54 @@ const bank = N => {
   return { holder: N < 4 ? 'M. Théo Lenoir' : null, solde, ops: ops.slice().reverse().map(({ p, ...o }) => o) };
 };
 
+// Appli Mail. p : premier téléphone où le mail existe ; gone : téléphone à partir duquel il a disparu
+// (les mails NOCTIS, qui montrent l'adresse et le nom de Théo, ne sont plus là au tél. 4).
+// box : 'in' (reçu) ou 'sent' (envoyé). att : pièces jointes ({ n: nom, k: type }). Aucun mail visible au tél. 4 ne contient « Lenoir ».
+const MAIL = [
+  { p: 1, d: '2026-10-16 10:12', box: 'in', gone: 4, from: 'Delphine Marchal · NOCTIS', addr: 'd.marchal@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Bienvenue chez NOCTIS 🌙',
+    body: "Bonjour Théo,\n\nToute l'équipe est ravie de t'accueillir. Rendez-vous lundi 19 à 9 h pour ton premier jour : Nicolas t'ouvrira tes accès.\n\nNotre mission tient en une phrase : alléger ce qui pèse.\n\nPetit rappel, le projet est confidentiel. Merci de n'en parler à personne, même à tes proches.\n\nÀ lundi !\nDelphine" },
+  { p: 1, d: '2026-10-17 09:00', box: 'in', from: 'Spotify', addr: 'no-reply@spotify.com', to: 'moi', subj: 'Ta sélection de la semaine est prête',
+    body: "30 titres choisis pour toi, d'après ce que tu as écouté cette semaine." },
+  { p: 1, d: '2026-10-18 11:30', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Merci pour samedi !',
+    body: "Vous étiez nombreux hier soir, merci !\n\nLes photos du concert sont en ligne sur notre page. Vous vous reconnaîtrez peut-être dans la foule.\n\nProchaine date annoncée bientôt." },
+  { p: 1, d: '2026-10-19 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Lundi 19 octobre : l'essentiel de l'actualité",
+    body: "Météo : gris et doux, 14 °C.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nCulture : le retour des films d'horreur en salle avant Halloween." },
+  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 2026-001',
+    body: 'Bonjour,\n\nVeuillez trouver ci-joint ma facture pour la tranche 1.\n\nBonne soirée,\nThéo Lenoir', att: [{ n: 'Facture_001.pdf', k: 'inv' }] },
+  { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Accès préprod',
+    body: "Bonjour,\n\nTes identifiants préprod t'arrivent par un autre canal.\n\nLes séances de test se font le soir, hors des heures de bureau, casque sur les oreilles et téléphone en charge. Pense à ne pas couper la séance avant la fin.\n\nN. Aubry\nOpérations" },
+  { p: 2, d: '2026-10-21 08:15', box: 'in', from: 'Biocoop', addr: 'infos@biocoop.fr', to: 'moi', subj: 'Les courges sont arrivées 🎃',
+    body: "Potimarron, butternut, pâtisson : c'est la saison. -10 % sur les soupes toute la semaine." },
+  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'RE: Facture n° 2026-001',
+    body: 'Bonjour,\n\nLe virement de 1 200,00 € a été émis ce jour.\n\nCordialement,\nService comptabilité' },
+  { p: 3, d: '2026-10-23 10:15', box: 'in', from: 'Cinéma Le Méliès', addr: 'billetterie@lemelies.fr', to: 'moi', subj: 'Vos billets : samedi 24 octobre, 20:00',
+    body: "Séance de 20:00, salle 2.\n2 places plein tarif.\n\nPrésentez ce mail à l'entrée. Bonne séance !" },
+  { p: 3, d: '2026-10-24 09:00', box: 'in', from: 'Déguiz’Express', addr: 'promo@deguizexpress.fr', to: 'moi', subj: 'Halloween : -20 % sur tous les costumes',
+    body: "Vampire, zombie, momie… Il vous reste une semaine pour trouver le vôtre. Livraison en 48 h." },
+  { p: 3, d: '2026-10-24 17:40', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: "Mise à jour de ton profil d'écoute",
+    body: "Bonjour,\n\nSuite à une connexion inhabituelle sur ton compte, une séance de recalibrage est programmée cette nuit sur ton appareil.\n\nAucune action n'est requise de ta part.\n\nN. Aubry" },
+  { p: 4, d: '2026-10-26 08:00', box: 'in', from: 'Sérénité', addr: 'bonjour@serenite.app', to: 'moi', subj: 'Votre bilan de la semaine 🌙',
+    body: "Bonjour Théo,\n\nCette semaine : 4 séances, dont 2 séances de nuit.\nVotre sommeil : +38 %.\nCe qui pesait : -61 %.\n\nBravo, vous avez allégé votre semaine." },
+  { p: 4, d: '2026-10-27 15:20', box: 'in', from: 'EHPAD Les Tilleuls', addr: 'accueil@ehpad-lestilleuls.fr', to: 'moi', subj: 'Programme de la Toussaint',
+    body: "Chères familles,\n\nUne messe sera célébrée dimanche 1er novembre à 11 h dans la salle commune. Les familles sont les bienvenues.\n\nCette semaine, l'atelier chant a eu beaucoup de succès. Madame Odette nous a même appris une chanson de sa jeunesse.\n\nL'équipe des Tilleuls" },
+  { p: 4, d: '2026-10-28 10:00', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Nouvelle date : 12 décembre',
+    body: 'On remet ça le samedi 12 décembre, même salle. Billetterie ouverte !' },
+  { p: 4, d: '2026-10-29 13:42', box: 'in', from: 'Doctolib', addr: 'no-reply@doctolib.fr', to: 'moi', subj: 'Rendez-vous confirmé : mardi 3 novembre à 09:00',
+    body: "Votre rendez-vous est confirmé.\n\nDr Claire Vasseur, neurologue\nMardi 3 novembre 2026 à 09:00\n\nRéservé pour vous par Nora Benali.\n\nPensez à apporter vos derniers examens." },
+  { p: 4, d: '2026-10-30 16:02', box: 'in', from: 'Ma Banque', addr: 'alertes@mabanque.fr', to: 'moi', subj: 'Vous avez reçu un virement',
+    body: 'Un virement de 4 800,00 € a été crédité sur votre compte courant.\nÉmetteur : NOCTIS WELLBEING SAS.' }
+];
+// Mails du téléphone N, du plus récent au plus ancien.
+const mails = N => MAIL.filter(m => m.p <= N && !(m.gone && N >= m.gone)).sort((a, b) => b.d.localeCompare(a.d)).map(({ p, gone, ...m }) => m);
+
 const phones = {
   1: {
     public: {
       label: 'Téléphone 1', wp: 1, ver: '0.8', bat: 82, att: 'désactivée', total: 214,
       notes: notes8(),
       th: threads(1),
-      cal: cal(1), calls: calls(1), bank: bank(1),
-      ph: [PH.live, PH.postit, PH.jour, PH.board, PH.inv], roll: ROLL,
+      cal: cal(1), calls: calls(1), bank: bank(1), mail: mails(1),
+      ph: [PH.live, PH.postit, PH.jour, PH.board], roll: ROLL,
       memos: [{ n: 'Test voix 1', d: '0:42', h: '16:50', x: '« Respirez... À votre réveil, ce qui pesait sera plus léger. »' }],
       drift: {}, close: false
     },
@@ -275,7 +315,7 @@ const phones = {
       label: 'Téléphone 2', wp: 2, ver: '0.9', bat: 41, att: 'bêta', total: 231,
       notes: [{ t: "Ce que j'ai vu", h: '23:12', b: "ouvert par erreur un dossier. j'ai changé son mot de passe : un mot que j'ai sous les yeux tous les jours\n\nclients : PETROVEX (incident site 4), puis un « état »\n\nce n'est pas de la méditation. ils font oublier\n\nne plus faire la séance du soir" }],
       th: threads(2),
-      cal: cal(2), calls: calls(2), bank: bank(2),
+      cal: cal(2), calls: calls(2), bank: bank(2), mail: mails(2),
       ph: [PH.ticket, PH.desk, PH.badge, PH.blur], roll: ROLL,
       memos: [{ n: 'Mémo 3:12', d: '1:08', h: '03:12', sp: true, x: '(chuchoté) Je crois que j\'ai vu quelque chose.  Je ne sais plus quoi.' }],
       drift: {}, close: false
@@ -292,7 +332,7 @@ const phones = {
         { t: '2 h 30 (bis)', h: '02:30', b: "J'ai l'impression d'avoir déjà écrit ça." }
       ],
       th: threads(3),
-      cal: cal(3), calls: calls(3), bank: bank(3),
+      cal: cal(3), calls: calls(3), bank: bank(3), mail: mails(3),
       ph: [PH.chat, PH.cine, PH.clock], roll: ROLL,
       memos: [],
       drift: { 0: 'Oui' }, close: false
@@ -310,7 +350,7 @@ const phones = {
       label: 'Téléphone 4', wp: 4, ver: '1.0.3', bat: 63, att: 'active', total: 164,
       notes: notes8().concat([{ t: "Rien d'important", h: '07:45', b: "Rien d'important." }]),
       th: threads(4),
-      cal: cal(4), calls: calls(4), bank: bank(4),
+      cal: cal(4), calls: calls(4), bank: bank(4), mail: mails(4),
       ph: [], roll: ROLL,
       memos: [{ n: 'Mémo 23:50', d: '0:31', h: '23:50', x: "Je ne sais pas pourquoi j'enregistre ça..." }],
       drift: { 0: 'Oui', 1: 'Oui', 2: 'Meyer' }, close: true
