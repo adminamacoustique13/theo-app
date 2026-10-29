@@ -260,32 +260,34 @@ const bank = N => {
 // (les mails NOCTIS, qui montrent l'adresse et le nom de Théo, ne sont plus là au tél. 4).
 // box : 'in' (reçu) ou 'sent' (envoyé). att : pièces jointes ({ n: nom, k: type }). Aucun mail visible au tél. 4 ne contient « Lenoir ».
 const MAIL = [
-  { p: 1, d: '2026-10-16 10:12', box: 'in', gone: 4, from: 'Delphine Marchal · NOCTIS', addr: 'd.marchal@noctis-wellbeing.fr', to: 't.lenoir.dev@gmail.com', subj: 'Bienvenue chez NOCTIS 🌙',
+  { p: 1, d: '2026-10-16 10:12', box: 'in', gone: 4, from: 'Delphine Marchal · NOCTIS', addr: 'd.marchal@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Bienvenue chez NOCTIS 🌙',
     body: "Bonjour Théo,\n\nToute l'équipe est ravie de t'accueillir. Rendez-vous lundi 19 à 9 h pour ton premier jour : Nicolas t'ouvrira tes accès.\n\nNotre mission tient en une phrase : alléger ce qui pèse.\n\nPetit rappel, le projet est confidentiel. Merci de n'en parler à personne, même à tes proches.\n\nÀ lundi !\nDelphine" },
   { p: 1, d: '2026-10-17 09:00', box: 'in', from: 'Spotify', addr: 'no-reply@spotify.com', to: 'moi', subj: 'Ta sélection de la semaine est prête',
     body: "30 titres choisis pour toi, d'après ce que tu as écouté cette semaine." },
   { p: 1, d: '2026-10-18 11:30', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Merci pour samedi !',
     body: "Vous étiez nombreux hier soir, merci !\n\nLes photos du concert sont en ligne sur notre page. Vous vous reconnaîtrez peut-être dans la foule.\n\nProchaine date annoncée bientôt." },
   { p: 1, d: '2026-10-19 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Lundi 19 octobre : l'essentiel de l'actualité",
-    body: "Météo : gris et doux, 14 °C.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nCulture : le retour des films d'horreur en salle avant Halloween." },
-  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 't.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 001',
+    body: "Météo : gris et doux, 14 °C, éclaircies l'après-midi.\nÀ la une : les préparatifs de la cérémonie du 31 octobre s'accélèrent.\nÉconomie : le prix du gazole repasse sous les 1,70 €.\nMarseille : travaux sur la ligne 2 du métro, trafic interrompu le week-end jusqu'en décembre.\nRégion : à Martigues, la pêche reste interdite au nord de l'étang jusqu'à nouvel ordre.\nAubagne : la foire aux santons ouvre ses portes le 15 novembre.\nSanté : la campagne de vaccination contre la grippe a commencé.\nCulture : le retour des films d'horreur en salle avant Halloween.\nSport : l'OM se déplace à Lens dimanche." },
+  { p: 1, d: '2026-10-19 18:05', box: 'sent', gone: 4, from: 'Théo Lenoir', addr: 'theo.lenoir.dev@gmail.com', to: 'compta@noctis-wellbeing.fr', subj: 'Facture n° 2026-001',
     body: 'Bonjour,\n\nVeuillez trouver ci-joint ma facture pour la tranche 1.\n\nBonne soirée,\nThéo Lenoir', att: [{ n: 'Facture_001.pdf', k: 'inv' }] },
-  { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 't.lenoir.dev@gmail.com', subj: 'Accès préprod',
+  { p: 2, d: '2026-10-20 08:52', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'Accès préprod',
     body: "Bonjour,\n\nTes identifiants préprod t'arrivent par un autre canal.\n\nLes séances de test se font le soir, hors des heures de bureau, casque sur les oreilles et téléphone en charge. Pense à ne pas couper la séance avant la fin.\n\nN. Aubry\nOpérations" },
   { p: 2, d: '2026-10-21 08:15', box: 'in', from: 'Biocoop', addr: 'infos@biocoop.fr', to: 'moi', subj: 'Les courges sont arrivées 🎃',
     body: "Potimarron, butternut, pâtisson : c'est la saison. -10 % sur les soupes toute la semaine." },
-  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 't.lenoir.dev@gmail.com', subj: 'RE: Facture n° 001',
+  { p: 2, d: '2026-10-22 14:02', box: 'in', gone: 4, from: 'Comptabilité NOCTIS', addr: 'compta@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: 'RE: Facture n° 2026-001',
     body: 'Bonjour,\n\nLe virement de 1 200,00 € a été émis ce jour.\n\nCordialement,\nService comptabilité' },
   { p: 3, d: '2026-10-23 10:15', box: 'in', from: 'Cinéma Le Méliès', addr: 'billetterie@lemelies.fr', to: 'moi', subj: 'Vos billets : samedi 24 octobre, 20:00',
     body: "Séance de 20:00, salle 2.\n2 places plein tarif.\n\nPrésentez ce mail à l'entrée. Bonne séance !" },
   { p: 3, d: '2026-10-24 09:00', box: 'in', from: 'Déguiz’Express', addr: 'promo@deguizexpress.fr', to: 'moi', subj: 'Halloween : -20 % sur tous les costumes',
     body: "Vampire, zombie, momie… Il vous reste une semaine pour trouver le vôtre. Livraison en 48 h." },
-  { p: 3, d: '2026-10-24 17:40', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 't.lenoir.dev@gmail.com', subj: "Mise à jour de ton profil d'écoute",
+  { p: 3, d: '2026-10-24 17:40', box: 'in', gone: 4, from: 'Nicolas Aubry · NOCTIS', addr: 'n.aubry@noctis-wellbeing.fr', to: 'theo.lenoir.dev@gmail.com', subj: "Mise à jour de ton profil d'écoute",
     body: "Bonjour,\n\nSuite à une connexion inhabituelle sur ton compte, une séance de recalibrage est programmée cette nuit sur ton appareil.\n\nAucune action n'est requise de ta part.\n\nN. Aubry" },
   { p: 4, d: '2026-10-26 08:00', box: 'in', from: 'Sérénité', addr: 'bonjour@serenite.app', to: 'moi', subj: 'Votre bilan de la semaine 🌙',
     body: "Bonjour Théo,\n\nCette semaine : 4 séances, dont 2 séances de nuit.\nVotre sommeil : +38 %.\nCe qui pesait : -61 %.\n\nBravo, vous avez allégé votre semaine." },
   { p: 4, d: '2026-10-27 15:20', box: 'in', from: 'EHPAD Les Tilleuls', addr: 'accueil@ehpad-lestilleuls.fr', to: 'moi', subj: 'Programme de la Toussaint',
     body: "Chères familles,\n\nUne messe sera célébrée dimanche 1er novembre à 11 h dans la salle commune. Les familles sont les bienvenues.\n\nCette semaine, l'atelier chant a eu beaucoup de succès. Madame Odette nous a même appris une chanson de sa jeunesse.\n\nL'équipe des Tilleuls" },
+  { p: 4, d: '2026-10-28 07:30', box: 'in', from: 'La Matinale', addr: 'newsletter@lamatinale.fr', to: 'moi', subj: "Mercredi 28 octobre : l'essentiel de l'actualité",
+    body: "Météo : pluie en fin de journée, 12 °C.\nÀ la une : cérémonie du 31 octobre, le parcours dévoilé et les rues fermées à la circulation.\nPolitique : le budget de la Métropole adopté de justesse.\nVacances : les bouchons attendus vendredi sur l'A7, Bison Futé voit rouge.\nJustice : étang de Berre, l'affaire de la pollution de juin classée sans suite, faute de témoins. « Un soulagement », réagit M. P., directeur du site.\nFaits divers : un sanglier en promenade sur la Corniche, la vidéo fait le tour des réseaux.\nConso : Halloween, les ventes de citrouilles en hausse de 12 %.\nSport : l'OM s'impose à domicile face à Nantes (2-0)." },
   { p: 4, d: '2026-10-28 10:00', box: 'in', from: 'Les Nuits Molles', addr: 'contact@lesnuitsmolles.fr', to: 'moi', subj: 'Nouvelle date : 12 décembre',
     body: 'On remet ça le samedi 12 décembre, même salle. Billetterie ouverte !' },
   { p: 4, d: '2026-10-29 13:42', box: 'in', from: 'Doctolib', addr: 'no-reply@doctolib.fr', to: 'moi', subj: 'Rendez-vous confirmé : mardi 3 novembre à 09:00',
@@ -340,7 +342,7 @@ const phones = {
       drift: { 0: 'Oui' }, close: false
     },
     // Journal trié par heure locale : à égalité, E (01:30 UTC) s'affiche avant D (00:30 UTC).
-    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
+    admin: { adm: 'ok', lethe: 'actif', jr: [['S-0914-4', '23:00', '21:00', 'Séance collective · lot P4 · 12 sujets · cible : nuit du 14/06', '40 min'], ['S-0424-1', '21:50', '19:50', 'Séance du soir', '24 min'], ['S-0424-3E', '02:30', '01:30', 'LETHE profond · sujet 0', '52 min'], ['S-0424-7D', '02:30', '00:30', 'Sommeil standard', '18 min']], tk: T3, accHtml: ACC, dos: 'locked', dosHint: 'la plante du bureau', dosMod: 't.lenoir, jeu. 22/10 23 h 18' },
     dossier: {
       rows: [['PETROVEX', 'Incident site 4', '12', '94 %'], ['Institution', 'Événement public du 31/10', '340', '87 %'], ['Douceur', 'Particuliers', '5 000', '40 %']],
       access: 't.lenoir, jeu. 23 h 08, ouverture non autorisée',
@@ -362,6 +364,30 @@ const phones = {
   }
 };
 
+// Fin du jeu : envoyée par le serveur seulement quand « Souviens-toi de moi » est trouvé (tél. 4).
+// Trois écrans (l'histoire, ORCHIDÉE, le choix), puis une des trois fins selon le choix commun des joueurs.
+const FIN = {
+  ecrans: [
+    { t: 'Rémanence : 100 %. Séance de 2 h 30 annulée.',
+      b: "Le 19 octobre, Théo Lenoir, développeur freelance, commence une mission chez NOCTIS : finir Sérénité, une appli de méditation pour mieux dormir.\n\nSérénité ne fait pas que vous endormir. Sous les séances du soir tourne LETHE, un moteur qui efface ce qui pèse. Un souvenir, une personne, une nuit entière.\n\nLe 22 octobre, Théo ouvre par erreur le dossier ORCHIDÉE. Il y lit la liste des clients. Il change le mot de passe et note ce qu'il a vu. NOCTIS s'en aperçoit.\n\nAlors, chaque nuit, une séance le reprend un peu plus. Il a oublié Lucile. Il a oublié qu'il avait compris. Pour se prévenir lui-même, il s'est écrit sous un faux nom : Ethel, l'anagramme du fleuve de l'oubli.\n\nCette nuit, à 2 h 30, la séance « fin de mission » devait tout effacer, y compris Théo lui-même.\n\nVous vous êtes souvenus de lui à sa place." },
+    { t: 'Dossier ORCHIDÉE · déverrouillé',
+      b: "PETROVEX. Le 14 juin, le site 4 de Martigues pollue l'étang de Berre. Douze salariés de nuit ont tout vu. En septembre, on leur offre une « séance collective ». L'affaire est classée : faute de témoins.\n\nInstitution. Le 31 octobre, 340 personnes assisteront à la cérémonie. Le lendemain, elles n'en garderont presque rien.\n\nDouceur. 5 000 particuliers, qui pensent simplement mieux dormir.\n\nLe dossier tient dans un fichier. Théo l'a entre les mains." }
+  ],
+  question: 'Que fait Théo du dossier ?',
+  consigne: 'Mettez-vous d\'accord : un seul appui, pas de retour en arrière.',
+  choix: [
+    { k: 'MATINALE', l: "L'envoyer à La Matinale",
+      b: "Le mail part à 00:03. Destinataire : redaction@lamatinale.fr. Pièce jointe : ORCHIDEE.zip.\n\nLundi 2 novembre, 07:30 · La Matinale : « Révélations : une appli de sommeil au cœur d'un scandale. L'enquête sur l'étang de Berre rouverte. »\n\nNora : « tu fais la une. rendez-vous mardi 9h, je viens te chercher »",
+      m: "Théo ne retrouvera pas tout. Mais douze personnes vont pouvoir témoigner." },
+    { k: 'EFFACER', l: "L'effacer",
+      b: "ORCHIDÉE supprimé. 0 fichier.\n\nPlus de liste, plus de preuve. NOCTIS ne peut plus rien en faire, et personne ne saura rien.\n\nLucile, 00:41 : « je sais pas pourquoi je t'écris à cette heure. on se refait un ciné ? »",
+      m: 'Théo est libre. Les douze témoins, eux, ne se souviendront jamais.' },
+    { k: 'GARDER', l: 'Le garder',
+      b: "Dossier déplacé dans Notes. Verrouillé.\n\nThéo le garde, au cas où. Il se dit qu'il saura quoi en faire plus tard.\n\nLundi 2 novembre, 09:00 · Nouveau mail : « Bienvenue chez NOCTIS 🌙 Bonjour Théo, toute l'équipe est ravie de t'accueillir… »",
+      m: "Il ne se souvient pas de l'avoir déjà lu." }
+  ]
+};
+
 const SECRETS = {
   admin: 'LETHE',
   // Le dossier s'ouvre avec le nom français de la plante ; le nom latin reçoit un refus à part.
@@ -373,4 +399,4 @@ const SECRETS = {
   spectro: 'TOI'
 };
 
-module.exports = { phones, MQ, NUM, SECRETS };
+module.exports = { phones, MQ, NUM, SECRETS, FIN };

@@ -14,6 +14,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const u = new URL(r.url);
   if (u.origin !== location.origin) return;
+  if (u.pathname.startsWith('/musique/')) return; // les sons se lisent par morceaux (Range), on ne les met pas en cache
   if (u.pathname.startsWith('/api/events') || u.pathname.startsWith('/api/gm') || u.pathname === '/gm') return;
   if (u.pathname.startsWith('/api/phone')) {
     e.respondWith(fetch(r).then(x => { const c = x.clone(); if (x.ok) caches.open(V).then(ca => ca.put(r.url, c)); return x; }).catch(() => caches.match(r.url)));
